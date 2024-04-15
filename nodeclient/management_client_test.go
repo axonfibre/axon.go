@@ -168,7 +168,7 @@ func TestManagementClient_AddPeer(t *testing.T) {
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
-	mockPostJSON(api.ManagementRoutePeers, 201, req, originRes)
+	mockPostJSON(api.ManagementRoutePeers, 200, req, originRes)
 
 	client := nodeClient(t)
 
@@ -176,6 +176,119 @@ func TestManagementClient_AddPeer(t *testing.T) {
 	require.NoError(t, err)
 
 	resp, err := management.AddPeer(context.Background(), multiAddr)
+	require.NoError(t, err)
+	require.EqualValues(t, originRes, resp)
+}
+
+func TestManagementClient_PruneDatabaseBySize(t *testing.T) {
+	defer gock.Off()
+
+	targetSize := "1GB"
+
+	originRes := &api.PruneDatabaseResponse{
+		Epoch: 1,
+	}
+
+	req := &api.PruneDatabaseRequest{TargetDatabaseSize: targetSize}
+
+	originRoutes := &api.RoutesResponse{
+		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+	}
+
+	mockGetJSON(api.RouteRoutes, 200, originRoutes)
+	mockPostJSON(api.ManagementRouteDatabasePrune, 200, req, originRes)
+
+	client := nodeClient(t)
+
+	management, err := client.Management(context.TODO())
+	require.NoError(t, err)
+
+	resp, err := management.PruneDatabaseBySize(context.Background(), targetSize)
+	require.NoError(t, err)
+	require.EqualValues(t, originRes, resp)
+}
+
+func TestManagementClient_PruneDatabaseByEpoch(t *testing.T) {
+	defer gock.Off()
+
+	epoch := iotago.EpochIndex(1)
+
+	originRes := &api.PruneDatabaseResponse{
+		Epoch: 1,
+	}
+
+	req := &api.PruneDatabaseRequest{Epoch: epoch}
+
+	originRoutes := &api.RoutesResponse{
+		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+	}
+
+	mockGetJSON(api.RouteRoutes, 200, originRoutes)
+	mockPostJSON(api.ManagementRouteDatabasePrune, 200, req, originRes)
+
+	client := nodeClient(t)
+
+	management, err := client.Management(context.TODO())
+	require.NoError(t, err)
+
+	resp, err := management.PruneDatabaseByEpoch(context.Background(), epoch)
+	require.NoError(t, err)
+	require.EqualValues(t, originRes, resp)
+}
+
+func TestManagementClient_PruneDatabaseByDepth(t *testing.T) {
+	defer gock.Off()
+
+	depth := iotago.EpochIndex(1)
+
+	originRes := &api.PruneDatabaseResponse{
+		Epoch: 1,
+	}
+
+	req := &api.PruneDatabaseRequest{Depth: depth}
+
+	originRoutes := &api.RoutesResponse{
+		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+	}
+
+	mockGetJSON(api.RouteRoutes, 200, originRoutes)
+	mockPostJSON(api.ManagementRouteDatabasePrune, 200, req, originRes)
+
+	client := nodeClient(t)
+
+	management, err := client.Management(context.TODO())
+	require.NoError(t, err)
+
+	resp, err := management.PruneDatabaseByDepth(context.Background(), depth)
+	require.NoError(t, err)
+	require.EqualValues(t, originRes, resp)
+}
+
+func TestManagementClient_CreateSnapshot(t *testing.T) {
+	defer gock.Off()
+
+	slot := iotago.SlotIndex(1)
+
+	originRes := &api.CreateSnapshotResponse{
+		Slot:     1,
+		FilePath: "filePath",
+	}
+
+	req := &api.CreateSnapshotRequest{Slot: slot}
+
+	originRoutes := &api.RoutesResponse{
+		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+	}
+
+	mockGetJSON(api.RouteRoutes, 200, originRoutes)
+	mockPostJSON(api.ManagementRouteSnapshotsCreate, 200, req, originRes)
+
+	client := nodeClient(t)
+
+	management, err := client.Management(context.TODO())
+	require.NoError(t, err)
+
+	resp, err := management.CreateSnapshot(context.Background(), slot)
 	require.NoError(t, err)
 	require.EqualValues(t, originRes, resp)
 }
