@@ -68,6 +68,21 @@ func Test_ManagementAPIDeSerialize(t *testing.T) {
 			},
 			Target: &api.PruneDatabaseResponse{},
 		},
+		{
+			Name: "ok - CreateSnapshotRequest",
+			Source: &api.CreateSnapshotRequest{
+				Slot: 1,
+			},
+			Target: &api.CreateSnapshotRequest{},
+		},
+		{
+			Name: "ok - CreateSnapshotResponse",
+			Source: &api.CreateSnapshotResponse{
+				Slot:     1,
+				FilePath: "filePath",
+			},
+			Target: &api.CreateSnapshotResponse{},
+		},
 	}
 
 	for _, tt := range tests {
@@ -170,6 +185,26 @@ func Test_ManagementAPIJSONSerialization(t *testing.T) {
 			},
 			Target: `{
 	"epoch": 1
+}`,
+		},
+		{
+			Name: "ok - CreateSnapshotRequest",
+			Source: &api.CreateSnapshotRequest{
+				Slot: 1,
+			},
+			Target: `{
+	"slot": 1
+}`,
+		},
+		{
+			Name: "ok - CreateSnapshotResponse",
+			Source: &api.CreateSnapshotResponse{
+				Slot:     1,
+				FilePath: "filePath",
+			},
+			Target: `{
+	"slot": 1,
+	"filePath": "filePath"
 }`,
 		},
 	}

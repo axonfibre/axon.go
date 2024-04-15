@@ -56,4 +56,18 @@ type (
 		// The current oldest epoch in the database.
 		Epoch iotago.EpochIndex `serix:""`
 	}
+
+	// CreateSnapshotRequest defines the request of a create snapshot REST API call.
+	CreateSnapshotRequest struct {
+		// The slot of the snapshot.
+		Slot iotago.SlotIndex `serix:""`
+	}
+
+	// CreateSnapshotResponse defines the response of a create snapshot REST API call.
+	CreateSnapshotResponse struct {
+		// The slot of the snapshot.
+		Slot iotago.SlotIndex `serix:""`
+		// The file path of the snapshot file.
+		FilePath string `serix:",lenPrefix=uint8"`
+	}
 )
