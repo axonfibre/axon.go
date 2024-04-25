@@ -26,7 +26,7 @@ type (
 		// PruneDatabaseByDepth prunes the database by depth.
 		PruneDatabaseByDepth(ctx context.Context, depth iotago.EpochIndex) (*api.PruneDatabaseResponse, error)
 		// CreateSnapshot creates a snapshot.
-		CreateSnapshot(ctx context.Context, slot iotago.SlotIndex) (*api.CreateSnapshotResponse, error)
+		CreateSnapshot(ctx context.Context) (*api.CreateSnapshotResponse, error)
 	}
 
 	managementClient struct {
@@ -147,14 +147,10 @@ func (client *managementClient) PruneDatabaseByDepth(ctx context.Context, depth 
 }
 
 // CreateSnapshot creates a snapshot.
-func (client *managementClient) CreateSnapshot(ctx context.Context, slot iotago.SlotIndex) (*api.CreateSnapshotResponse, error) {
-	req := &api.CreateSnapshotRequest{
-		Slot: slot,
-	}
-
+func (client *managementClient) CreateSnapshot(ctx context.Context) (*api.CreateSnapshotResponse, error) {
 	res := new(api.CreateSnapshotResponse)
 	//nolint:bodyclose
-	if _, err := client.DoWithRequestHeaderHook(ctx, http.MethodPost, api.ManagementRouteSnapshotsCreate, RequestHeaderHookAcceptJSON, req, res); err != nil {
+	if _, err := client.DoWithRequestHeaderHook(ctx, http.MethodPost, api.ManagementRouteSnapshotsCreate, RequestHeaderHookAcceptJSON, nil, res); err != nil {
 		return nil, err
 	}
 

@@ -267,28 +267,24 @@ func TestManagementClient_PruneDatabaseByDepth(t *testing.T) {
 func TestManagementClient_CreateSnapshot(t *testing.T) {
 	defer gock.Off()
 
-	slot := iotago.SlotIndex(1)
-
 	originRes := &api.CreateSnapshotResponse{
 		Slot:     1,
 		FilePath: "filePath",
 	}
-
-	req := &api.CreateSnapshotRequest{Slot: slot}
 
 	originRoutes := &api.RoutesResponse{
 		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
-	mockPostJSON(api.ManagementRouteSnapshotsCreate, 200, req, originRes)
+	mockPostJSON(api.ManagementRouteSnapshotsCreate, 200, nil, originRes)
 
 	client := nodeClient(t)
 
 	management, err := client.Management(context.TODO())
 	require.NoError(t, err)
 
-	resp, err := management.CreateSnapshot(context.Background(), slot)
+	resp, err := management.CreateSnapshot(context.Background())
 	require.NoError(t, err)
 	require.EqualValues(t, originRes, resp)
 }
