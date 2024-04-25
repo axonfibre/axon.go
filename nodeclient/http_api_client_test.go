@@ -76,11 +76,13 @@ func mockGetJSONWithParams(route string, status int, body interface{}, params ma
 
 //nolint:unparam // false positive
 func mockPostJSON(route string, status int, req interface{}, resp interface{}) {
-	gock.New(nodeAPIUrl).
-		Post(route).
-		MatchHeader("Content-Type", api.MIMEApplicationJSON).
-		BodyString(string(lo.PanicOnErr(mockAPI.JSONEncode(req)))).
-		Reply(status).
+	mock := gock.New(nodeAPIUrl).Post(route)
+	if req != nil {
+		mock.MatchHeader("Content-Type", api.MIMEApplicationJSON).
+			BodyString(string(lo.PanicOnErr(mockAPI.JSONEncode(req))))
+	}
+
+	mock.Reply(status).
 		SetHeader("Content-Type", api.MIMEApplicationJSON).
 		BodyString(string(lo.PanicOnErr(mockAPI.JSONEncode(resp))))
 }
