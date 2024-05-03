@@ -698,7 +698,7 @@ func ExecFuncBalancedMana() ExecFunc {
 		} else if manaIn > manaOut {
 			// less mana on output side than on input side => check if mana burning is allowed
 			if vmParams.WorkingSet.Tx.Capabilities.CannotBurnMana() {
-				return ierrors.Chain(iotago.ErrInputOutputManaMismatch, iotago.ErrTxCapabilitiesManaBurningNotAllowed)
+				return ierrors.Chain(iotago.ErrInputOutputManaMismatch, ierrors.WithMessagef(iotago.ErrTxCapabilitiesManaBurningNotAllowed, "Mana in %d, Mana out %d", manaIn, manaOut))
 			}
 		}
 
