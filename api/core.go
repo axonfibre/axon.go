@@ -412,6 +412,107 @@ func TransactionFailureReasonFromBytes(b []byte) (TransactionFailureReason, int,
 	return TransactionFailureReason(b[0]), TransactionFailureReasonLength, nil
 }
 
+func (t TransactionFailureReason) String() string {
+	return []string{
+		"none",
+
+		"conflict_rejected",
+		"orphaned",
+
+		"input_already_spent",
+		"input_creation_after_tx_creation",
+		"unlock_signature_invalid",
+
+		"chain_address_unlock_invalid",
+		"direct_unlockable_address_unlock_invalid",
+		"multi_address_unlock_invalid",
+
+		"commitment_input_reference_invalid",
+		"bic_input_reference_invalid",
+		"reward_input_reference_invalid",
+
+		"staking_reward_calculation_failure",
+		"delegation_reward_calculation_failure",
+
+		"input_output_base_token_mismatch",
+
+		"mana_overflow",
+		"input_output_mana_mismatch",
+		"mana_decay_creation_index_exceeds_target_index",
+
+		"native_token_sum_unbalanced",
+
+		"simple_token_scheme_minted_melted_token_decrease",
+		"simple_token_scheme_minting_invalid",
+		"simple_token_scheme_melting_invalid",
+		"simple_token_scheme_maximum_supply_changed",
+		"simple_token_scheme_genesis_invalid",
+
+		"multi_address_length_unlock_length_mismatch",
+		"multi_address_unlock_threshold_not_reached",
+
+		"sender_feature_not_unlocked",
+
+		"issuer_feature_not_unlocked",
+
+		"staking_reward_input_missing",
+		"staking_commitment_input_missing",
+		"staking_reward_claiming_invalid",
+		"staking_feature_removed_before_unbonding",
+		"staking_feature_modified_before_unbonding",
+		"staking_start_epoch_invalid",
+		"staking_end_epoch_too_early",
+
+		"block_issuer_commitment_input_missing",
+		"block_issuance_credit_input_missing",
+		"block_issuer_not_expired",
+		"block_issuer_expiry_too_early",
+		"mana_moved_off_block_issuer_account",
+		"account_locked",
+
+		"timelock_commitment_input_missing",
+		"timelock_not_expired",
+
+		"expiration_commitment_input_missing",
+		"expiration_not_unlockable",
+
+		"return_amount_not_fulfilled",
+
+		"new_chain_output_has_non_zeroed_id",
+		"chain_output_immutable_features_changed",
+
+		"implicit_account_destruction_disallowed",
+		"multiple_implicit_account_creation_addresses",
+
+		"account_invalid_foundry_counter",
+
+		"anchor_invalid_state_transition",
+		"anchor_invalid_governance_transition",
+
+		"foundry_transition_without_account",
+		"foundry_serial_invalid",
+
+		"delegation_commitment_input_missing",
+		"delegation_reward_input_missing",
+		"delegation_rewards_claiming_invalid",
+		"delegation_output_transitioned_twice",
+		"delegation_modified",
+		"delegation_start_epoch_invalid",
+		"delegation_amount_mismatch",
+		"delegation_end_epoch_not_zero",
+		"delegation_end_epoch_invalid",
+
+		"capabilities_native_token_burning_not_allowed",
+		"capabilities_mana_burning_not_allowed",
+		"capabilities_account_destruction_not_allowed",
+		"capabilities_anchor_destruction_not_allowed",
+		"capabilities_foundry_destruction_not_allowed",
+		"capabilities_nft_destruction_not_allowed",
+
+		"semantic_validation_failed",
+	}[t]
+}
+
 // Unwraps the given err into the given errList by recursively unwrapping it.
 //
 // In case of joined errors, the right-most error is unwrapped first, which corresponds

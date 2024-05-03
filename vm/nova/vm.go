@@ -476,7 +476,7 @@ func accountStakingGenesisValidation(vmParams *vm.Params, stakingFeat *iotago.St
 	pastBoundedEpoch := timeProvider.EpochFromSlot(pastBoundedSlot)
 
 	if stakingFeat.StartEpoch != pastBoundedEpoch {
-		return iotago.ErrStakingStartEpochInvalid
+		return ierrors.WithMessagef(iotago.ErrStakingStartEpochInvalid, "is %d, expected %d", stakingFeat.StartEpoch, pastBoundedEpoch)
 	}
 
 	unbondingEpoch := pastBoundedEpoch + vmParams.API.ProtocolParameters().StakingUnbondingPeriod()
@@ -996,7 +996,7 @@ func delegationGenesisValid(vmParams *vm.Params, current *iotago.DelegationOutpu
 	}
 
 	if current.DelegatedAmount != current.Amount {
-		return iotago.ErrDelegationAmountMismatch
+		return ierrors.WithMessagef(iotago.ErrDelegationAmountMismatch, "delegated amount %d, amount %d", current.DelegatedAmount, current.Amount)
 	}
 
 	if current.EndEpoch != 0 {
