@@ -3,10 +3,10 @@ package nova
 import (
 	"fmt"
 
-	"github.com/iotaledger/hive.go/core/safemath"
-	"github.com/iotaledger/hive.go/ierrors"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/vm"
+	"github.com/axonfibre/fibre.go/core/safemath"
+	"github.com/axonfibre/fibre.go/ierrors"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/vm"
 )
 
 // NewVirtualMachine returns an VirtualMachine adhering to the Nova protocol.

@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
-	"github.com/iotaledger/iota.go/v4/blockissuer/pow"
-	"github.com/iotaledger/iota.go/v4/builder"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
+	"github.com/axonfibre/axon.go/v4/blockissuer/pow"
+	"github.com/axonfibre/axon.go/v4/builder"
 )
 
 type (

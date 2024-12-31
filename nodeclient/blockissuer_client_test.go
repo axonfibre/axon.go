@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
-	"github.com/iotaledger/iota.go/v4/nodeclient"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
+	"github.com/axonfibre/axon.go/v4/nodeclient"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 func TestBlockIssuerClient_Enabled(t *testing.T) {

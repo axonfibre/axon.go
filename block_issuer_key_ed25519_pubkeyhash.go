@@ -7,9 +7,9 @@ import (
 
 	"golang.org/x/crypto/blake2b"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/serializer/v2"
+	hiveEd25519 "github.com/axonfibre/fibre.go/crypto/ed25519"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/serializer/v2"
 )
 
 // Ed25519PublicKeyHashBytesLength is the length of an Ed25519 public key hash.

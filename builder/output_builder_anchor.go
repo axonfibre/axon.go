@@ -1,8 +1,8 @@
 package builder
 
 import (
-	"github.com/iotaledger/hive.go/ierrors"
-	iotago "github.com/iotaledger/iota.go/v4"
+	"github.com/axonfibre/fibre.go/ierrors"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 // NewAnchorOutputBuilder creates a new AnchorOutputBuilder with the required state controller/governor addresses and base token amount.

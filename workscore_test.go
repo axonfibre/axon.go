@@ -6,10 +6,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/builder"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	hiveEd25519 "github.com/axonfibre/fibre.go/crypto/ed25519"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/builder"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 func TestTransactionEssenceWorkScore(t *testing.T) {

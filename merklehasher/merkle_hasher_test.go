@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/hexutil"
-	"github.com/iotaledger/iota.go/v4/merklehasher"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/hexutil"
+	"github.com/axonfibre/axon.go/v4/merklehasher"
 
 	// import implementation.
 	_ "golang.org/x/crypto/blake2b"
@@ -18,7 +18,7 @@ import (
 func TestMerkleHasher(t *testing.T) {
 	var includedBlocks iotago.BlockIDs
 
-	// https://github.com/iotaledger/iota-crypto-demo/tree/master/examples/merkle
+	// https://github.com/axonfibre/axon-crypto-demo/tree/master/examples/merkle
 
 	includedBlocks = append(includedBlocks, iotago.MustBlockIDFromHexString("0x52fdfc072182654f163f5f0f9a621d729566c74d10037c4d7bbb0407d1e2c64900000000"))
 	includedBlocks = append(includedBlocks, iotago.MustBlockIDFromHexString("0x81855ad8681d0d86d1e91e00167939cb6694d2c422acd208a0072939487f699900000000"))

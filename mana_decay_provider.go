@@ -1,9 +1,9 @@
 package iotago
 
 import (
-	"github.com/iotaledger/hive.go/core/safemath"
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/lo"
+	"github.com/axonfibre/fibre.go/core/safemath"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/lo"
 )
 
 // splitUint64 splits a uint64 value into two uint64 that hold the high and the low double-word.

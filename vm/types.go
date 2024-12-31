@@ -3,7 +3,7 @@ package vm
 import (
 	"fmt"
 
-	iotago "github.com/iotaledger/iota.go/v4"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 // InputSet is a map of OutputID to Output.

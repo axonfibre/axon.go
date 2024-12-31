@@ -1,6 +1,6 @@
 package bech32
 
-import "github.com/iotaledger/hive.go/ierrors"
+import "github.com/axonfibre/fibre.go/ierrors"
 
 // Errors reported during bech32 decoding.
 var (

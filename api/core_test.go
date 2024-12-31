@@ -7,11 +7,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	"github.com/axonfibre/fibre.go/ierrors"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func Test_CoreAPIDeSerialize(t *testing.T) {

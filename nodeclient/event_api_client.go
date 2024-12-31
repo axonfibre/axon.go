@@ -10,10 +10,10 @@ import (
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
-	"github.com/iotaledger/iota.go/v4/hexutil"
+	"github.com/axonfibre/fibre.go/ierrors"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
+	"github.com/axonfibre/axon.go/v4/hexutil"
 )
 
 var (

@@ -3,9 +3,9 @@ package api
 import (
 	"time"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/serializer/v2"
-	iotago "github.com/iotaledger/iota.go/v4"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 type BlockState byte

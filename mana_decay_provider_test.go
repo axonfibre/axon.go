@@ -9,9 +9,9 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/require"
 
-	"github.com/iotaledger/hive.go/core/safemath"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	"github.com/axonfibre/fibre.go/core/safemath"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 var (

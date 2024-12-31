@@ -3,7 +3,7 @@ package iotago
 import (
 	"fmt"
 
-	"github.com/iotaledger/hive.go/constraints"
+	"github.com/axonfibre/fibre.go/constraints"
 )
 
 const (

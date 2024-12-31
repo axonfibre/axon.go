@@ -1,7 +1,7 @@
 package builder
 
 import (
-	iotago "github.com/iotaledger/iota.go/v4"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 // NewDelegationOutputBuilder creates a new DelegationOutputBuilder with the account address, serial number, token scheme and base token amount.

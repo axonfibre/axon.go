@@ -4,8 +4,8 @@ import (
 	cryptorand "crypto/rand"
 	"encoding/binary"
 
-	"github.com/iotaledger/hive.go/runtime/options"
-	iotago "github.com/iotaledger/iota.go/v4"
+	"github.com/axonfibre/fibre.go/runtime/options"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 func RandSignedTransactionIDWithCreationSlot(slot iotago.SlotIndex) iotago.SignedTransactionID {

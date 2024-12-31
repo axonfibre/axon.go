@@ -9,15 +9,15 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
-	"github.com/iotaledger/hive.go/lo"
-	"github.com/iotaledger/hive.go/serializer/v2"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/builder"
-	"github.com/iotaledger/iota.go/v4/hexutil"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	hiveEd25519 "github.com/axonfibre/fibre.go/crypto/ed25519"
+	"github.com/axonfibre/fibre.go/lo"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/builder"
+	"github.com/axonfibre/axon.go/v4/hexutil"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestBlock_DeSerialize(t *testing.T) {

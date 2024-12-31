@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/iotaledger/iota.go/v4"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 func TestIdentifier_Bytes(t *testing.T) {

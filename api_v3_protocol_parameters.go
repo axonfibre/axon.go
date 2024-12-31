@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/iotaledger/hive.go/core/safemath"
-	"github.com/iotaledger/hive.go/lo"
-	"github.com/iotaledger/hive.go/runtime/options"
+	"github.com/axonfibre/fibre.go/core/safemath"
+	"github.com/axonfibre/fibre.go/lo"
+	"github.com/axonfibre/fibre.go/runtime/options"
 )
 
 // V3ProtocolParameters defines the parameters of the protocol.

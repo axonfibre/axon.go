@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"cmp"
 
-	"github.com/iotaledger/hive.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2"
 )
 
 // TagFeature is a feature which allows to additionally tag an output by a user defined value.

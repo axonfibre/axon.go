@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 // JSONEncodeTest is used to check if the JSON encoding is equal to a manually provided JSON string.

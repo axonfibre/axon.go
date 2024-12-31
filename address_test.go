@@ -7,13 +7,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
-	"github.com/iotaledger/hive.go/serializer/v2"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	"github.com/iotaledger/hive.go/serializer/v2/stream"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	hiveEd25519 "github.com/axonfibre/fibre.go/crypto/ed25519"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	"github.com/axonfibre/fibre.go/serializer/v2/stream"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestAddressDeSerialize(t *testing.T) {

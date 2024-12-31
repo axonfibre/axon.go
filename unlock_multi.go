@@ -1,8 +1,8 @@
 package iotago
 
 import (
-	"github.com/iotaledger/hive.go/lo"
-	"github.com/iotaledger/hive.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/lo"
+	"github.com/axonfibre/fibre.go/serializer/v2"
 )
 
 // MultiUnlock is an Unlock which holds a list of unlocks for a multi address.

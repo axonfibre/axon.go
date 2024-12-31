@@ -5,7 +5,7 @@ import (
 	"crypto/ed25519"
 	"fmt"
 
-	"github.com/iotaledger/hive.go/ierrors"
+	"github.com/axonfibre/fibre.go/ierrors"
 )
 
 var (

@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/builder"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/builder"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 func TestBasicOutputBuilder(t *testing.T) {

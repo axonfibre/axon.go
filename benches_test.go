@@ -5,10 +5,10 @@ import (
 	"crypto/ed25519"
 	"testing"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	hiveEd25519 "github.com/axonfibre/fibre.go/crypto/ed25519"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 var (

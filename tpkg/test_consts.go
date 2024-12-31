@@ -3,7 +3,7 @@ package tpkg
 import (
 	"time"
 
-	iotago "github.com/iotaledger/iota.go/v4"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 // IOTAMainnetV3TestProtocolParameters reflect the planned protocol parameters to be used for IOTA mainnet.

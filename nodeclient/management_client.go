@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
 )
 
 type (

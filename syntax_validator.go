@@ -1,8 +1,8 @@
 package iotago
 
 import (
-	"github.com/iotaledger/hive.go/constraints"
-	"github.com/iotaledger/hive.go/ierrors"
+	"github.com/axonfibre/fibre.go/constraints"
+	"github.com/axonfibre/fibre.go/ierrors"
 )
 
 // ElementValidationFunc is a func that, given the index of a slice element and the element itself

@@ -3,8 +3,8 @@ package iotago_test
 import (
 	"testing"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestCandidacyAnnouncmentDeSerialize(t *testing.T) {

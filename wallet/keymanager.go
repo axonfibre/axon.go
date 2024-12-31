@@ -4,14 +4,14 @@ import (
 	"crypto/ed25519"
 	"fmt"
 
-	"github.com/iotaledger/iota-crypto-demo/pkg/bip32path"
-	"github.com/iotaledger/iota-crypto-demo/pkg/bip39"
-	"github.com/iotaledger/iota-crypto-demo/pkg/slip10"
-	"github.com/iotaledger/iota-crypto-demo/pkg/slip10/eddsa"
+	"github.com/axonfibre/axon-crypto-demo/pkg/bip32path"
+	"github.com/axonfibre/axon-crypto-demo/pkg/bip39"
+	"github.com/axonfibre/axon-crypto-demo/pkg/slip10"
+	"github.com/axonfibre/axon-crypto-demo/pkg/slip10/eddsa"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/lo"
-	iotago "github.com/iotaledger/iota.go/v4"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/lo"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 const (

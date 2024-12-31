@@ -3,8 +3,8 @@ package iotago
 import (
 	"encoding/binary"
 
-	"github.com/iotaledger/hive.go/serializer/v2"
-	"github.com/iotaledger/iota.go/v4/hexutil"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	"github.com/axonfibre/axon.go/v4/hexutil"
 )
 
 func EmptyOutputIDWithCreationSlot(slot SlotIndex) OutputID {

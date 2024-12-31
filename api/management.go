@@ -1,7 +1,7 @@
 package api
 
 import (
-	iotago "github.com/iotaledger/iota.go/v4"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 type (

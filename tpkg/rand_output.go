@@ -6,8 +6,8 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/iotaledger/hive.go/lo"
-	iotago "github.com/iotaledger/iota.go/v4"
+	"github.com/axonfibre/fibre.go/lo"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 func RandOutputIDWithCreationSlot(slot iotago.SlotIndex, index ...uint16) iotago.OutputID {

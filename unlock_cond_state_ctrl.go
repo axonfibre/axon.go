@@ -4,7 +4,7 @@ package iotago
 import (
 	"cmp"
 
-	"github.com/iotaledger/hive.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2"
 )
 
 // StateControllerAddressUnlockCondition is an UnlockCondition defining the state controller address for an AccountOutput.

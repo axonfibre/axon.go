@@ -1,8 +1,8 @@
 package iotago
 
 import (
-	"github.com/iotaledger/hive.go/core/safemath"
-	"github.com/iotaledger/hive.go/ierrors"
+	"github.com/axonfibre/fibre.go/core/safemath"
+	"github.com/axonfibre/fibre.go/ierrors"
 )
 
 // WorkScore defines the type of work score used to denote the computation costs of processing an object.

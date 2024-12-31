@@ -1,9 +1,9 @@
 package builder
 
 import (
-	"github.com/iotaledger/hive.go/core/safemath"
-	"github.com/iotaledger/hive.go/ierrors"
-	iotago "github.com/iotaledger/iota.go/v4"
+	"github.com/axonfibre/fibre.go/core/safemath"
+	"github.com/axonfibre/fibre.go/ierrors"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 // ErrTransactionBuilder defines a generic error occurring within the TransactionBuilder.

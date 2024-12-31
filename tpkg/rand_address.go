@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"slices"
 
-	iotago "github.com/iotaledger/iota.go/v4"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 // RandEd25519Address returns a random Ed25519 address.

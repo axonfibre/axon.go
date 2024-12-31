@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/pasztorpisti/qs"
 
-	iotago "github.com/iotaledger/iota.go/v4"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 // IndexerResponse is the standard successful response by the indexer.

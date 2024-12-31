@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
-	"github.com/iotaledger/iota.go/v4/nodeclient"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
+	"github.com/axonfibre/axon.go/v4/nodeclient"
 )
 
 func TestManagementClient_Enabled(t *testing.T) {

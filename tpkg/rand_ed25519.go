@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"slices"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
-	iotago "github.com/iotaledger/iota.go/v4"
+	hiveEd25519 "github.com/axonfibre/fibre.go/crypto/ed25519"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 // RandEd25519Signature returns a random Ed25519 signature.

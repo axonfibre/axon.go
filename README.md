@@ -1,18 +1,16 @@
-# iota.go
+# Axon Go Library
 
-Official Go library.
-
-This library allows you to do the following:
+This library enables the following:
 
 - Create blocks with tagged data and transaction payloads
 - Get blocks and outputs
 - Sign transactions
 - Generate addresses
-- Interact with an IOTA node
+- Interact with an Axon node
 - Act as a foundation for Go based node software
 
 If you need to have more sophisticated account management, have a look
-at [wallet.rs](https://github.com/iotaledger/wallet.rs) for which we also provide bindings in Python and JavaScript.
+at [wallet.rs](https://github.com/axonfibre/wallet.rs) for which we also provide bindings in Python and JavaScript.
 
 ## Requirements
 
@@ -25,12 +23,12 @@ To use the library, we recommend you update Go [to the latest stable version](ht
 Using the library is easy, just `go get` it as any other dependency:
 
 ```bash
-go get github.com/iotaledger/iota.go/v4
+go get github.com/axonfibre/axon.go/v1
 ```
 
 ## API reference
 
-You can read the API reference [here](https://pkg.go.dev/github.com/iotaledger/iota.go/v4).
+You can read the API reference [here](https://pkg.go.dev/github.com/axonfibre/axon.go/v4).
 
 ## Joining the discussion
 

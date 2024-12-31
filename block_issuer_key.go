@@ -5,11 +5,11 @@ import (
 	"io"
 	"slices"
 
-	"github.com/iotaledger/hive.go/constraints"
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/lo"
-	"github.com/iotaledger/hive.go/serializer/v2"
-	"github.com/iotaledger/hive.go/serializer/v2/stream"
+	"github.com/axonfibre/fibre.go/constraints"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/lo"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2/stream"
 )
 
 // BlockIssuerKeyType defines the type of block issuer key.

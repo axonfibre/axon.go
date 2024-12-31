@@ -6,11 +6,11 @@ import (
 
 	"golang.org/x/crypto/blake2b"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/lo"
-	"github.com/iotaledger/hive.go/serializer/v2/byteutils"
-	"github.com/iotaledger/hive.go/stringify"
-	"github.com/iotaledger/iota.go/v4/merklehasher"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/lo"
+	"github.com/axonfibre/fibre.go/serializer/v2/byteutils"
+	"github.com/axonfibre/fibre.go/stringify"
+	"github.com/axonfibre/axon.go/v4/merklehasher"
 )
 
 const (

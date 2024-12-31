@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	iotago "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestStorageScoreParameters_DeSerialize(t *testing.T) {

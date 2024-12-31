@@ -4,10 +4,10 @@ import (
 	"crypto/ed25519"
 	"fmt"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/serializer/v2"
-	"github.com/iotaledger/iota.go/v4/hexutil"
+	hiveEd25519 "github.com/axonfibre/fibre.go/crypto/ed25519"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	"github.com/axonfibre/axon.go/v4/hexutil"
 )
 
 const (

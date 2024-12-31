@@ -1,7 +1,7 @@
 package tpkg
 
 import (
-	iotago "github.com/iotaledger/iota.go/v4"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 // Must panics if the given error is not nil.

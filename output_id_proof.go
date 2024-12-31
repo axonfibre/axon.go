@@ -4,9 +4,9 @@ import (
 	"context"
 	"crypto"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/lo"
-	"github.com/iotaledger/iota.go/v4/merklehasher"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/lo"
+	"github.com/axonfibre/axon.go/v4/merklehasher"
 )
 
 type OutputIDProof struct {

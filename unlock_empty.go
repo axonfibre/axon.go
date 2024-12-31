@@ -1,7 +1,7 @@
 package iotago
 
 import (
-	"github.com/iotaledger/hive.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2"
 )
 
 // EmptyUnlock are simply skipped. They are used to maintain correct index relationship between

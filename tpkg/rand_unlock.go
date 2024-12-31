@@ -1,7 +1,7 @@
 package tpkg
 
 import (
-	iotago "github.com/iotaledger/iota.go/v4"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 // RandUnlock returns a random unlock (except Signature, Reference, Account, Anchor, NFT).

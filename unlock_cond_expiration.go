@@ -3,7 +3,7 @@ package iotago
 import (
 	"cmp"
 
-	"github.com/iotaledger/hive.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2"
 )
 
 // ExpirationUnlockCondition is an unlock condition which puts a time constraint on whether the receiver or return address

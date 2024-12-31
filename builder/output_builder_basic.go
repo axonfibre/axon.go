@@ -1,7 +1,7 @@
 package builder
 
 import (
-	iotago "github.com/iotaledger/iota.go/v4"
+	iotago "github.com/axonfibre/axon.go/v4"
 )
 
 // NewBasicOutputBuilder creates a new BasicOutputBuilder with the required target address and base token amount.
