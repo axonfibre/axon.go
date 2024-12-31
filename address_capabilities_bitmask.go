@@ -5,7 +5,7 @@ import (
 
 	"github.com/axonfibre/fibre.go/lo"
 	"github.com/axonfibre/fibre.go/runtime/options"
-	"github.com/axonfibre/fibre.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer"
 )
 
 const (

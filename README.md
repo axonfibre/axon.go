@@ -6,8 +6,8 @@ This library enables the following:
 - Get blocks and outputs
 - Sign transactions
 - Generate addresses
-- Interact with an Axon node
-- Act as a foundation for Go based node software
+- Interact with an Axon Node
+- Foundation for Go based node software
 
 If you need to have more sophisticated account management, have a look
 at [wallet.rs](https://github.com/axonfibre/wallet.rs) for which we also provide bindings in Python and JavaScript.
