@@ -1,0 +1,283 @@
+package iotago
+
+import (
+	"context"
+	"encoding/binary"
+
+	"github.com/iotaledger/hive.go/ierrors"
+	"github.com/iotaledger/hive.go/serializer/v2"
+	"github.com/iotaledger/iota.go/v4/hexutil"
+)
+
+const (
+	FoundrySerialNumberLength = serializer.UInt32ByteSize
+	FoundryTokenSchemeLength  = serializer.OneByte
+	// FoundryIDLength is the byte length of a FoundryID consisting out of the account address, serial number and token scheme.
+	FoundryIDLength = AccountAddressSerializedBytesSize + FoundrySerialNumberLength + FoundryTokenSchemeLength
+)
+
+var (
+	// ErrFoundryTransitionWithoutAccount gets returned when a foundry output is transitioned
+	// without an accompanying account on the input or output side.
+	ErrFoundryTransitionWithoutAccount = ierrors.New("foundry output transitioned without accompanying account on input or output side")
+	// ErrFoundrySerialInvalid gets returned when the foundry output's serial number is invalid.
+	ErrFoundrySerialInvalid = ierrors.New("foundry output serial number is invalid")
+
+	emptyFoundryID = [FoundryIDLength]byte{}
+)
+
+// FoundryID defines the identifier for a foundry consisting out of the address, serial number and TokenScheme.
+type FoundryID [FoundryIDLength]byte
+
+func FoundryIDFromAddressAndSerialNumberAndTokenScheme(addr Address, serialNumber uint32, tokenScheme TokenSchemeType) (NativeTokenID, error) {
+	serixAPI := CommonSerixAPI()
+	var foundryID FoundryID
+	addrBytes, err := serixAPI.Encode(context.Background(), addr)
+	if err != nil {
+		return foundryID, err
+	}
+	copy(foundryID[:], addrBytes)
+	binary.LittleEndian.PutUint32(foundryID[len(addrBytes):], serialNumber)
+	foundryID[len(foundryID)-1] = byte(tokenScheme)
+
+	return foundryID, nil
+}
+
+func (fID FoundryID) ToHex() string {
+	return hexutil.EncodeHex(fID[:])
+}
+
+func (fID FoundryID) Addressable() bool {
+	return false
+}
+
+// FoundrySerialNumber returns the serial number of the foundry.
+func (fID FoundryID) FoundrySerialNumber() uint32 {
+	return binary.LittleEndian.Uint32(fID[AccountAddressSerializedBytesSize : AccountAddressSerializedBytesSize+FoundrySerialNumberLength])
+}
+
+func (fID FoundryID) Matches(other ChainID) bool {
+	otherFID, is := other.(FoundryID)
+	if !is {
+		return false
+	}
+
+	return fID == otherFID
+}
+
+func (fID FoundryID) AccountAddress() (*AccountAddress, error) {
+	var addr Address
+	if _, err := CommonSerixAPI().Decode(context.Background(), fID[:], &addr); err != nil {
+		return nil, err
+	}
+
+	accountAddr, isAccountAddr := addr.(*AccountAddress)
+	if !isAccountAddr {
+		return nil, ierrors.New("address is not an account address")
+	}
+
+	return accountAddr, nil
+}
+
+func (fID FoundryID) ToAddress() ChainAddress {
+	panic("foundry ID is not addressable")
+}
+
+func (fID FoundryID) Empty() bool {
+	return fID == emptyFoundryID
+}
+
+func (fID FoundryID) String() string {
+	return hexutil.EncodeHex(fID[:])
+}
+
+// FoundryOutputs is a slice of FoundryOutput(s).
+type FoundryOutputs []*FoundryOutput
+
+// FoundryOutputsSet is a set of FoundryOutput(s).
+type FoundryOutputsSet map[FoundryID]*FoundryOutput
+
+type (
+	FoundryOutputUnlockCondition  interface{ UnlockCondition }
+	FoundryOutputFeature          interface{ Feature }
+	FoundryOutputImmFeature       interface{ Feature }
+	FoundryOutputUnlockConditions = UnlockConditions[FoundryOutputUnlockCondition]
+	FoundryOutputFeatures         = Features[FoundryOutputFeature]
+	FoundryOutputImmFeatures      = Features[FoundryOutputImmFeature]
+)
+
+// FoundryOutput is an output type which controls the supply of user defined native tokens.
+type FoundryOutput struct {
+	// The amount of IOTA tokens held by the output.
+	Amount BaseToken `serix:""`
+	// The serial number of the foundry.
+	SerialNumber uint32 `serix:""`
+	// The token scheme this foundry uses.
+	TokenScheme TokenScheme `serix:""`
+	// The unlock conditions on this output.
+	UnlockConditions FoundryOutputUnlockConditions `serix:",omitempty"`
+	// The feature on the output.
+	Features FoundryOutputFeatures `serix:",omitempty"`
+	// The immutable feature on the output.
+	ImmutableFeatures FoundryOutputImmFeatures `serix:",omitempty"`
+}
+
+func (f *FoundryOutput) Clone() Output {
+	return &FoundryOutput{
+		Amount:            f.Amount,
+		SerialNumber:      f.SerialNumber,
+		TokenScheme:       f.TokenScheme.Clone(),
+		UnlockConditions:  f.UnlockConditions.Clone(),
+		Features:          f.Features.Clone(),
+		ImmutableFeatures: f.ImmutableFeatures.Clone(),
+	}
+}
+
+func (f *FoundryOutput) Equal(other Output) bool {
+	otherOutput, isSameType := other.(*FoundryOutput)
+	if !isSameType {
+		return false
+	}
+
+	if f.Amount != otherOutput.Amount {
+		return false
+	}
+
+	if f.SerialNumber != otherOutput.SerialNumber {
+		return false
+	}
+
+	if !f.TokenScheme.Equal(otherOutput.TokenScheme) {
+		return false
+	}
+
+	if !f.UnlockConditions.Equal(otherOutput.UnlockConditions) {
+		return false
+	}
+
+	if !f.Features.Equal(otherOutput.Features) {
+		return false
+	}
+
+	if !f.ImmutableFeatures.Equal(otherOutput.ImmutableFeatures) {
+		return false
+	}
+
+	return true
+}
+
+func (f *FoundryOutput) Owner() Address {
+	return f.UnlockConditionSet().ImmutableAccount().Address
+}
+
+func (f *FoundryOutput) UnlockableBy(addr Address, pastBoundedSlotIndex SlotIndex, futureBoundedSlotIndex SlotIndex) bool {
+	ok, _ := outputUnlockableBy(f, nil, addr, pastBoundedSlotIndex, futureBoundedSlotIndex)
+	return ok
+}
+
+func (f *FoundryOutput) StorageScore(storageScoreStruct *StorageScoreStructure, _ StorageScoreFunc) StorageScore {
+	return storageScoreStruct.OffsetOutput +
+		storageScoreStruct.FactorData().Multiply(StorageScore(f.Size())) +
+		f.TokenScheme.StorageScore(storageScoreStruct, nil) +
+		f.UnlockConditions.StorageScore(storageScoreStruct, nil) +
+		f.Features.StorageScore(storageScoreStruct, nil) +
+		f.ImmutableFeatures.StorageScore(storageScoreStruct, nil)
+}
+
+func (f *FoundryOutput) WorkScore(workScoreParameters *WorkScoreParameters) (WorkScore, error) {
+	workScoreTokenScheme, err := f.TokenScheme.WorkScore(workScoreParameters)
+	if err != nil {
+		return 0, err
+	}
+
+	workScoreConditions, err := f.UnlockConditions.WorkScore(workScoreParameters)
+	if err != nil {
+		return 0, err
+	}
+
+	workScoreFeatures, err := f.Features.WorkScore(workScoreParameters)
+	if err != nil {
+		return 0, err
+	}
+
+	workScoreImmutableFeatures, err := f.ImmutableFeatures.WorkScore(workScoreParameters)
+	if err != nil {
+		return 0, err
+	}
+
+	return workScoreParameters.Output.Add(workScoreTokenScheme, workScoreConditions, workScoreFeatures, workScoreImmutableFeatures)
+}
+
+func (f *FoundryOutput) ChainID() ChainID {
+	foundryID, err := f.FoundryID()
+	if err != nil {
+		panic(err)
+	}
+
+	return foundryID
+}
+
+// FoundryID returns the FoundryID of this FoundryOutput.
+func (f *FoundryOutput) FoundryID() (FoundryID, error) {
+	return FoundryIDFromAddressAndSerialNumberAndTokenScheme(f.Owner(), f.SerialNumber, f.TokenScheme.Type())
+}
+
+// MustFoundryID works like FoundryID but panics if an error occurs.
+func (f *FoundryOutput) MustFoundryID() FoundryID {
+	id, err := f.FoundryID()
+	if err != nil {
+		panic(err)
+	}
+
+	return id
+}
+
+// MustNativeTokenID works like NativeTokenID but panics if there is an error.
+func (f *FoundryOutput) MustNativeTokenID() NativeTokenID {
+	nativeTokenID, err := f.NativeTokenID()
+	if err != nil {
+		panic(err)
+	}
+
+	return nativeTokenID
+}
+
+// NativeTokenID returns the NativeTokenID this FoundryOutput operates on.
+func (f *FoundryOutput) NativeTokenID() (NativeTokenID, error) {
+	return f.FoundryID()
+}
+
+func (f *FoundryOutput) FeatureSet() FeatureSet {
+	return f.Features.MustSet()
+}
+
+func (f *FoundryOutput) UnlockConditionSet() UnlockConditionSet {
+	return f.UnlockConditions.MustSet()
+}
+
+func (f *FoundryOutput) ImmutableFeatureSet() FeatureSet {
+	return f.ImmutableFeatures.MustSet()
+}
+
+func (f *FoundryOutput) BaseTokenAmount() BaseToken {
+	return f.Amount
+}
+
+func (f *FoundryOutput) StoredMana() Mana {
+	return 0
+}
+
+func (f *FoundryOutput) Type() OutputType {
+	return OutputFoundry
+}
+
+func (f *FoundryOutput) Size() int {
+	// OutputType
+	return serializer.OneByte +
+		BaseTokenSize +
+		FoundrySerialNumberLength +
+		f.TokenScheme.Size() +
+		f.UnlockConditions.Size() +
+		f.Features.Size() +
+		f.ImmutableFeatures.Size()
+}

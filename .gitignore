@@ -1,0 +1,14 @@
+.idea/
+.vscode/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.zip
+.experimental/
+examples/mam-transmit/transmit.sh
+examples/mam-receive/receive.sh
+.DS_Store
