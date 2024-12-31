@@ -1,7 +1,7 @@
 package api
 
 import (
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 type (
@@ -13,6 +13,6 @@ type (
 
 	// RoutesResponse defines the response of a GET routes REST API call.
 	RoutesResponse struct {
-		Routes []iotago.PrefixedStringUint8 `serix:",lenPrefix=uint8"`
+		Routes []axongo.PrefixedStringUint8 `serix:",lenPrefix=uint8"`
 	}
 )

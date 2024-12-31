@@ -3,7 +3,7 @@ package api_test
 import (
 	"testing"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/api"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
@@ -16,7 +16,7 @@ func Test_IndexerAPIDeSerialize(t *testing.T) {
 			Source: &api.IndexerResponse{
 				CommittedSlot: tpkg.RandSlot(),
 				PageSize:      1000,
-				Items:         iotago.HexOutputIDsFromOutputIDs(tpkg.RandOutputIDs(2)...),
+				Items:         axongo.HexOutputIDsFromOutputIDs(tpkg.RandOutputIDs(2)...),
 				Cursor:        "cursor-value",
 			},
 			Target:    &api.IndexerResponse{},
@@ -37,9 +37,9 @@ func Test_IndexerAPIJSONSerialization(t *testing.T) {
 			Source: &api.IndexerResponse{
 				CommittedSlot: 281,
 				PageSize:      1000,
-				Items: iotago.HexOutputIDsFromOutputIDs(
-					iotago.OutputID{0xff},
-					iotago.OutputID{0xfa},
+				Items: axongo.HexOutputIDsFromOutputIDs(
+					axongo.OutputID{0xff},
+					axongo.OutputID{0xfa},
 				),
 				Cursor: "cursor-value",
 			},
@@ -58,9 +58,9 @@ func Test_IndexerAPIJSONSerialization(t *testing.T) {
 			Source: &api.IndexerResponse{
 				CommittedSlot: 281,
 				PageSize:      1000,
-				Items: iotago.HexOutputIDsFromOutputIDs(
-					iotago.OutputID{0xff},
-					iotago.OutputID{0xfa},
+				Items: axongo.HexOutputIDsFromOutputIDs(
+					axongo.OutputID{0xff},
+					axongo.OutputID{0xfa},
 				),
 			},
 			Target: `{

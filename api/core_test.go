@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/axonfibre/fibre.go/ierrors"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/api"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
@@ -108,7 +108,7 @@ func Test_CoreAPIDeSerialize(t *testing.T) {
 		{
 			Name: "ok - BlockWithMetadataResponse",
 			Source: &api.BlockWithMetadataResponse{
-				Block: tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, iotago.PayloadSignedTransaction), tpkg.ZeroCostTestAPI, 100),
+				Block: tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, axongo.PayloadSignedTransaction), tpkg.ZeroCostTestAPI, 100),
 				Metadata: &api.BlockMetadataResponse{
 					BlockID:    tpkg.RandBlockID(),
 					BlockState: api.BlockStateDropped,
@@ -236,7 +236,7 @@ func Test_CoreAPIDeSerialize(t *testing.T) {
 			Source: &api.ValidatorsResponse{
 				Validators: []*api.ValidatorResponse{
 					{
-						AddressBech32:                  tpkg.RandAccountAddress().Bech32(iotago.PrefixTestnet),
+						AddressBech32:                  tpkg.RandAccountAddress().Bech32(axongo.PrefixTestnet),
 						StakingEndEpoch:                tpkg.RandEpoch(),
 						PoolStake:                      123,
 						ValidatorStake:                 456,
@@ -269,7 +269,7 @@ func Test_CoreAPIDeSerialize(t *testing.T) {
 			Source: &api.CommitteeResponse{
 				Committee: []*api.CommitteeMemberResponse{
 					{
-						AddressBech32:  tpkg.RandAccountAddress().Bech32(iotago.PrefixTestnet),
+						AddressBech32:  tpkg.RandAccountAddress().Bech32(axongo.PrefixTestnet),
 						PoolStake:      456,
 						ValidatorStake: 123,
 						FixedCost:      789,
@@ -292,8 +292,8 @@ func Test_CoreAPIDeSerialize(t *testing.T) {
 
 func Test_CoreAPIJSONSerialization(t *testing.T) {
 
-	protoParams := iotago.NewV3SnapshotProtocolParameters(
-		iotago.WithTimeProviderOptions(1, 1690879505, 10, 13),
+	protoParams := axongo.NewV3SnapshotProtocolParameters(
+		axongo.WithTimeProviderOptions(1, 1690879505, 10, 13),
 	)
 
 	// replace the decay factors to reduce the size of the JSON string
@@ -316,7 +316,7 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 					RelativeAcceptedTangleTime:  time.Unix(1690879505, 0).UTC(),
 					ConfirmedTangleTime:         time.Unix(1690879505, 0).UTC(),
 					RelativeConfirmedTangleTime: time.Unix(1690879505, 0).UTC(),
-					LatestCommitmentID:          iotago.CommitmentID{},
+					LatestCommitmentID:          axongo.CommitmentID{},
 					LatestFinalizedSlot:         1,
 					LatestAcceptedBlockSlot:     2,
 					LatestConfirmedBlockSlot:    3,
@@ -485,22 +485,22 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - IssuanceBlockHeaderResponse",
 			Source: &api.IssuanceBlockHeaderResponse{
-				StrongParents: iotago.BlockIDs{
-					iotago.BlockID{0x9},
+				StrongParents: axongo.BlockIDs{
+					axongo.BlockID{0x9},
 				},
-				WeakParents: iotago.BlockIDs{
-					iotago.BlockID{0x8},
+				WeakParents: axongo.BlockIDs{
+					axongo.BlockID{0x8},
 				},
-				ShallowLikeParents: iotago.BlockIDs{
-					iotago.BlockID{0x7},
+				ShallowLikeParents: axongo.BlockIDs{
+					axongo.BlockID{0x7},
 				},
 				LatestParentBlockIssuingTime: time.Unix(1690879505, 0).UTC(),
 				LatestFinalizedSlot:          14,
-				LatestCommitment: &iotago.Commitment{
+				LatestCommitment: &axongo.Commitment{
 					ProtocolVersion:      3,
 					Slot:                 18,
-					PreviousCommitmentID: iotago.CommitmentID{0x1},
-					RootsID:              iotago.Identifier{0x2},
+					PreviousCommitmentID: axongo.CommitmentID{0x1},
+					RootsID:              axongo.Identifier{0x2},
 					CumulativeWeight:     89,
 					ReferenceManaCost:    123,
 				},
@@ -530,7 +530,7 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - BlockCreatedResponse",
 			Source: &api.BlockCreatedResponse{
-				BlockID: iotago.BlockID{0x1},
+				BlockID: axongo.BlockID{0x1},
 			},
 			Target: `{
 	"blockId": "0x010000000000000000000000000000000000000000000000000000000000000000000000"
@@ -539,7 +539,7 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - BlockMetadataResponse",
 			Source: &api.BlockMetadataResponse{
-				BlockID:    iotago.BlockID{0x9},
+				BlockID:    axongo.BlockID{0x9},
 				BlockState: api.BlockStateDropped,
 			},
 			Target: `{
@@ -550,7 +550,7 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - BlockMetadataResponse - omitempty",
 			Source: &api.BlockMetadataResponse{
-				BlockID:    iotago.BlockID{0x9},
+				BlockID:    axongo.BlockID{0x9},
 				BlockState: api.BlockStateConfirmed,
 			},
 			Target: `{
@@ -561,7 +561,7 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - TransactionMetadataResponse",
 			Source: &api.TransactionMetadataResponse{
-				TransactionID:             iotago.TransactionID{0x1},
+				TransactionID:             axongo.TransactionID{0x1},
 				TransactionState:          api.TransactionStateFailed,
 				EarliestAttachmentSlot:    5,
 				TransactionFailureReason:  api.TxFailureDelegationRewardsClaimingInvalid,
@@ -578,7 +578,7 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - TransactionMetadataResponse - omitempty",
 			Source: &api.TransactionMetadataResponse{
-				TransactionID:          iotago.TransactionID{0x1},
+				TransactionID:          axongo.TransactionID{0x1},
 				TransactionState:       api.TransactionStateCommitted,
 				EarliestAttachmentSlot: 10,
 			},
@@ -591,19 +591,19 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - OutputMetadata",
 			Source: &api.OutputMetadata{
-				OutputID: iotago.OutputID{0x01},
-				BlockID:  iotago.BlockID{0x02},
+				OutputID: axongo.OutputID{0x01},
+				BlockID:  axongo.BlockID{0x02},
 				Included: &api.OutputInclusionMetadata{
 					Slot:          3,
-					TransactionID: iotago.TransactionID{0x4},
-					CommitmentID:  iotago.CommitmentID{0x5},
+					TransactionID: axongo.TransactionID{0x4},
+					CommitmentID:  axongo.CommitmentID{0x5},
 				},
 				Spent: &api.OutputConsumptionMetadata{
 					Slot:          6,
-					TransactionID: iotago.TransactionID{0x7},
-					CommitmentID:  iotago.CommitmentID{0x8},
+					TransactionID: axongo.TransactionID{0x7},
+					CommitmentID:  axongo.CommitmentID{0x8},
 				},
-				LatestCommitmentID: iotago.CommitmentID{0x9},
+				LatestCommitmentID: axongo.CommitmentID{0x9},
 			},
 			Target: `{
 	"outputId": "0x0100000000000000000000000000000000000000000000000000000000000000000000000000",
@@ -624,15 +624,15 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - OutputMetadata - omitempty",
 			Source: &api.OutputMetadata{
-				OutputID: iotago.OutputID{0x01},
-				BlockID:  iotago.BlockID{0x02},
+				OutputID: axongo.OutputID{0x01},
+				BlockID:  axongo.BlockID{0x02},
 				Included: &api.OutputInclusionMetadata{
 					Slot:          3,
-					TransactionID: iotago.TransactionID{0x4},
+					TransactionID: axongo.TransactionID{0x4},
 					// CommitmentID is omitted
 				},
 				// Spent is omitted
-				LatestCommitmentID: iotago.CommitmentID{0x9},
+				LatestCommitmentID: axongo.CommitmentID{0x9},
 			},
 			Target: `{
 	"outputId": "0x0100000000000000000000000000000000000000000000000000000000000000000000000000",
@@ -647,12 +647,12 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - UTXOChangesResponse",
 			Source: &api.UTXOChangesResponse{
-				CommitmentID: iotago.NewCommitmentID(42, iotago.Identifier{}),
-				CreatedOutputs: iotago.OutputIDs{
-					iotago.OutputID{0x1},
+				CommitmentID: axongo.NewCommitmentID(42, axongo.Identifier{}),
+				CreatedOutputs: axongo.OutputIDs{
+					axongo.OutputID{0x1},
 				},
-				ConsumedOutputs: iotago.OutputIDs{
-					iotago.OutputID{0x2},
+				ConsumedOutputs: axongo.OutputIDs{
+					axongo.OutputID{0x2},
 				},
 			},
 			Target: `{
@@ -668,34 +668,34 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - UTXOChangesFullResponse",
 			Source: &api.UTXOChangesFullResponse{
-				CommitmentID: iotago.NewCommitmentID(42, iotago.Identifier{}),
+				CommitmentID: axongo.NewCommitmentID(42, axongo.Identifier{}),
 				CreatedOutputs: []*api.OutputWithID{
 					{
-						OutputID: iotago.OutputID{0x1},
-						Output: &iotago.BasicOutput{
+						OutputID: axongo.OutputID{0x1},
+						Output: &axongo.BasicOutput{
 							Amount: 123,
 							Mana:   456,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{
-									Address: &iotago.Ed25519Address{0x01},
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{
+									Address: &axongo.Ed25519Address{0x01},
 								},
 							},
-							Features: iotago.BasicOutputFeatures{},
+							Features: axongo.BasicOutputFeatures{},
 						},
 					},
 				},
 				ConsumedOutputs: []*api.OutputWithID{
 					{
-						OutputID: iotago.OutputID{0x2},
-						Output: &iotago.BasicOutput{
+						OutputID: axongo.OutputID{0x2},
+						Output: &axongo.BasicOutput{
 							Amount: 456,
 							Mana:   123,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{
-									Address: &iotago.Ed25519Address{0x02},
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{
+									Address: &axongo.Ed25519Address{0x02},
 								},
 							},
-							Features: iotago.BasicOutputFeatures{},
+							Features: axongo.BasicOutputFeatures{},
 						},
 					},
 				},
@@ -762,7 +762,7 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 			Source: &api.ValidatorsResponse{
 				Validators: []*api.ValidatorResponse{
 					{
-						AddressBech32:                  iotago.AccountID{0xFF}.ToAddress().Bech32(iotago.PrefixTestnet),
+						AddressBech32:                  axongo.AccountID{0xFF}.ToAddress().Bech32(axongo.PrefixTestnet),
 						StakingEndEpoch:                0,
 						PoolStake:                      123,
 						ValidatorStake:                 456,
@@ -811,7 +811,7 @@ func Test_CoreAPIJSONSerialization(t *testing.T) {
 			Source: &api.CommitteeResponse{
 				Committee: []*api.CommitteeMemberResponse{
 					{
-						AddressBech32:  iotago.AccountID{0xFF}.ToAddress().Bech32(iotago.PrefixTestnet),
+						AddressBech32:  axongo.AccountID{0xFF}.ToAddress().Bech32(axongo.PrefixTestnet),
 						PoolStake:      456,
 						ValidatorStake: 123,
 						FixedCost:      789,
@@ -852,19 +852,19 @@ func TestTransactionFailureReasonDetermination(t *testing.T) {
 	tests := []*txFailureTest{
 		{
 			name:     "last error of a series of joined errors is mapped first",
-			err:      ierrors.Join(iotago.ErrAccountLocked, iotago.ErrDelegationAmountMismatch, iotago.ErrBlockIssuerCommitmentInputMissing),
+			err:      ierrors.Join(axongo.ErrAccountLocked, axongo.ErrDelegationAmountMismatch, axongo.ErrBlockIssuerCommitmentInputMissing),
 			expected: api.TxFailureBlockIssuerCommitmentInputMissing,
 		},
 		{
 			name: "first visited error of a post-order depth traversed error tree is mapped first",
 			err: func() error {
-				err1 := ierrors.WithMessage(iotago.ErrAccountLocked, "message1")
+				err1 := ierrors.WithMessage(axongo.ErrAccountLocked, "message1")
 				errTree1 := ierrors.WithMessage(err1, "message2")
 
-				subtreeErr := ierrors.WithMessage(iotago.ErrRewardInputReferenceInvalid, "message3")
+				subtreeErr := ierrors.WithMessage(axongo.ErrRewardInputReferenceInvalid, "message3")
 				subTree := ierrors.WithMessage(subtreeErr, "message4")
 
-				err2 := ierrors.WithMessage(iotago.ErrAccountInvalidFoundryCounter, "message5")
+				err2 := ierrors.WithMessage(axongo.ErrAccountInvalidFoundryCounter, "message5")
 				errTree2 := ierrors.Join(err2, subTree)
 
 				return ierrors.Join(errTree1, errTree2)

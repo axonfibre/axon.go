@@ -2,127 +2,127 @@ package builder
 
 import (
 	"github.com/axonfibre/fibre.go/ierrors"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 // NewNFTOutputBuilder creates a new NFTOutputBuilder with the address and base token amount.
-func NewNFTOutputBuilder(targetAddr iotago.Address, amount iotago.BaseToken) *NFTOutputBuilder {
-	return &NFTOutputBuilder{output: &iotago.NFTOutput{
+func NewNFTOutputBuilder(targetAddr axongo.Address, amount axongo.BaseToken) *NFTOutputBuilder {
+	return &NFTOutputBuilder{output: &axongo.NFTOutput{
 		Amount: amount,
 		Mana:   0,
-		NFTID:  iotago.EmptyNFTID(),
-		UnlockConditions: iotago.NFTOutputUnlockConditions{
-			&iotago.AddressUnlockCondition{Address: targetAddr},
+		NFTID:  axongo.EmptyNFTID(),
+		UnlockConditions: axongo.NFTOutputUnlockConditions{
+			&axongo.AddressUnlockCondition{Address: targetAddr},
 		},
-		Features:          iotago.NFTOutputFeatures{},
-		ImmutableFeatures: iotago.NFTOutputImmFeatures{},
+		Features:          axongo.NFTOutputFeatures{},
+		ImmutableFeatures: axongo.NFTOutputImmFeatures{},
 	}}
 }
 
-// NewNFTOutputBuilderFromPrevious creates a new NFTOutputBuilder starting from a copy of the previous iotago.NFTOutput.
-func NewNFTOutputBuilderFromPrevious(previous *iotago.NFTOutput) *NFTOutputBuilder {
+// NewNFTOutputBuilderFromPrevious creates a new NFTOutputBuilder starting from a copy of the previous axongo.NFTOutput.
+func NewNFTOutputBuilderFromPrevious(previous *axongo.NFTOutput) *NFTOutputBuilder {
 	return &NFTOutputBuilder{
 		prev: previous,
 		//nolint:forcetypeassert // we can safely assume that this is a NFTOutput
-		output: previous.Clone().(*iotago.NFTOutput),
+		output: previous.Clone().(*axongo.NFTOutput),
 	}
 }
 
-// NFTOutputBuilder builds an iotago.NFTOutput.
+// NFTOutputBuilder builds an axongo.NFTOutput.
 type NFTOutputBuilder struct {
-	prev   *iotago.NFTOutput
-	output *iotago.NFTOutput
+	prev   *axongo.NFTOutput
+	output *axongo.NFTOutput
 }
 
 // Amount sets the base token amount of the output.
-func (builder *NFTOutputBuilder) Amount(amount iotago.BaseToken) *NFTOutputBuilder {
+func (builder *NFTOutputBuilder) Amount(amount axongo.BaseToken) *NFTOutputBuilder {
 	builder.output.Amount = amount
 
 	return builder
 }
 
 // Amount sets the mana of the output.
-func (builder *NFTOutputBuilder) Mana(mana iotago.Mana) *NFTOutputBuilder {
+func (builder *NFTOutputBuilder) Mana(mana axongo.Mana) *NFTOutputBuilder {
 	builder.output.Mana = mana
 
 	return builder
 }
 
-// NFTID sets the iotago.NFTID of this output.
-// Do not call this function if the underlying iotago.NFTID is not new.
-func (builder *NFTOutputBuilder) NFTID(nftID iotago.NFTID) *NFTOutputBuilder {
+// NFTID sets the axongo.NFTID of this output.
+// Do not call this function if the underlying axongo.NFTID is not new.
+func (builder *NFTOutputBuilder) NFTID(nftID axongo.NFTID) *NFTOutputBuilder {
 	builder.output.NFTID = nftID
 
 	return builder
 }
 
-// Address sets/modifies an iotago.AddressUnlockCondition on the output.
-func (builder *NFTOutputBuilder) Address(addr iotago.Address) *NFTOutputBuilder {
-	builder.output.UnlockConditions.Upsert(&iotago.AddressUnlockCondition{Address: addr})
+// Address sets/modifies an axongo.AddressUnlockCondition on the output.
+func (builder *NFTOutputBuilder) Address(addr axongo.Address) *NFTOutputBuilder {
+	builder.output.UnlockConditions.Upsert(&axongo.AddressUnlockCondition{Address: addr})
 
 	return builder
 }
 
-// StorageDepositReturn sets/modifies an iotago.StorageDepositReturnUnlockCondition on the output.
-func (builder *NFTOutputBuilder) StorageDepositReturn(returnAddr iotago.Address, amount iotago.BaseToken) *NFTOutputBuilder {
-	builder.output.UnlockConditions.Upsert(&iotago.StorageDepositReturnUnlockCondition{ReturnAddress: returnAddr, Amount: amount})
+// StorageDepositReturn sets/modifies an axongo.StorageDepositReturnUnlockCondition on the output.
+func (builder *NFTOutputBuilder) StorageDepositReturn(returnAddr axongo.Address, amount axongo.BaseToken) *NFTOutputBuilder {
+	builder.output.UnlockConditions.Upsert(&axongo.StorageDepositReturnUnlockCondition{ReturnAddress: returnAddr, Amount: amount})
 
 	return builder
 }
 
-// Timelock sets/modifies an iotago.TimelockUnlockCondition on the output.
-func (builder *NFTOutputBuilder) Timelock(untilSlot iotago.SlotIndex) *NFTOutputBuilder {
-	builder.output.UnlockConditions.Upsert(&iotago.TimelockUnlockCondition{Slot: untilSlot})
+// Timelock sets/modifies an axongo.TimelockUnlockCondition on the output.
+func (builder *NFTOutputBuilder) Timelock(untilSlot axongo.SlotIndex) *NFTOutputBuilder {
+	builder.output.UnlockConditions.Upsert(&axongo.TimelockUnlockCondition{Slot: untilSlot})
 
 	return builder
 }
 
-// Expiration sets/modifies an iotago.ExpirationUnlockCondition on the output.
-func (builder *NFTOutputBuilder) Expiration(returnAddr iotago.Address, expiredAfterSlot iotago.SlotIndex) *NFTOutputBuilder {
-	builder.output.UnlockConditions.Upsert(&iotago.ExpirationUnlockCondition{ReturnAddress: returnAddr, Slot: expiredAfterSlot})
+// Expiration sets/modifies an axongo.ExpirationUnlockCondition on the output.
+func (builder *NFTOutputBuilder) Expiration(returnAddr axongo.Address, expiredAfterSlot axongo.SlotIndex) *NFTOutputBuilder {
+	builder.output.UnlockConditions.Upsert(&axongo.ExpirationUnlockCondition{ReturnAddress: returnAddr, Slot: expiredAfterSlot})
 
 	return builder
 }
 
-// Sender sets/modifies an iotago.SenderFeature on the output.
-func (builder *NFTOutputBuilder) Sender(senderAddr iotago.Address) *NFTOutputBuilder {
-	builder.output.Features.Upsert(&iotago.SenderFeature{Address: senderAddr})
+// Sender sets/modifies an axongo.SenderFeature on the output.
+func (builder *NFTOutputBuilder) Sender(senderAddr axongo.Address) *NFTOutputBuilder {
+	builder.output.Features.Upsert(&axongo.SenderFeature{Address: senderAddr})
 
 	return builder
 }
 
-// Metadata sets/modifies an iotago.MetadataFeature on the output.
-func (builder *NFTOutputBuilder) Metadata(entries iotago.MetadataFeatureEntries) *NFTOutputBuilder {
-	builder.output.Features.Upsert(&iotago.MetadataFeature{Entries: entries})
+// Metadata sets/modifies an axongo.MetadataFeature on the output.
+func (builder *NFTOutputBuilder) Metadata(entries axongo.MetadataFeatureEntries) *NFTOutputBuilder {
+	builder.output.Features.Upsert(&axongo.MetadataFeature{Entries: entries})
 
 	return builder
 }
 
-// Tag sets/modifies an iotago.TagFeature on the output.
+// Tag sets/modifies an axongo.TagFeature on the output.
 func (builder *NFTOutputBuilder) Tag(tag []byte) *NFTOutputBuilder {
-	builder.output.Features.Upsert(&iotago.TagFeature{Tag: tag})
+	builder.output.Features.Upsert(&axongo.TagFeature{Tag: tag})
 
 	return builder
 }
 
-// ImmutableIssuer sets/modifies an iotago.IssuerFeature as an immutable feature on the output.
-// Only call this function on a new iotago.NFTOutput.
-func (builder *NFTOutputBuilder) ImmutableIssuer(issuer iotago.Address) *NFTOutputBuilder {
-	builder.output.ImmutableFeatures.Upsert(&iotago.IssuerFeature{Address: issuer})
+// ImmutableIssuer sets/modifies an axongo.IssuerFeature as an immutable feature on the output.
+// Only call this function on a new axongo.NFTOutput.
+func (builder *NFTOutputBuilder) ImmutableIssuer(issuer axongo.Address) *NFTOutputBuilder {
+	builder.output.ImmutableFeatures.Upsert(&axongo.IssuerFeature{Address: issuer})
 
 	return builder
 }
 
-// ImmutableMetadata sets/modifies an iotago.MetadataFeature as an immutable feature on the output.
-// Only call this function on a new iotago.NFTOutput.
-func (builder *NFTOutputBuilder) ImmutableMetadata(entries iotago.MetadataFeatureEntries) *NFTOutputBuilder {
-	builder.output.ImmutableFeatures.Upsert(&iotago.MetadataFeature{Entries: entries})
+// ImmutableMetadata sets/modifies an axongo.MetadataFeature as an immutable feature on the output.
+// Only call this function on a new axongo.NFTOutput.
+func (builder *NFTOutputBuilder) ImmutableMetadata(entries axongo.MetadataFeatureEntries) *NFTOutputBuilder {
+	builder.output.ImmutableFeatures.Upsert(&axongo.MetadataFeature{Entries: entries})
 
 	return builder
 }
 
-// Build builds the iotago.FoundryOutput.
-func (builder *NFTOutputBuilder) Build() (*iotago.NFTOutput, error) {
+// Build builds the axongo.FoundryOutput.
+func (builder *NFTOutputBuilder) Build() (*axongo.NFTOutput, error) {
 	if builder.prev != nil {
 		if !builder.prev.ImmutableFeatures.Equal(builder.output.ImmutableFeatures) {
 			return nil, ierrors.New("immutable features are not allowed to be changed")
@@ -137,7 +137,7 @@ func (builder *NFTOutputBuilder) Build() (*iotago.NFTOutput, error) {
 }
 
 // MustBuild works like Build() but panics if an error is encountered.
-func (builder *NFTOutputBuilder) MustBuild() *iotago.NFTOutput {
+func (builder *NFTOutputBuilder) MustBuild() *axongo.NFTOutput {
 	output, err := builder.Build()
 	if err != nil {
 		panic(err)

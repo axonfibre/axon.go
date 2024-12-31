@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/api"
 	"github.com/axonfibre/axon.go/v4/nodeclient"
 	"github.com/axonfibre/axon.go/v4/tpkg"
@@ -24,7 +24,7 @@ func Test_EventAPIEnabled(t *testing.T) {
 	defer gock.Off()
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.MQTTPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.MQTTPluginName},
 	}
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
 
@@ -36,7 +36,7 @@ func Test_EventAPIDisabled(t *testing.T) {
 	defer gock.Off()
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{"someplugin/v1"},
+		Routes: []axongo.PrefixedStringUint8{"someplugin/v1"},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -46,7 +46,7 @@ func Test_EventAPIDisabled(t *testing.T) {
 }
 
 func Test_NewEventAPIClient(t *testing.T) {
-	block := tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, iotago.PayloadTaggedData), tpkg.ZeroCostTestAPI, 0)
+	block := tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, axongo.PayloadTaggedData), tpkg.ZeroCostTestAPI, 0)
 	originBlockBytes, err := tpkg.ZeroCostTestAPI.Encode(block)
 	require.NoError(t, err)
 	mock := &mockMqttClient{payload: originBlockBytes}

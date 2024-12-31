@@ -3,7 +3,7 @@ package api_test
 import (
 	"testing"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/api"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
@@ -14,7 +14,7 @@ func Test_BlockIssuerAPIDeSerialize(t *testing.T) {
 		{
 			Name: "ok",
 			Source: &api.BlockIssuerInfo{
-				BlockIssuerAddress:     tpkg.RandAccountAddress().Bech32(iotago.PrefixTestnet),
+				BlockIssuerAddress:     tpkg.RandAccountAddress().Bech32(axongo.PrefixTestnet),
 				PowTargetTrailingZeros: 10,
 			},
 			Target:    &api.BlockIssuerInfo{},
@@ -33,7 +33,7 @@ func Test_BlockIssuerAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - BlockIssuerInfo",
 			Source: &api.BlockIssuerInfo{
-				BlockIssuerAddress:     iotago.AccountID{0xFF}.ToAddress().Bech32(iotago.PrefixTestnet),
+				BlockIssuerAddress:     axongo.AccountID{0xFF}.ToAddress().Bech32(axongo.PrefixTestnet),
 				PowTargetTrailingZeros: 10,
 			},
 			Target: `{

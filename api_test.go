@@ -1,15 +1,15 @@
-package iotago_test
+package axongo_test
 
 import (
 	"testing"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 const (
-	OneIOTA iotago.BaseToken = 1_000_000
+	OneIOTA axongo.BaseToken = 1_000_000
 )
 
 func TestProtocolParameters_DeSerialize(t *testing.T) {
@@ -17,7 +17,7 @@ func TestProtocolParameters_DeSerialize(t *testing.T) {
 		{
 			Name:      "ok",
 			Source:    tpkg.RandProtocolParameters(),
-			Target:    &iotago.V3ProtocolParameters{},
+			Target:    &axongo.V3ProtocolParameters{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},
@@ -30,8 +30,8 @@ func TestProtocolParameters_DeSerialize(t *testing.T) {
 
 func TestProtocolParametersJSONMarshalling(t *testing.T) {
 
-	protoParams := iotago.NewV3SnapshotProtocolParameters(
-		iotago.WithTimeProviderOptions(1, 1690879505, 10, 13),
+	protoParams := axongo.NewV3SnapshotProtocolParameters(
+		axongo.WithTimeProviderOptions(1, 1690879505, 10, 13),
 	)
 
 	// replace the decay factors to reduce the size of the JSON string

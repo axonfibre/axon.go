@@ -1,4 +1,4 @@
-package iotago_test
+package axongo_test
 
 import (
 	"math/big"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/axonfibre/fibre.go/lo"
 	"github.com/axonfibre/fibre.go/serializer/v2"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/builder"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
@@ -19,7 +19,7 @@ func TestTransactionEssence_DeSerialize(t *testing.T) {
 		{
 			Name:   "ok",
 			Source: tpkg.RandTransaction(tpkg.ZeroCostTestAPI),
-			Target: &iotago.Transaction{API: tpkg.ZeroCostTestAPI},
+			Target: &axongo.Transaction{API: tpkg.ZeroCostTestAPI},
 		},
 	}
 
@@ -33,13 +33,13 @@ func TestChainConstrainedOutputUniqueness(t *testing.T) {
 
 	inputIDs := tpkg.RandOutputIDs(1)
 
-	accountAddress := iotago.AccountAddressFromOutputID(inputIDs[0])
+	accountAddress := axongo.AccountAddressFromOutputID(inputIDs[0])
 	accountID := accountAddress.AccountID()
 
-	anchorAddress := iotago.AnchorAddressFromOutputID(inputIDs[0])
+	anchorAddress := axongo.AnchorAddressFromOutputID(inputIDs[0])
 	anchorID := anchorAddress.AnchorID()
 
-	nftAddress := iotago.NFTAddressFromOutputID(inputIDs[0])
+	nftAddress := axongo.NFTAddressFromOutputID(inputIDs[0])
 	nftID := nftAddress.NFTID()
 
 	tests := []*frameworks.DeSerializeTest{
@@ -47,161 +47,161 @@ func TestChainConstrainedOutputUniqueness(t *testing.T) {
 			// we transition the same Account twice
 			Name: "transition the same Account twice",
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
-				&iotago.Transaction{
+				&axongo.Transaction{
 					API: tpkg.ZeroCostTestAPI,
-					TransactionEssence: &iotago.TransactionEssence{
+					TransactionEssence: &axongo.TransactionEssence{
 						NetworkID:     tpkg.TestNetworkID,
-						ContextInputs: iotago.TxEssenceContextInputs{},
+						ContextInputs: axongo.TxEssenceContextInputs{},
 						Inputs:        inputIDs.UTXOInputs(),
-						Allotments:    iotago.Allotments{},
-						Capabilities:  iotago.TransactionCapabilitiesBitMask{},
+						Allotments:    axongo.Allotments{},
+						Capabilities:  axongo.TransactionCapabilitiesBitMask{},
 					},
-					Outputs: iotago.TxEssenceOutputs{
-						&iotago.AccountOutput{
+					Outputs: axongo.TxEssenceOutputs{
+						&axongo.AccountOutput{
 							Amount:    OneIOTA,
 							AccountID: accountID,
-							UnlockConditions: iotago.AccountOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: addr1},
+							UnlockConditions: axongo.AccountOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: addr1},
 							},
 							Features: nil,
 						},
-						&iotago.AccountOutput{
+						&axongo.AccountOutput{
 							Amount:    OneIOTA,
 							AccountID: accountID,
-							UnlockConditions: iotago.AccountOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: addr1},
+							UnlockConditions: axongo.AccountOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: addr1},
 							},
 							Features: nil,
 						},
 					},
 				}),
-			Target:    &iotago.SignedTransaction{},
-			SeriErr:   iotago.ErrNonUniqueChainOutputs,
-			DeSeriErr: iotago.ErrNonUniqueChainOutputs,
+			Target:    &axongo.SignedTransaction{},
+			SeriErr:   axongo.ErrNonUniqueChainOutputs,
+			DeSeriErr: axongo.ErrNonUniqueChainOutputs,
 		},
 		{
 			// we transition the same Anchor twice
 			Name: "transition the same Anchor twice",
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
-				&iotago.Transaction{
+				&axongo.Transaction{
 					API: tpkg.ZeroCostTestAPI,
-					TransactionEssence: &iotago.TransactionEssence{
+					TransactionEssence: &axongo.TransactionEssence{
 						NetworkID:     tpkg.TestNetworkID,
-						ContextInputs: iotago.TxEssenceContextInputs{},
+						ContextInputs: axongo.TxEssenceContextInputs{},
 						Inputs:        inputIDs.UTXOInputs(),
-						Allotments:    iotago.Allotments{},
-						Capabilities:  iotago.TransactionCapabilitiesBitMask{},
+						Allotments:    axongo.Allotments{},
+						Capabilities:  axongo.TransactionCapabilitiesBitMask{},
 					},
-					Outputs: iotago.TxEssenceOutputs{
-						&iotago.AnchorOutput{
+					Outputs: axongo.TxEssenceOutputs{
+						&axongo.AnchorOutput{
 							Amount:   OneIOTA,
 							AnchorID: anchorID,
-							UnlockConditions: iotago.AnchorOutputUnlockConditions{
-								&iotago.StateControllerAddressUnlockCondition{Address: addr1},
-								&iotago.GovernorAddressUnlockCondition{Address: addr1},
+							UnlockConditions: axongo.AnchorOutputUnlockConditions{
+								&axongo.StateControllerAddressUnlockCondition{Address: addr1},
+								&axongo.GovernorAddressUnlockCondition{Address: addr1},
 							},
 							Features: nil,
 						},
-						&iotago.AnchorOutput{
+						&axongo.AnchorOutput{
 							Amount:   OneIOTA,
 							AnchorID: anchorID,
-							UnlockConditions: iotago.AnchorOutputUnlockConditions{
-								&iotago.StateControllerAddressUnlockCondition{Address: addr1},
-								&iotago.GovernorAddressUnlockCondition{Address: addr1},
+							UnlockConditions: axongo.AnchorOutputUnlockConditions{
+								&axongo.StateControllerAddressUnlockCondition{Address: addr1},
+								&axongo.GovernorAddressUnlockCondition{Address: addr1},
 							},
 							Features: nil,
 						},
 					},
 				}),
-			Target:    &iotago.SignedTransaction{},
-			SeriErr:   iotago.ErrNonUniqueChainOutputs,
-			DeSeriErr: iotago.ErrNonUniqueChainOutputs,
+			Target:    &axongo.SignedTransaction{},
+			SeriErr:   axongo.ErrNonUniqueChainOutputs,
+			DeSeriErr: axongo.ErrNonUniqueChainOutputs,
 		},
 		{
 			// we transition the same NFT twice
 			Name: "transition the same NFT twice",
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
-				&iotago.Transaction{
+				&axongo.Transaction{
 					API: tpkg.ZeroCostTestAPI,
-					TransactionEssence: &iotago.TransactionEssence{
+					TransactionEssence: &axongo.TransactionEssence{
 						NetworkID:    tpkg.TestNetworkID,
 						Inputs:       inputIDs.UTXOInputs(),
-						Capabilities: iotago.TransactionCapabilitiesBitMask{},
+						Capabilities: axongo.TransactionCapabilitiesBitMask{},
 					},
-					Outputs: iotago.TxEssenceOutputs{
-						&iotago.NFTOutput{
+					Outputs: axongo.TxEssenceOutputs{
+						&axongo.NFTOutput{
 							Amount: OneIOTA,
 							NFTID:  nftID,
-							UnlockConditions: iotago.NFTOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: addr1},
+							UnlockConditions: axongo.NFTOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: addr1},
 							},
 							Features: nil,
 						},
-						&iotago.NFTOutput{
+						&axongo.NFTOutput{
 							Amount: OneIOTA,
 							NFTID:  nftID,
-							UnlockConditions: iotago.NFTOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: addr1},
+							UnlockConditions: axongo.NFTOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: addr1},
 							},
 							Features: nil,
 						},
 					},
 				}),
-			Target:    &iotago.SignedTransaction{},
-			SeriErr:   iotago.ErrNonUniqueChainOutputs,
-			DeSeriErr: iotago.ErrNonUniqueChainOutputs,
+			Target:    &axongo.SignedTransaction{},
+			SeriErr:   axongo.ErrNonUniqueChainOutputs,
+			DeSeriErr: axongo.ErrNonUniqueChainOutputs,
 		},
 		{
 			// we transition the same Foundry twice
 			Name: "transition the same Foundry twice",
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
-				&iotago.Transaction{
+				&axongo.Transaction{
 					API: tpkg.ZeroCostTestAPI,
-					TransactionEssence: &iotago.TransactionEssence{
+					TransactionEssence: &axongo.TransactionEssence{
 						NetworkID:    tpkg.TestNetworkID,
 						Inputs:       inputIDs.UTXOInputs(),
-						Capabilities: iotago.TransactionCapabilitiesBitMask{},
+						Capabilities: axongo.TransactionCapabilitiesBitMask{},
 					},
-					Outputs: iotago.TxEssenceOutputs{
-						&iotago.AccountOutput{
+					Outputs: axongo.TxEssenceOutputs{
+						&axongo.AccountOutput{
 							Amount:    OneIOTA,
 							AccountID: accountID,
-							UnlockConditions: iotago.AccountOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: addr1},
+							UnlockConditions: axongo.AccountOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: addr1},
 							},
 							Features: nil,
 						},
-						&iotago.FoundryOutput{
+						&axongo.FoundryOutput{
 							Amount:       OneIOTA,
 							SerialNumber: 1,
-							TokenScheme: &iotago.SimpleTokenScheme{
+							TokenScheme: &axongo.SimpleTokenScheme{
 								MintedTokens:  big.NewInt(50),
 								MeltedTokens:  big.NewInt(0),
 								MaximumSupply: big.NewInt(50),
 							},
-							UnlockConditions: iotago.FoundryOutputUnlockConditions{
-								&iotago.ImmutableAccountUnlockCondition{Address: accountAddress},
+							UnlockConditions: axongo.FoundryOutputUnlockConditions{
+								&axongo.ImmutableAccountUnlockCondition{Address: accountAddress},
 							},
 							Features: nil,
 						},
-						&iotago.FoundryOutput{
+						&axongo.FoundryOutput{
 							Amount:       OneIOTA,
 							SerialNumber: 1,
-							TokenScheme: &iotago.SimpleTokenScheme{
+							TokenScheme: &axongo.SimpleTokenScheme{
 								MintedTokens:  big.NewInt(50),
 								MeltedTokens:  big.NewInt(0),
 								MaximumSupply: big.NewInt(50),
 							},
-							UnlockConditions: iotago.FoundryOutputUnlockConditions{
-								&iotago.ImmutableAccountUnlockCondition{Address: accountAddress},
+							UnlockConditions: axongo.FoundryOutputUnlockConditions{
+								&axongo.ImmutableAccountUnlockCondition{Address: accountAddress},
 							},
 							Features: nil,
 						},
 					},
 				}),
-			Target:    &iotago.SignedTransaction{},
-			SeriErr:   iotago.ErrNonUniqueChainOutputs,
-			DeSeriErr: iotago.ErrNonUniqueChainOutputs,
+			Target:    &axongo.SignedTransaction{},
+			SeriErr:   axongo.ErrNonUniqueChainOutputs,
+			DeSeriErr: axongo.ErrNonUniqueChainOutputs,
 		},
 	}
 
@@ -213,42 +213,42 @@ func TestChainConstrainedOutputUniqueness(t *testing.T) {
 func TestAllotmentUniqueness(t *testing.T) {
 	inputIDs := tpkg.RandOutputIDs(1)
 
-	accountAddress := iotago.AccountAddressFromOutputID(inputIDs[0])
+	accountAddress := axongo.AccountAddressFromOutputID(inputIDs[0])
 	accountID := accountAddress.AccountID()
 
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name: "allot to the same account twice",
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
-				&iotago.Transaction{
+				&axongo.Transaction{
 					API: tpkg.ZeroCostTestAPI,
-					TransactionEssence: &iotago.TransactionEssence{
+					TransactionEssence: &axongo.TransactionEssence{
 						NetworkID:     tpkg.TestNetworkID,
-						ContextInputs: iotago.TxEssenceContextInputs{},
+						ContextInputs: axongo.TxEssenceContextInputs{},
 						Inputs:        inputIDs.UTXOInputs(),
-						Allotments: iotago.Allotments{
-							&iotago.Allotment{
+						Allotments: axongo.Allotments{
+							&axongo.Allotment{
 								AccountID: accountID,
 								Mana:      0,
 							},
-							&iotago.Allotment{
+							&axongo.Allotment{
 								AccountID: accountID,
 								Mana:      12,
 							},
-							&iotago.Allotment{
+							&axongo.Allotment{
 								AccountID: tpkg.RandAccountID(),
 								Mana:      12,
 							},
 						},
-						Capabilities: iotago.TransactionCapabilitiesBitMask{},
+						Capabilities: axongo.TransactionCapabilitiesBitMask{},
 					},
-					Outputs: iotago.TxEssenceOutputs{
-						tpkg.RandBasicOutput(iotago.AddressEd25519),
+					Outputs: axongo.TxEssenceOutputs{
+						tpkg.RandBasicOutput(axongo.AddressEd25519),
 					},
 				}),
-			Target:    &iotago.SignedTransaction{},
-			SeriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			DeSeriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			Target:    &axongo.SignedTransaction{},
+			SeriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			DeSeriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 	}
 
@@ -261,11 +261,11 @@ func TestTransactionEssenceCapabilitiesBitMask(t *testing.T) {
 
 	type test struct {
 		name    string
-		tx      *iotago.Transaction
+		tx      *axongo.Transaction
 		wantErr error
 	}
 
-	randTransactionWithCapabilities := func(capabilities iotago.TransactionCapabilitiesBitMask) *iotago.Transaction {
+	randTransactionWithCapabilities := func(capabilities axongo.TransactionCapabilitiesBitMask) *axongo.Transaction {
 		tx := tpkg.RandTransaction(tpkg.ZeroCostTestAPI)
 		tx.Capabilities = capabilities
 		return tx
@@ -274,18 +274,18 @@ func TestTransactionEssenceCapabilitiesBitMask(t *testing.T) {
 	tests := []*test{
 		{
 			name:    "ok - no trailing zero bytes",
-			tx:      randTransactionWithCapabilities(iotago.TransactionCapabilitiesBitMask{0x01}),
+			tx:      randTransactionWithCapabilities(axongo.TransactionCapabilitiesBitMask{0x01}),
 			wantErr: nil,
 		},
 		{
 			name:    "ok - empty capabilities",
-			tx:      randTransactionWithCapabilities(iotago.TransactionCapabilitiesBitMask{}),
+			tx:      randTransactionWithCapabilities(axongo.TransactionCapabilitiesBitMask{}),
 			wantErr: nil,
 		},
 		{
 			name:    "fail - single zero byte",
-			tx:      randTransactionWithCapabilities(iotago.TransactionCapabilitiesBitMask{0x00}),
-			wantErr: iotago.ErrBitmaskTrailingZeroBytes,
+			tx:      randTransactionWithCapabilities(axongo.TransactionCapabilitiesBitMask{0x00}),
+			wantErr: axongo.ErrBitmaskTrailingZeroBytes,
 		},
 	}
 
@@ -305,36 +305,36 @@ func TestTransactionEssenceCapabilitiesBitMask(t *testing.T) {
 func TestTransactionSyntacticMaxMana(t *testing.T) {
 	type test struct {
 		name    string
-		tx      *iotago.Transaction
+		tx      *axongo.Transaction
 		wantErr error
 	}
 
-	basicOutputWithMana := func(mana iotago.Mana) *iotago.BasicOutput {
-		return &iotago.BasicOutput{
+	basicOutputWithMana := func(mana axongo.Mana) *axongo.BasicOutput {
+		return &axongo.BasicOutput{
 			Amount: OneIOTA,
 			Mana:   mana,
-			UnlockConditions: iotago.BasicOutputUnlockConditions{
-				&iotago.AddressUnlockCondition{
+			UnlockConditions: axongo.BasicOutputUnlockConditions{
+				&axongo.AddressUnlockCondition{
 					Address: tpkg.RandEd25519Address(),
 				},
 			},
 		}
 	}
 
-	allotmentWithMana := func(mana iotago.Mana) *iotago.Allotment {
-		return &iotago.Allotment{
+	allotmentWithMana := func(mana axongo.Mana) *axongo.Allotment {
+		return &axongo.Allotment{
 			Mana:      mana,
 			AccountID: tpkg.RandAccountID(),
 		}
 	}
 
-	var maxManaValue iotago.Mana = (1 << tpkg.ZeroCostTestAPI.ProtocolParameters().ManaParameters().BitsCount) - 1
+	var maxManaValue axongo.Mana = (1 << tpkg.ZeroCostTestAPI.ProtocolParameters().ManaParameters().BitsCount) - 1
 	tests := []*test{
 		{
 			name: "ok - stored mana sum below max value",
 			tx: tpkg.RandTransactionWithOptions(tpkg.ZeroCostTestAPI,
-				func(tx *iotago.Transaction) {
-					tx.Outputs = iotago.TxEssenceOutputs{basicOutputWithMana(1), basicOutputWithMana(maxManaValue - 1)}
+				func(tx *axongo.Transaction) {
+					tx.Outputs = axongo.TxEssenceOutputs{basicOutputWithMana(1), basicOutputWithMana(maxManaValue - 1)}
 				},
 			),
 			wantErr: nil,
@@ -342,26 +342,26 @@ func TestTransactionSyntacticMaxMana(t *testing.T) {
 		{
 			name: "fail - one output's stored mana exceeds max mana value",
 			tx: tpkg.RandTransactionWithOptions(tpkg.ZeroCostTestAPI,
-				func(tx *iotago.Transaction) {
-					tx.Outputs = iotago.TxEssenceOutputs{basicOutputWithMana(maxManaValue + 1)}
+				func(tx *axongo.Transaction) {
+					tx.Outputs = axongo.TxEssenceOutputs{basicOutputWithMana(maxManaValue + 1)}
 				},
 			),
-			wantErr: iotago.ErrMaxManaExceeded,
+			wantErr: axongo.ErrMaxManaExceeded,
 		},
 		{
 			name: "fail - sum of stored mana exceeds max mana value",
 			tx: tpkg.RandTransactionWithOptions(tpkg.ZeroCostTestAPI,
-				func(tx *iotago.Transaction) {
-					tx.Outputs = iotago.TxEssenceOutputs{basicOutputWithMana(maxManaValue - 1), basicOutputWithMana(maxManaValue - 1)}
+				func(tx *axongo.Transaction) {
+					tx.Outputs = axongo.TxEssenceOutputs{basicOutputWithMana(maxManaValue - 1), basicOutputWithMana(maxManaValue - 1)}
 				},
 			),
-			wantErr: iotago.ErrMaxManaExceeded,
+			wantErr: axongo.ErrMaxManaExceeded,
 		},
 		{
 			name: "ok - allotted mana sum below max value",
 			tx: tpkg.RandTransactionWithOptions(tpkg.ZeroCostTestAPI,
-				func(tx *iotago.Transaction) {
-					tx.Allotments = iotago.Allotments{allotmentWithMana(1), allotmentWithMana(maxManaValue - 1)}
+				func(tx *axongo.Transaction) {
+					tx.Allotments = axongo.Allotments{allotmentWithMana(1), allotmentWithMana(maxManaValue - 1)}
 					tx.Allotments.Sort()
 				},
 			),
@@ -370,22 +370,22 @@ func TestTransactionSyntacticMaxMana(t *testing.T) {
 		{
 			name: "fail - one allotment's mana exceeds max value",
 			tx: tpkg.RandTransactionWithOptions(tpkg.ZeroCostTestAPI,
-				func(tx *iotago.Transaction) {
-					tx.Allotments = iotago.Allotments{allotmentWithMana(maxManaValue + 1)}
+				func(tx *axongo.Transaction) {
+					tx.Allotments = axongo.Allotments{allotmentWithMana(maxManaValue + 1)}
 					tx.Allotments.Sort()
 				},
 			),
-			wantErr: iotago.ErrMaxManaExceeded,
+			wantErr: axongo.ErrMaxManaExceeded,
 		},
 		{
 			name: "fail - sum of allotted mana exceeds max value",
 			tx: tpkg.RandTransactionWithOptions(tpkg.ZeroCostTestAPI,
-				func(tx *iotago.Transaction) {
-					tx.Allotments = iotago.Allotments{allotmentWithMana(maxManaValue - 1), allotmentWithMana(maxManaValue - 1)}
+				func(tx *axongo.Transaction) {
+					tx.Allotments = axongo.Allotments{allotmentWithMana(maxManaValue - 1), allotmentWithMana(maxManaValue - 1)}
 					tx.Allotments.Sort()
 				},
 			),
-			wantErr: iotago.ErrMaxManaExceeded,
+			wantErr: axongo.ErrMaxManaExceeded,
 		},
 	}
 
@@ -405,21 +405,21 @@ func TestTransactionSyntacticMaxMana(t *testing.T) {
 func TestTransactionInputUniqueness(t *testing.T) {
 	type test struct {
 		name      string
-		inputs    iotago.TxEssenceInputs
+		inputs    axongo.TxEssenceInputs
 		seriErr   error
 		deseriErr error
 	}
 
-	input1 := iotago.MustOutputIDFromHexString("0x2668778ef0362d601c36ea05c742185daa1740dfcdaee0acfde6a9806a1f2ed20d8566fd0800")
-	input2 := iotago.MustOutputIDFromHexString("0x3f34a869f47f8454e7cb233943cd31a0e3bd8b9551b1390039ec582b0a196856eff185120400")
-	input3 := iotago.MustOutputIDFromHexString("0xfdad2fee88cc4f1020848dce710124ac9060cdbee840a72b750c1f6901502576422f83b50500")
+	input1 := axongo.MustOutputIDFromHexString("0x2668778ef0362d601c36ea05c742185daa1740dfcdaee0acfde6a9806a1f2ed20d8566fd0800")
+	input2 := axongo.MustOutputIDFromHexString("0x3f34a869f47f8454e7cb233943cd31a0e3bd8b9551b1390039ec582b0a196856eff185120400")
+	input3 := axongo.MustOutputIDFromHexString("0xfdad2fee88cc4f1020848dce710124ac9060cdbee840a72b750c1f6901502576422f83b50500")
 	// Differs from input3 only in the output index.
-	input4 := iotago.MustOutputIDFromHexString("0xfdad2fee88cc4f1020848dce710124ac9060cdbee840a72b750c1f6901502576422f83b50600")
+	input4 := axongo.MustOutputIDFromHexString("0xfdad2fee88cc4f1020848dce710124ac9060cdbee840a72b750c1f6901502576422f83b50600")
 
 	tests := []test{
 		{
 			name: "ok - inputs unique",
-			inputs: iotago.TxEssenceInputs{
+			inputs: axongo.TxEssenceInputs{
 				input3.UTXOInput(),
 				input1.UTXOInput(),
 				input4.UTXOInput(),
@@ -429,27 +429,27 @@ func TestTransactionInputUniqueness(t *testing.T) {
 		},
 		{
 			name: "fail - duplicate inputs",
-			inputs: iotago.TxEssenceInputs{
+			inputs: axongo.TxEssenceInputs{
 				input1.UTXOInput(),
 				input2.UTXOInput(),
 				input2.UTXOInput(),
 			},
-			seriErr:   iotago.ErrInputUTXORefsNotUnique,
-			deseriErr: iotago.ErrInputUTXORefsNotUnique,
+			seriErr:   axongo.ErrInputUTXORefsNotUnique,
+			deseriErr: axongo.ErrInputUTXORefsNotUnique,
 		},
 	}
 
 	for _, test := range tests {
-		stx := tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI, &iotago.Transaction{
+		stx := tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI, &axongo.Transaction{
 			API: tpkg.ZeroCostTestAPI,
-			TransactionEssence: &iotago.TransactionEssence{
-				Allotments:    iotago.Allotments{},
-				ContextInputs: iotago.TxEssenceContextInputs{},
-				Capabilities:  iotago.TransactionCapabilitiesBitMaskWithCapabilities(),
+			TransactionEssence: &axongo.TransactionEssence{
+				Allotments:    axongo.Allotments{},
+				ContextInputs: axongo.TxEssenceContextInputs{},
+				Capabilities:  axongo.TransactionCapabilitiesBitMaskWithCapabilities(),
 				NetworkID:     tpkg.ZeroCostTestAPI.ProtocolParameters().NetworkID(),
 				Inputs:        test.inputs,
 			},
-			Outputs: iotago.TxEssenceOutputs{
+			Outputs: axongo.TxEssenceOutputs{
 				tpkg.RandBasicOutput(),
 			},
 		})
@@ -457,7 +457,7 @@ func TestTransactionInputUniqueness(t *testing.T) {
 		tst := &frameworks.DeSerializeTest{
 			Name:      test.name,
 			Source:    stx,
-			Target:    &iotago.SignedTransaction{},
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   test.seriErr,
 			DeSeriErr: test.deseriErr,
 		}
@@ -469,32 +469,32 @@ func TestTransactionInputUniqueness(t *testing.T) {
 func TestTransactionContextInputLexicalOrderAndUniqueness(t *testing.T) {
 	type test struct {
 		name          string
-		contextInputs iotago.TxEssenceContextInputs
+		contextInputs axongo.TxEssenceContextInputs
 		wantErr       error
 	}
 
-	accountID1 := iotago.MustAccountIDFromHexString("0x2668778ef0362d601c36ea05c742185daa1740dfcdaee0acfde6a9806a1f2ed2")
-	accountID2 := iotago.MustAccountIDFromHexString("0x4e7cb233943cd31a0e3bd8b92668778ef0362d601c36ea05c742039ec582b0af")
-	commitmentID1 := iotago.MustCommitmentIDFromHexString("0x3f34a869f47f8454e7cb233943cd31a0e3bd8b9551b1390039ec582b0a196856e50500fd")
-	commitmentID2 := iotago.MustCommitmentIDFromHexString("0x90039ec582b0a196856e50500fd3f34a869f47f8454e7cb233943cd31a0e3bd8b9551ac4")
+	accountID1 := axongo.MustAccountIDFromHexString("0x2668778ef0362d601c36ea05c742185daa1740dfcdaee0acfde6a9806a1f2ed2")
+	accountID2 := axongo.MustAccountIDFromHexString("0x4e7cb233943cd31a0e3bd8b92668778ef0362d601c36ea05c742039ec582b0af")
+	commitmentID1 := axongo.MustCommitmentIDFromHexString("0x3f34a869f47f8454e7cb233943cd31a0e3bd8b9551b1390039ec582b0a196856e50500fd")
+	commitmentID2 := axongo.MustCommitmentIDFromHexString("0x90039ec582b0a196856e50500fd3f34a869f47f8454e7cb233943cd31a0e3bd8b9551ac4")
 
 	tests := []test{
 		{
 			name: "ok - context inputs lexically ordered and unique",
-			contextInputs: iotago.TxEssenceContextInputs{
-				&iotago.CommitmentInput{
+			contextInputs: axongo.TxEssenceContextInputs{
+				&axongo.CommitmentInput{
 					CommitmentID: commitmentID1,
 				}, // type 0
-				&iotago.BlockIssuanceCreditInput{
+				&axongo.BlockIssuanceCreditInput{
 					AccountID: accountID1,
 				}, // type 1
-				&iotago.BlockIssuanceCreditInput{
+				&axongo.BlockIssuanceCreditInput{
 					AccountID: accountID2,
 				}, // type 1
-				&iotago.RewardInput{
+				&axongo.RewardInput{
 					Index: 0,
 				}, // type 2
-				&iotago.RewardInput{
+				&axongo.RewardInput{
 					Index: 1,
 				}, // type 2
 			},
@@ -502,135 +502,135 @@ func TestTransactionContextInputLexicalOrderAndUniqueness(t *testing.T) {
 		},
 		{
 			name: "fail - context inputs lexically unordered",
-			contextInputs: iotago.TxEssenceContextInputs{
-				&iotago.CommitmentInput{
+			contextInputs: axongo.TxEssenceContextInputs{
+				&axongo.CommitmentInput{
 					CommitmentID: commitmentID1,
 				},
-				&iotago.BlockIssuanceCreditInput{
+				&axongo.BlockIssuanceCreditInput{
 					AccountID: accountID1,
 				}, // type 1
-				&iotago.CommitmentInput{
+				&axongo.CommitmentInput{
 					CommitmentID: commitmentID1,
 				}, // type 0
-				&iotago.RewardInput{
+				&axongo.RewardInput{
 					Index: 0,
 				}, // type 2
 			},
-			wantErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			wantErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - block issuance credits inputs lexically unordered",
-			contextInputs: iotago.TxEssenceContextInputs{
-				&iotago.CommitmentInput{
+			contextInputs: axongo.TxEssenceContextInputs{
+				&axongo.CommitmentInput{
 					CommitmentID: commitmentID1,
 				},
-				&iotago.BlockIssuanceCreditInput{
+				&axongo.BlockIssuanceCreditInput{
 					AccountID: accountID2,
 				}, // type 1
-				&iotago.BlockIssuanceCreditInput{
+				&axongo.BlockIssuanceCreditInput{
 					AccountID: accountID1,
 				}, // type 1
 			},
-			wantErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			wantErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - reward inputs lexically unordered",
-			contextInputs: iotago.TxEssenceContextInputs{
-				&iotago.CommitmentInput{
+			contextInputs: axongo.TxEssenceContextInputs{
+				&axongo.CommitmentInput{
 					CommitmentID: commitmentID1,
 				},
-				&iotago.RewardInput{
+				&axongo.RewardInput{
 					Index: 1,
 				}, // type 2
-				&iotago.RewardInput{
+				&axongo.RewardInput{
 					Index: 0,
 				}, // type 2
 			},
-			wantErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			wantErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - duplicate block issuance credit inputs",
-			contextInputs: iotago.TxEssenceContextInputs{
-				&iotago.CommitmentInput{
+			contextInputs: axongo.TxEssenceContextInputs{
+				&axongo.CommitmentInput{
 					CommitmentID: commitmentID1,
 				},
-				&iotago.BlockIssuanceCreditInput{
+				&axongo.BlockIssuanceCreditInput{
 					AccountID: accountID1,
 				}, // type 1
-				&iotago.BlockIssuanceCreditInput{
+				&axongo.BlockIssuanceCreditInput{
 					AccountID: accountID1,
 				}, // type 1
 			},
-			wantErr: iotago.ErrArrayValidationViolatesUniqueness,
+			wantErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			name: "fail - duplicate reward inputs",
-			contextInputs: iotago.TxEssenceContextInputs{
-				&iotago.CommitmentInput{
+			contextInputs: axongo.TxEssenceContextInputs{
+				&axongo.CommitmentInput{
 					CommitmentID: commitmentID1,
 				},
-				&iotago.RewardInput{
+				&axongo.RewardInput{
 					Index: 0,
 				}, // type 2
-				&iotago.RewardInput{
+				&axongo.RewardInput{
 					Index: 0,
 				}, // type 2
 			},
-			wantErr: iotago.ErrArrayValidationViolatesUniqueness,
+			wantErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			// At most one commitment input is allowed.
 			name: "fail - duplicate commitment inputs",
-			contextInputs: iotago.TxEssenceContextInputs{
-				&iotago.CommitmentInput{
+			contextInputs: axongo.TxEssenceContextInputs{
+				&axongo.CommitmentInput{
 					CommitmentID: commitmentID2,
 				}, // type 0
-				&iotago.CommitmentInput{
+				&axongo.CommitmentInput{
 					CommitmentID: commitmentID1,
 				}, // type 0
-				&iotago.RewardInput{
+				&axongo.RewardInput{
 					Index: 1,
 				}, // type 2
 			},
-			wantErr: iotago.ErrArrayValidationViolatesUniqueness,
+			wantErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			name: "fail - block issuance credit input without commitment input",
-			contextInputs: iotago.TxEssenceContextInputs{
-				&iotago.BlockIssuanceCreditInput{
+			contextInputs: axongo.TxEssenceContextInputs{
+				&axongo.BlockIssuanceCreditInput{
 					AccountID: accountID1,
 				},
 			},
-			wantErr: iotago.ErrCommitmentInputMissing,
+			wantErr: axongo.ErrCommitmentInputMissing,
 		},
 		{
 			name: "fail - reward input without commitment input",
-			contextInputs: iotago.TxEssenceContextInputs{
-				&iotago.RewardInput{
+			contextInputs: axongo.TxEssenceContextInputs{
+				&axongo.RewardInput{
 					Index: 0,
 				},
 			},
-			wantErr: iotago.ErrCommitmentInputMissing,
+			wantErr: axongo.ErrCommitmentInputMissing,
 		},
 	}
 
 	for _, test := range tests {
 		// We need to build the transaction manually, since the builder and rand funcs would sort the context inputs.
-		tx := &iotago.Transaction{
+		tx := &axongo.Transaction{
 			API: tpkg.ZeroCostTestAPI,
-			TransactionEssence: &iotago.TransactionEssence{
-				Allotments:   iotago.Allotments{},
-				Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(),
+			TransactionEssence: &axongo.TransactionEssence{
+				Allotments:   axongo.Allotments{},
+				Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(),
 				NetworkID:    tpkg.ZeroCostTestAPI.ProtocolParameters().NetworkID(),
 				CreationSlot: 5,
-				Inputs: iotago.TxEssenceInputs{
+				Inputs: axongo.TxEssenceInputs{
 					tpkg.RandUTXOInput(),
 					tpkg.RandUTXOInput(),
 					tpkg.RandUTXOInput(),
 				},
 				ContextInputs: test.contextInputs,
 			},
-			Outputs: iotago.TxEssenceOutputs{
+			Outputs: axongo.TxEssenceOutputs{
 				tpkg.RandBasicOutput(),
 			},
 		}
@@ -640,7 +640,7 @@ func TestTransactionContextInputLexicalOrderAndUniqueness(t *testing.T) {
 		tst := &frameworks.DeSerializeTest{
 			Name:      test.name,
 			Source:    stx,
-			Target:    &iotago.SignedTransaction{},
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   test.wantErr,
 			DeSeriErr: test.wantErr,
 		}
@@ -651,7 +651,7 @@ func TestTransactionContextInputLexicalOrderAndUniqueness(t *testing.T) {
 
 type transactionSerializeTest struct {
 	name      string
-	output    iotago.Output
+	output    axongo.Output
 	seriErr   error
 	deseriErr error
 }
@@ -659,9 +659,9 @@ type transactionSerializeTest struct {
 func (test *transactionSerializeTest) ToDeserializeTest() *frameworks.DeSerializeTest {
 	_, addr, addrKeys := tpkg.RandEd25519Identity()
 
-	txBuilder := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, iotago.NewInMemoryAddressSigner(addrKeys))
+	txBuilder := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, axongo.NewInMemoryAddressSigner(addrKeys))
 	txBuilder.WithTransactionCapabilities(
-		iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanBurnNativeTokens(true)),
+		axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanBurnNativeTokens(true)),
 	)
 
 	txBuilder.AddInput(&builder.TxInput{
@@ -677,7 +677,7 @@ func (test *transactionSerializeTest) ToDeserializeTest() *frameworks.DeSerializ
 	return &frameworks.DeSerializeTest{
 		Name:      test.name,
 		Source:    tx,
-		Target:    &iotago.SignedTransaction{},
+		Target:    &axongo.SignedTransaction{},
 		SeriErr:   test.seriErr,
 		DeSeriErr: test.deseriErr,
 	}
@@ -685,29 +685,29 @@ func (test *transactionSerializeTest) ToDeserializeTest() *frameworks.DeSerializ
 
 // Tests that lexical order & uniqueness are checked for unlock conditions across all relevant outputs.
 func TestTransactionOutputUnlockConditionsLexicalOrderAndUniqueness(t *testing.T) {
-	addressUnlockCond := &iotago.AddressUnlockCondition{
+	addressUnlockCond := &axongo.AddressUnlockCondition{
 		Address: tpkg.RandEd25519Address(),
 	}
-	addressUnlockCond2 := &iotago.AddressUnlockCondition{
+	addressUnlockCond2 := &axongo.AddressUnlockCondition{
 		Address: tpkg.RandEd25519Address(),
 	}
-	stateCtrlUnlockCond := &iotago.StateControllerAddressUnlockCondition{
+	stateCtrlUnlockCond := &axongo.StateControllerAddressUnlockCondition{
 		Address: tpkg.RandEd25519Address(),
 	}
-	govUnlockCond := &iotago.GovernorAddressUnlockCondition{
+	govUnlockCond := &axongo.GovernorAddressUnlockCondition{
 		Address: tpkg.RandEd25519Address(),
 	}
-	immAccUnlockCond := &iotago.ImmutableAccountUnlockCondition{
+	immAccUnlockCond := &axongo.ImmutableAccountUnlockCondition{
 		Address: tpkg.RandAccountAddress(),
 	}
-	immAccUnlockCond2 := &iotago.ImmutableAccountUnlockCondition{
+	immAccUnlockCond2 := &axongo.ImmutableAccountUnlockCondition{
 		Address: tpkg.RandAccountAddress(),
 	}
 
-	timelockUnlockCond := &iotago.TimelockUnlockCondition{Slot: 1337}
-	timelockUnlockCond2 := &iotago.TimelockUnlockCondition{Slot: 1000}
+	timelockUnlockCond := &axongo.TimelockUnlockCondition{Slot: 1337}
+	timelockUnlockCond2 := &axongo.TimelockUnlockCondition{Slot: 1000}
 
-	expirationUnlockCond := &iotago.ExpirationUnlockCondition{
+	expirationUnlockCond := &axongo.ExpirationUnlockCondition{
 		ReturnAddress: tpkg.RandEd25519Address(),
 		Slot:          1000,
 	}
@@ -715,124 +715,124 @@ func TestTransactionOutputUnlockConditionsLexicalOrderAndUniqueness(t *testing.T
 	tests := []transactionSerializeTest{
 		{
 			name: "fail - BasicOutput contains lexically unordered unlock conditions",
-			output: &iotago.BasicOutput{
+			output: &axongo.BasicOutput{
 				Amount: 10_000_000,
-				UnlockConditions: iotago.BasicOutputUnlockConditions{
+				UnlockConditions: axongo.BasicOutputUnlockConditions{
 					addressUnlockCond,    // type 0
 					expirationUnlockCond, // type 3
 					timelockUnlockCond,   // type 2
 				},
-				Features: iotago.BasicOutputFeatures{},
+				Features: axongo.BasicOutputFeatures{},
 			},
-			seriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			deseriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			seriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			deseriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - AnchorOutput contains lexically unordered unlock conditions",
-			output: &iotago.AnchorOutput{
+			output: &axongo.AnchorOutput{
 				Amount: 10_000_000,
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
 					govUnlockCond,       // type 5
 					stateCtrlUnlockCond, // type 4
 				},
-				Features: iotago.AnchorOutputFeatures{},
+				Features: axongo.AnchorOutputFeatures{},
 			},
-			seriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			deseriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			seriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			deseriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - NFTOutput contains lexically unordered unlock conditions",
-			output: &iotago.NFTOutput{
+			output: &axongo.NFTOutput{
 				Amount: 10_000_000,
-				UnlockConditions: iotago.NFTOutputUnlockConditions{
+				UnlockConditions: axongo.NFTOutputUnlockConditions{
 					addressUnlockCond,    // type 0
 					expirationUnlockCond, // type 3
 					timelockUnlockCond,   // type 2
 				},
-				Features: iotago.NFTOutputFeatures{},
+				Features: axongo.NFTOutputFeatures{},
 			},
-			seriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			deseriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			seriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			deseriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - BasicOutput contains duplicate unlock conditions",
-			output: &iotago.BasicOutput{
+			output: &axongo.BasicOutput{
 				Amount: 10_000_000,
-				UnlockConditions: iotago.BasicOutputUnlockConditions{
+				UnlockConditions: axongo.BasicOutputUnlockConditions{
 					addressUnlockCond,   // type 0
 					timelockUnlockCond,  // type 2
 					timelockUnlockCond2, // type 2
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			deseriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			deseriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			name: "fail - AccountOutput contains duplicate unlock conditions",
-			output: &iotago.AccountOutput{
+			output: &axongo.AccountOutput{
 				Amount: 10_000_000,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
 					addressUnlockCond,  // type 0
 					addressUnlockCond2, // type 0
 				},
 			},
-			seriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr: axongo.ErrArrayValidationViolatesUniqueness,
 			// During decoding, we encounter the max size error before the custom validator runs.
 			deseriErr: serializer.ErrArrayValidationMaxElementsExceeded,
 		},
 		{
 			name: "fail - AnchorOutput contains duplicate unlock conditions",
-			output: &iotago.AnchorOutput{
+			output: &axongo.AnchorOutput{
 				Amount: 10_000_000,
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
 					stateCtrlUnlockCond, // type 4
 					stateCtrlUnlockCond, // type 4
 					govUnlockCond,       // type 5
 				},
-				Features: iotago.AnchorOutputFeatures{},
+				Features: axongo.AnchorOutputFeatures{},
 			},
-			seriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr: axongo.ErrArrayValidationViolatesUniqueness,
 			// During decoding, we encounter the max size error before the custom validator runs.
 			deseriErr: serializer.ErrArrayValidationMaxElementsExceeded,
 		},
 		{
 			name: "fail - FoundryOutput contains duplicate unlock conditions",
-			output: &iotago.FoundryOutput{
+			output: &axongo.FoundryOutput{
 				Amount:      10_000_000,
 				TokenScheme: tpkg.RandTokenScheme(),
-				UnlockConditions: iotago.FoundryOutputUnlockConditions{
+				UnlockConditions: axongo.FoundryOutputUnlockConditions{
 					immAccUnlockCond,  // type 6
 					immAccUnlockCond2, // type 6
 				},
-				Features: iotago.FoundryOutputFeatures{},
+				Features: axongo.FoundryOutputFeatures{},
 			},
-			seriErr:   iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr:   axongo.ErrArrayValidationViolatesUniqueness,
 			deseriErr: serializer.ErrArrayValidationMaxElementsExceeded,
 		},
 		{
 			name: "fail - NFTOutput contains duplicate unlock conditions",
-			output: &iotago.NFTOutput{
+			output: &axongo.NFTOutput{
 				Amount: 10_000_000,
-				UnlockConditions: iotago.NFTOutputUnlockConditions{
+				UnlockConditions: axongo.NFTOutputUnlockConditions{
 					addressUnlockCond,   // type 0
 					timelockUnlockCond,  // type 2
 					timelockUnlockCond2, // type 2
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			deseriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			deseriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			name: "fail - DelegationOutput contains duplicate unlock conditions",
-			output: &iotago.DelegationOutput{
+			output: &axongo.DelegationOutput{
 				Amount:           10_000_000,
 				ValidatorAddress: tpkg.RandAccountAddress(),
-				UnlockConditions: iotago.DelegationOutputUnlockConditions{
+				UnlockConditions: axongo.DelegationOutputUnlockConditions{
 					addressUnlockCond,  // type 0
 					addressUnlockCond2, // type 0
 				},
 			},
-			seriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr: axongo.ErrArrayValidationViolatesUniqueness,
 			// During decoding, we encounter the max size error before the custom validator runs.
 			deseriErr: serializer.ErrArrayValidationMaxElementsExceeded,
 		},
@@ -845,47 +845,47 @@ func TestTransactionOutputUnlockConditionsLexicalOrderAndUniqueness(t *testing.T
 
 // Tests that lexical order & uniqueness are checked for features across all relevant outputs.
 func TestTransactionOutputFeatureLexicalOrderAndUniqueness(t *testing.T) {
-	addressUnlockCond := &iotago.AddressUnlockCondition{
+	addressUnlockCond := &axongo.AddressUnlockCondition{
 		Address: tpkg.RandEd25519Address(),
 	}
-	immutableAccountAddressUnlockCond := &iotago.ImmutableAccountUnlockCondition{
+	immutableAccountAddressUnlockCond := &axongo.ImmutableAccountUnlockCondition{
 		Address: tpkg.RandAccountAddress(),
 	}
-	stateCtrlUnlockCond := &iotago.StateControllerAddressUnlockCondition{
+	stateCtrlUnlockCond := &axongo.StateControllerAddressUnlockCondition{
 		Address: tpkg.RandEd25519Address(),
 	}
-	govUnlockCond := &iotago.GovernorAddressUnlockCondition{
-		Address: tpkg.RandEd25519Address(),
-	}
-
-	senderFeat := &iotago.SenderFeature{
-		Address: tpkg.RandEd25519Address(),
-	}
-	senderFeat2 := &iotago.SenderFeature{
+	govUnlockCond := &axongo.GovernorAddressUnlockCondition{
 		Address: tpkg.RandEd25519Address(),
 	}
 
-	metadataFeat := &iotago.MetadataFeature{
-		Entries: iotago.MetadataFeatureEntries{
+	senderFeat := &axongo.SenderFeature{
+		Address: tpkg.RandEd25519Address(),
+	}
+	senderFeat2 := &axongo.SenderFeature{
+		Address: tpkg.RandEd25519Address(),
+	}
+
+	metadataFeat := &axongo.MetadataFeature{
+		Entries: axongo.MetadataFeatureEntries{
 			"key": []byte("val"),
 		},
 	}
-	metadataFeat2 := &iotago.MetadataFeature{
-		Entries: iotago.MetadataFeatureEntries{
+	metadataFeat2 := &axongo.MetadataFeature{
+		Entries: axongo.MetadataFeatureEntries{
 			"entry": []byte("theval"),
 		},
 	}
 
-	stateMetadataFeat := &iotago.StateMetadataFeature{
-		Entries: iotago.StateMetadataFeatureEntries{
+	stateMetadataFeat := &axongo.StateMetadataFeature{
+		Entries: axongo.StateMetadataFeatureEntries{
 			"key": []byte("value"),
 		},
 	}
 
-	tagFeat := &iotago.TagFeature{
+	tagFeat := &axongo.TagFeature{
 		Tag: tpkg.RandBytes(3),
 	}
-	tagFeat2 := &iotago.TagFeature{
+	tagFeat2 := &axongo.TagFeature{
 		Tag: tpkg.RandBytes(6),
 	}
 
@@ -894,158 +894,158 @@ func TestTransactionOutputFeatureLexicalOrderAndUniqueness(t *testing.T) {
 	tests := []transactionSerializeTest{
 		{
 			name: "fail - BasicOutput contains lexically unordered features",
-			output: &iotago.BasicOutput{
+			output: &axongo.BasicOutput{
 				Amount: 1337,
 				Mana:   500,
-				UnlockConditions: iotago.BasicOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.BasicOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				Features: iotago.BasicOutputFeatures{
+				Features: axongo.BasicOutputFeatures{
 					tagFeat,    // type 4
 					senderFeat, // type 0
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			deseriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			seriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			deseriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - AccountOutput contains lexically unordered features",
-			output: &iotago.AccountOutput{
+			output: &axongo.AccountOutput{
 				Amount: 1_000_000,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
 					addressUnlockCond,
 				},
-				Features: iotago.AccountOutputFeatures{
+				Features: axongo.AccountOutputFeatures{
 					metadataFeat, // type 2
 					senderFeat,   // type 0
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			deseriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			seriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			deseriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - AnchorOutput contains lexically unordered features",
-			output: &iotago.AnchorOutput{
+			output: &axongo.AnchorOutput{
 				Amount: 1_000_000,
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
 					stateCtrlUnlockCond,
 					govUnlockCond,
 				},
-				Features: iotago.AnchorOutputFeatures{
+				Features: axongo.AnchorOutputFeatures{
 					stateMetadataFeat, // type 3
 					metadataFeat,      // type 2
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			deseriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			seriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			deseriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - FoundryOutput contains lexically unordered features",
-			output: &iotago.FoundryOutput{
+			output: &axongo.FoundryOutput{
 				Amount:      1_000_000,
 				TokenScheme: tpkg.RandTokenScheme(),
-				UnlockConditions: iotago.FoundryOutputUnlockConditions{
+				UnlockConditions: axongo.FoundryOutputUnlockConditions{
 					immutableAccountAddressUnlockCond,
 				},
-				Features: iotago.FoundryOutputFeatures{
+				Features: axongo.FoundryOutputFeatures{
 					nativeTokenFeat, // type 5
 					metadataFeat,    // type 2
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			deseriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			seriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			deseriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - NFTOutput contains lexically unordered features",
-			output: &iotago.NFTOutput{
+			output: &axongo.NFTOutput{
 				Amount: 1337,
-				UnlockConditions: iotago.NFTOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.NFTOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				Features: iotago.NFTOutputFeatures{
+				Features: axongo.NFTOutputFeatures{
 					tagFeat,    // type 4
 					senderFeat, // type 0
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			deseriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			seriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			deseriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - BasicOutput contains duplicate features",
-			output: &iotago.BasicOutput{
+			output: &axongo.BasicOutput{
 				Amount: 1337,
-				UnlockConditions: iotago.BasicOutputUnlockConditions{
+				UnlockConditions: axongo.BasicOutputUnlockConditions{
 					addressUnlockCond,
 				},
-				Features: iotago.BasicOutputFeatures{
+				Features: axongo.BasicOutputFeatures{
 					tagFeat,  // type 4
 					tagFeat2, // type 4
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			deseriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			deseriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			name: "fail - AccountOutput contains duplicate features",
-			output: &iotago.AccountOutput{
+			output: &axongo.AccountOutput{
 				Amount: 1337,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
 					addressUnlockCond,
 				},
-				Features: iotago.AccountOutputFeatures{
+				Features: axongo.AccountOutputFeatures{
 					senderFeat,  // type 0
 					senderFeat2, // type 0
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			deseriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			deseriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			name: "fail - AnchorOutput contains duplicate features",
-			output: &iotago.AnchorOutput{
+			output: &axongo.AnchorOutput{
 				Amount: 1337,
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
 					stateCtrlUnlockCond,
 					govUnlockCond,
 				},
-				Features: iotago.AnchorOutputFeatures{
+				Features: axongo.AnchorOutputFeatures{
 					metadataFeat,  // type 2
 					metadataFeat2, // type 2
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			deseriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			deseriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			name: "fail - FoundryOutput contains duplicate features",
-			output: &iotago.FoundryOutput{
+			output: &axongo.FoundryOutput{
 				Amount:      1_000_000,
 				TokenScheme: tpkg.RandTokenScheme(),
-				UnlockConditions: iotago.FoundryOutputUnlockConditions{
+				UnlockConditions: axongo.FoundryOutputUnlockConditions{
 					immutableAccountAddressUnlockCond,
 				},
-				Features: iotago.FoundryOutputFeatures{
+				Features: axongo.FoundryOutputFeatures{
 					metadataFeat,  // type 2
 					metadataFeat2, // type 2
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			deseriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			deseriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			name: "fail - NFTOutput contains duplicate features",
-			output: &iotago.NFTOutput{
+			output: &axongo.NFTOutput{
 				Amount: 1337,
-				UnlockConditions: iotago.NFTOutputUnlockConditions{
+				UnlockConditions: axongo.NFTOutputUnlockConditions{
 					addressUnlockCond,
 				},
-				Features: iotago.NFTOutputFeatures{
+				Features: axongo.NFTOutputFeatures{
 					tagFeat,  // type 4
 					tagFeat2, // type 4
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			deseriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			deseriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 	}
 
@@ -1056,31 +1056,31 @@ func TestTransactionOutputFeatureLexicalOrderAndUniqueness(t *testing.T) {
 
 // Tests that lexical order & uniqueness are checked for immutable features across all relevant outputs.
 func TestTransactionOutputImmutableFeatureLexicalOrderAndUniqueness(t *testing.T) {
-	addressUnlockCond := &iotago.AddressUnlockCondition{
+	addressUnlockCond := &axongo.AddressUnlockCondition{
 		Address: tpkg.RandEd25519Address(),
 	}
-	stateCtrlUnlockCond := &iotago.StateControllerAddressUnlockCondition{
+	stateCtrlUnlockCond := &axongo.StateControllerAddressUnlockCondition{
 		Address: tpkg.RandEd25519Address(),
 	}
-	govUnlockCond := &iotago.GovernorAddressUnlockCondition{
+	govUnlockCond := &axongo.GovernorAddressUnlockCondition{
 		Address: tpkg.RandEd25519Address(),
 	}
 
-	issuerFeat := &iotago.IssuerFeature{
+	issuerFeat := &axongo.IssuerFeature{
 		Address: tpkg.RandEd25519Address(),
 	}
 	// Create a second issuer feature to ensure uniqueness is checked based on the type of the feature.
-	issuerFeat2 := &iotago.IssuerFeature{
+	issuerFeat2 := &axongo.IssuerFeature{
 		Address: tpkg.RandEd25519Address(),
 	}
 
-	metadataFeat := &iotago.MetadataFeature{
-		Entries: iotago.MetadataFeatureEntries{
+	metadataFeat := &axongo.MetadataFeature{
+		Entries: axongo.MetadataFeatureEntries{
 			"key": []byte("val"),
 		},
 	}
-	metadataFeat2 := &iotago.MetadataFeature{
-		Entries: iotago.MetadataFeatureEntries{
+	metadataFeat2 := &axongo.MetadataFeature{
+		Entries: axongo.MetadataFeatureEntries{
 			"key": []byte("value"),
 		},
 	}
@@ -1088,114 +1088,114 @@ func TestTransactionOutputImmutableFeatureLexicalOrderAndUniqueness(t *testing.T
 	tests := []transactionSerializeTest{
 		{
 			name: "fail - AccountOutput contains lexically unordered immutable features",
-			output: &iotago.AccountOutput{
+			output: &axongo.AccountOutput{
 				Amount: 1_000_000,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
 					addressUnlockCond,
 				},
-				ImmutableFeatures: iotago.AccountOutputImmFeatures{
+				ImmutableFeatures: axongo.AccountOutputImmFeatures{
 					metadataFeat, // type 2
 					issuerFeat,   // type 1
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			deseriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			seriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			deseriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - AnchorOutput contains lexically unordered immutable features",
-			output: &iotago.AnchorOutput{
+			output: &axongo.AnchorOutput{
 				Amount: 1_000_000,
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
 					stateCtrlUnlockCond,
 					govUnlockCond,
 				},
-				ImmutableFeatures: iotago.AnchorOutputImmFeatures{
+				ImmutableFeatures: axongo.AnchorOutputImmFeatures{
 					metadataFeat, // type 2
 					issuerFeat,   // type 1
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			deseriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			seriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			deseriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - NFTOutput contains lexically unordered immutable features",
-			output: &iotago.NFTOutput{
+			output: &axongo.NFTOutput{
 				Amount: 1_000_000,
-				UnlockConditions: iotago.NFTOutputUnlockConditions{
+				UnlockConditions: axongo.NFTOutputUnlockConditions{
 					addressUnlockCond,
 				},
-				ImmutableFeatures: iotago.NFTOutputImmFeatures{
+				ImmutableFeatures: axongo.NFTOutputImmFeatures{
 					metadataFeat, // type 2
 					issuerFeat,   // type 1
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			deseriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			seriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			deseriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			name: "fail - AccountOutput contains duplicate immutable features",
-			output: &iotago.AccountOutput{
+			output: &axongo.AccountOutput{
 				Amount: 1_000_000,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
 					addressUnlockCond,
 				},
-				ImmutableFeatures: iotago.AccountOutputImmFeatures{
+				ImmutableFeatures: axongo.AccountOutputImmFeatures{
 					issuerFeat,  // type 1
 					issuerFeat2, // type 1
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			deseriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			deseriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			name: "fail - AnchorOutput contains duplicate immutable features",
-			output: &iotago.AnchorOutput{
+			output: &axongo.AnchorOutput{
 				Amount: 1_000_000,
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
 					stateCtrlUnlockCond,
 					govUnlockCond,
 				},
-				ImmutableFeatures: iotago.AnchorOutputImmFeatures{
+				ImmutableFeatures: axongo.AnchorOutputImmFeatures{
 					issuerFeat,  // type 1
 					issuerFeat2, // type 1
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			deseriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			deseriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			name: "fail - FoundryOutput contains duplicate immutable features",
-			output: &iotago.FoundryOutput{
+			output: &axongo.FoundryOutput{
 				Amount:      1_000_000,
 				TokenScheme: tpkg.RandTokenScheme(),
-				UnlockConditions: iotago.FoundryOutputUnlockConditions{
-					&iotago.ImmutableAccountUnlockCondition{
+				UnlockConditions: axongo.FoundryOutputUnlockConditions{
+					&axongo.ImmutableAccountUnlockCondition{
 						Address: tpkg.RandAccountAddress(),
 					},
 				},
-				ImmutableFeatures: iotago.FoundryOutputImmFeatures{
+				ImmutableFeatures: axongo.FoundryOutputImmFeatures{
 					metadataFeat,  // type 2
 					metadataFeat2, // type 2
 				},
 			},
-			seriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr: axongo.ErrArrayValidationViolatesUniqueness,
 			// During decoding, we encounter the max size error before the custom validator runs.
 			deseriErr: serializer.ErrArrayValidationMaxElementsExceeded,
 		},
 		{
 			name: "fail - NFTOutput contains duplicate immutable features",
-			output: &iotago.NFTOutput{
+			output: &axongo.NFTOutput{
 				Amount: 1_000_000,
-				UnlockConditions: iotago.NFTOutputUnlockConditions{
+				UnlockConditions: axongo.NFTOutputUnlockConditions{
 					addressUnlockCond,
 				},
-				ImmutableFeatures: iotago.NFTOutputImmFeatures{
+				ImmutableFeatures: axongo.NFTOutputImmFeatures{
 					issuerFeat,  // type 1
 					issuerFeat2, // type 1
 				},
 			},
-			seriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			deseriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			seriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			deseriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 	}
 
@@ -1206,20 +1206,20 @@ func TestTransactionOutputImmutableFeatureLexicalOrderAndUniqueness(t *testing.T
 
 // Helper struct for testing JSON encoding, since slices cannot be serialized directly.
 type transactionIDTestHelper struct {
-	IDs iotago.TransactionIDs `serix:""`
+	IDs axongo.TransactionIDs `serix:""`
 }
 
 // Tests that lexical order & uniqueness are checked for TransactionIDs.
 func TestTransactionIDsLexicalOrderAndUniqueness(t *testing.T) {
-	txID1 := iotago.MustTransactionIDFromHexString("0x8f63d1473a0417e89d01c5174ac5802402f2a49159cad1de811786367da7db3d0a0d3d78")
-	txID2 := iotago.MustTransactionIDFromHexString("0xc988b403f48b71adbd0a0dba3b2c0665283f8c3290028e220eab35d1c86c60f747eb2624")
-	txID3 := iotago.MustTransactionIDFromHexString("0xfe25a362ae9483819ec35387a47476408e7a65d868651832d7714935fd5ca7596aa8828b")
+	txID1 := axongo.MustTransactionIDFromHexString("0x8f63d1473a0417e89d01c5174ac5802402f2a49159cad1de811786367da7db3d0a0d3d78")
+	txID2 := axongo.MustTransactionIDFromHexString("0xc988b403f48b71adbd0a0dba3b2c0665283f8c3290028e220eab35d1c86c60f747eb2624")
+	txID3 := axongo.MustTransactionIDFromHexString("0xfe25a362ae9483819ec35387a47476408e7a65d868651832d7714935fd5ca7596aa8828b")
 
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name: "ok - transaction ids lexically ordered and unique",
 			Source: &transactionIDTestHelper{
-				IDs: iotago.TransactionIDs{
+				IDs: axongo.TransactionIDs{
 					txID1,
 					txID2,
 					txID3,
@@ -1230,28 +1230,28 @@ func TestTransactionIDsLexicalOrderAndUniqueness(t *testing.T) {
 		{
 			Name: "fail - transaction ids lexically unordered",
 			Source: &transactionIDTestHelper{
-				IDs: iotago.TransactionIDs{
+				IDs: axongo.TransactionIDs{
 					txID1,
 					txID3,
 					txID2,
 				},
 			},
 			Target:    &transactionIDTestHelper{},
-			SeriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			DeSeriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			SeriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			DeSeriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			Name: "fail - transaction ids contains duplicates",
 			Source: &transactionIDTestHelper{
-				IDs: iotago.TransactionIDs{
+				IDs: axongo.TransactionIDs{
 					txID1,
 					txID2,
 					txID2,
 				},
 			},
 			Target:    &transactionIDTestHelper{},
-			SeriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			DeSeriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			SeriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			DeSeriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 	}
 
@@ -1261,15 +1261,15 @@ func TestTransactionIDsLexicalOrderAndUniqueness(t *testing.T) {
 }
 
 func TestCommitmentInputSyntacticalValidation(t *testing.T) {
-	accountWithFeatures := func(feats iotago.AccountOutputFeatures) *iotago.AccountOutput {
-		return &iotago.AccountOutput{
+	accountWithFeatures := func(feats axongo.AccountOutputFeatures) *axongo.AccountOutput {
+		return &axongo.AccountOutput{
 			Amount: 100_000_000,
-			UnlockConditions: iotago.AccountOutputUnlockConditions{
-				&iotago.AddressUnlockCondition{
+			UnlockConditions: axongo.AccountOutputUnlockConditions{
+				&axongo.AddressUnlockCondition{
 					Address: tpkg.RandAccountAddress(),
 				},
 			},
-			ImmutableFeatures: iotago.AccountOutputImmFeatures{},
+			ImmutableFeatures: axongo.AccountOutputImmFeatures{},
 			Features:          feats,
 		}
 	}
@@ -1278,11 +1278,11 @@ func TestCommitmentInputSyntacticalValidation(t *testing.T) {
 		// fail - BlockIssuerFeature on output side without Commitment Input
 		{
 			Name: "fail - BlockIssuerFeature on output side without Commitment Input",
-			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *iotago.Transaction) {
-				t.Outputs = iotago.TxEssenceOutputs{
+			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *axongo.Transaction) {
+				t.Outputs = axongo.TxEssenceOutputs{
 					accountWithFeatures(
-						iotago.AccountOutputFeatures{
-							&iotago.BlockIssuerFeature{
+						axongo.AccountOutputFeatures{
+							&axongo.BlockIssuerFeature{
 								ExpirySlot:      100,
 								BlockIssuerKeys: tpkg.RandBlockIssuerKeys(3),
 							},
@@ -1292,22 +1292,22 @@ func TestCommitmentInputSyntacticalValidation(t *testing.T) {
 				// Make sure there are no Context Inputs added by the rand function for this test.
 				t.TransactionEssence.ContextInputs = nil
 			}),
-			Target:    &iotago.SignedTransaction{},
-			SeriErr:   iotago.ErrBlockIssuerCommitmentInputMissing,
-			DeSeriErr: iotago.ErrBlockIssuerCommitmentInputMissing,
+			Target:    &axongo.SignedTransaction{},
+			SeriErr:   axongo.ErrBlockIssuerCommitmentInputMissing,
+			DeSeriErr: axongo.ErrBlockIssuerCommitmentInputMissing,
 		},
 		// fail - StakingFeature on output side without Commitment Input
 		{
 			Name: "fail - StakingFeature on output side without Commitment Input",
-			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *iotago.Transaction) {
-				t.Outputs = iotago.TxEssenceOutputs{
+			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *axongo.Transaction) {
+				t.Outputs = axongo.TxEssenceOutputs{
 					accountWithFeatures(
-						iotago.AccountOutputFeatures{
-							&iotago.BlockIssuerFeature{
+						axongo.AccountOutputFeatures{
+							&axongo.BlockIssuerFeature{
 								ExpirySlot:      100,
 								BlockIssuerKeys: tpkg.RandBlockIssuerKeys(3),
 							},
-							&iotago.StakingFeature{
+							&axongo.StakingFeature{
 								StakedAmount: 1,
 								FixedCost:    1,
 								StartEpoch:   10,
@@ -1319,24 +1319,24 @@ func TestCommitmentInputSyntacticalValidation(t *testing.T) {
 				// Make sure there are no Context Inputs added by the rand function for this test.
 				t.TransactionEssence.ContextInputs = nil
 			}),
-			Target:    &iotago.SignedTransaction{},
-			SeriErr:   iotago.ErrStakingCommitmentInputMissing,
-			DeSeriErr: iotago.ErrStakingCommitmentInputMissing,
+			Target:    &axongo.SignedTransaction{},
+			SeriErr:   axongo.ErrStakingCommitmentInputMissing,
+			DeSeriErr: axongo.ErrStakingCommitmentInputMissing,
 		},
 		// fail - Delegation Output on output side without Commitment Input
 		{
 			Name: "fail - Delegation Output on output side without Commitment Input",
-			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *iotago.Transaction) {
-				t.Outputs = iotago.TxEssenceOutputs{
-					&iotago.DelegationOutput{
+			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *axongo.Transaction) {
+				t.Outputs = axongo.TxEssenceOutputs{
+					&axongo.DelegationOutput{
 						Amount:           10,
 						DelegatedAmount:  10,
 						DelegationID:     tpkg.RandDelegationID(),
 						ValidatorAddress: tpkg.RandAccountAddress(),
 						StartEpoch:       10,
 						EndEpoch:         12,
-						UnlockConditions: iotago.DelegationOutputUnlockConditions{
-							&iotago.AddressUnlockCondition{
+						UnlockConditions: axongo.DelegationOutputUnlockConditions{
+							&axongo.AddressUnlockCondition{
 								Address: tpkg.RandEd25519Address(),
 							},
 						},
@@ -1345,9 +1345,9 @@ func TestCommitmentInputSyntacticalValidation(t *testing.T) {
 				// Make sure there are no Context Inputs added by the rand function for this test.
 				t.TransactionEssence.ContextInputs = nil
 			}),
-			Target:    &iotago.SignedTransaction{},
-			SeriErr:   iotago.ErrDelegationCommitmentInputMissing,
-			DeSeriErr: iotago.ErrDelegationCommitmentInputMissing,
+			Target:    &axongo.SignedTransaction{},
+			SeriErr:   axongo.ErrDelegationCommitmentInputMissing,
+			DeSeriErr: axongo.ErrDelegationCommitmentInputMissing,
 		},
 	}
 

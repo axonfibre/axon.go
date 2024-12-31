@@ -1,4 +1,4 @@
-package iotago_test
+package axongo_test
 
 import (
 	"fmt"
@@ -7,13 +7,13 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 type outputIDProofTest struct {
 	name string
-	tx   *iotago.Transaction
+	tx   *axongo.Transaction
 }
 
 func TestOutputIDProof(t *testing.T) {
@@ -24,19 +24,19 @@ func TestOutputIDProof(t *testing.T) {
 	tests := []outputIDProofTest{
 		{
 			name: "single output",
-			tx: &iotago.Transaction{
+			tx: &axongo.Transaction{
 				API: tpkg.ZeroCostTestAPI,
-				TransactionEssence: &iotago.TransactionEssence{
+				TransactionEssence: &axongo.TransactionEssence{
 					CreationSlot: tpkg.RandSlot(),
 					NetworkID:    tpkg.TestNetworkID,
 					Inputs:       inputIDs.UTXOInputs(),
-					Capabilities: iotago.TransactionCapabilitiesBitMask{},
+					Capabilities: axongo.TransactionCapabilitiesBitMask{},
 				},
-				Outputs: lo.RepeatBy(1, func(_ int) iotago.TxEssenceOutput {
-					return &iotago.BasicOutput{
+				Outputs: lo.RepeatBy(1, func(_ int) axongo.TxEssenceOutput {
+					return &axongo.BasicOutput{
 						Amount: OneIOTA,
-						UnlockConditions: iotago.BasicOutputUnlockConditions{
-							&iotago.AddressUnlockCondition{Address: addr1},
+						UnlockConditions: axongo.BasicOutputUnlockConditions{
+							&axongo.AddressUnlockCondition{Address: addr1},
 						},
 					}
 				}),
@@ -44,19 +44,19 @@ func TestOutputIDProof(t *testing.T) {
 		},
 		{
 			name: "two outputs",
-			tx: &iotago.Transaction{
+			tx: &axongo.Transaction{
 				API: tpkg.ZeroCostTestAPI,
-				TransactionEssence: &iotago.TransactionEssence{
+				TransactionEssence: &axongo.TransactionEssence{
 					CreationSlot: tpkg.RandSlot(),
 					NetworkID:    tpkg.TestNetworkID,
 					Inputs:       inputIDs.UTXOInputs(),
-					Capabilities: iotago.TransactionCapabilitiesBitMask{},
+					Capabilities: axongo.TransactionCapabilitiesBitMask{},
 				},
-				Outputs: lo.RepeatBy(2, func(_ int) iotago.TxEssenceOutput {
-					return &iotago.BasicOutput{
+				Outputs: lo.RepeatBy(2, func(_ int) axongo.TxEssenceOutput {
+					return &axongo.BasicOutput{
 						Amount: OneIOTA,
-						UnlockConditions: iotago.BasicOutputUnlockConditions{
-							&iotago.AddressUnlockCondition{Address: addr1},
+						UnlockConditions: axongo.BasicOutputUnlockConditions{
+							&axongo.AddressUnlockCondition{Address: addr1},
 						},
 					}
 				}),
@@ -64,19 +64,19 @@ func TestOutputIDProof(t *testing.T) {
 		},
 		{
 			name: "three outputs",
-			tx: &iotago.Transaction{
+			tx: &axongo.Transaction{
 				API: tpkg.ZeroCostTestAPI,
-				TransactionEssence: &iotago.TransactionEssence{
+				TransactionEssence: &axongo.TransactionEssence{
 					CreationSlot: tpkg.RandSlot(),
 					NetworkID:    tpkg.TestNetworkID,
 					Inputs:       inputIDs.UTXOInputs(),
-					Capabilities: iotago.TransactionCapabilitiesBitMask{},
+					Capabilities: axongo.TransactionCapabilitiesBitMask{},
 				},
-				Outputs: lo.RepeatBy(3, func(_ int) iotago.TxEssenceOutput {
-					return &iotago.BasicOutput{
+				Outputs: lo.RepeatBy(3, func(_ int) axongo.TxEssenceOutput {
+					return &axongo.BasicOutput{
 						Amount: OneIOTA,
-						UnlockConditions: iotago.BasicOutputUnlockConditions{
-							&iotago.AddressUnlockCondition{Address: addr1},
+						UnlockConditions: axongo.BasicOutputUnlockConditions{
+							&axongo.AddressUnlockCondition{Address: addr1},
 						},
 					}
 				}),
@@ -84,19 +84,19 @@ func TestOutputIDProof(t *testing.T) {
 		},
 		{
 			name: "max outputs",
-			tx: &iotago.Transaction{
+			tx: &axongo.Transaction{
 				API: tpkg.ZeroCostTestAPI,
-				TransactionEssence: &iotago.TransactionEssence{
+				TransactionEssence: &axongo.TransactionEssence{
 					CreationSlot: tpkg.RandSlot(),
 					NetworkID:    tpkg.TestNetworkID,
 					Inputs:       inputIDs.UTXOInputs(),
-					Capabilities: iotago.TransactionCapabilitiesBitMask{},
+					Capabilities: axongo.TransactionCapabilitiesBitMask{},
 				},
-				Outputs: lo.RepeatBy(iotago.MaxOutputsCount, func(_ int) iotago.TxEssenceOutput {
-					return &iotago.BasicOutput{
+				Outputs: lo.RepeatBy(axongo.MaxOutputsCount, func(_ int) axongo.TxEssenceOutput {
+					return &axongo.BasicOutput{
 						Amount: OneIOTA,
-						UnlockConditions: iotago.BasicOutputUnlockConditions{
-							&iotago.AddressUnlockCondition{Address: addr1},
+						UnlockConditions: axongo.BasicOutputUnlockConditions{
+							&axongo.AddressUnlockCondition{Address: addr1},
 						},
 					}
 				}),
@@ -114,7 +114,7 @@ func (p *outputIDProofTest) testOutputs(t *testing.T) {
 	require.NoError(t, err)
 
 	for outputID, output := range outputSet {
-		proof, err := iotago.OutputIDProofFromTransaction(p.tx, outputID.Index())
+		proof, err := axongo.OutputIDProofFromTransaction(p.tx, outputID.Index())
 		require.NoError(t, err)
 
 		serializedProof, err := proof.Bytes()
@@ -124,7 +124,7 @@ func (p *outputIDProofTest) testOutputs(t *testing.T) {
 		require.NoError(t, err)
 		fmt.Println(string(jsonEncoded))
 
-		deserializedProof, consumedBytes, err := iotago.OutputIDProofFromBytes(tpkg.ZeroCostTestAPI)(serializedProof)
+		deserializedProof, consumedBytes, err := axongo.OutputIDProofFromBytes(tpkg.ZeroCostTestAPI)(serializedProof)
 		require.NoError(t, err)
 		require.Equal(t, len(serializedProof), consumedBytes)
 

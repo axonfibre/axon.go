@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/api"
 	"github.com/axonfibre/axon.go/v4/nodeclient"
 	"github.com/axonfibre/axon.go/v4/tpkg"
@@ -17,7 +17,7 @@ func TestBlockIssuerClient_Enabled(t *testing.T) {
 	defer gock.Off()
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.BlockIssuerPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.BlockIssuerPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -32,7 +32,7 @@ func TestBlockIssuerClient_Disabled(t *testing.T) {
 	defer gock.Off()
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{"someplugin/v1"},
+		Routes: []axongo.PrefixedStringUint8{"someplugin/v1"},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -47,12 +47,12 @@ func TestBlockIssuerClient_Info(t *testing.T) {
 	defer gock.Off()
 
 	infoResponse := &api.BlockIssuerInfo{
-		BlockIssuerAddress:     tpkg.RandAccountAddress().Bech32(iotago.PrefixTestnet),
+		BlockIssuerAddress:     tpkg.RandAccountAddress().Bech32(axongo.PrefixTestnet),
 		PowTargetTrailingZeros: 25,
 	}
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.BlockIssuerPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.BlockIssuerPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)

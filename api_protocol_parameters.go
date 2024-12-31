@@ -1,4 +1,4 @@
-package iotago
+package axongo
 
 type basicProtocolParameters struct {
 	// Version defines the version of the protocol this protocol parameters are for.

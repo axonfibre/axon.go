@@ -11,7 +11,7 @@ import (
 
 	"github.com/axonfibre/fibre.go/ierrors"
 	"github.com/axonfibre/fibre.go/lo"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 const (
@@ -109,7 +109,7 @@ func (k *KeyManager) Mnemonic() bip39.Mnemonic {
 }
 
 // AddressSigner returns an address signer.
-func (k *KeyManager) AddressSigner(indexes ...uint32) iotago.AddressSigner {
+func (k *KeyManager) AddressSigner(indexes ...uint32) axongo.AddressSigner {
 	privKeys := make([]ed25519.PrivateKey, 0)
 
 	if len(indexes) == 0 {
@@ -122,19 +122,19 @@ func (k *KeyManager) AddressSigner(indexes ...uint32) iotago.AddressSigner {
 		}
 	}
 
-	return iotago.NewInMemoryAddressSignerFromEd25519PrivateKeys(privKeys...)
+	return axongo.NewInMemoryAddressSignerFromEd25519PrivateKeys(privKeys...)
 }
 
 // Address calculates an address of the specified type.
-func (k *KeyManager) Address(addressType iotago.AddressType, index ...uint32) iotago.DirectUnlockableAddress {
+func (k *KeyManager) Address(addressType axongo.AddressType, index ...uint32) axongo.DirectUnlockableAddress {
 	_, pubKey := k.KeyPair(index...)
 
 	//nolint:exhaustive // we only support two address types
 	switch addressType {
-	case iotago.AddressEd25519:
-		return iotago.Ed25519AddressFromPubKey(pubKey)
-	case iotago.AddressImplicitAccountCreation:
-		return iotago.ImplicitAccountCreationAddressFromPubKey(pubKey)
+	case axongo.AddressEd25519:
+		return axongo.Ed25519AddressFromPubKey(pubKey)
+	case axongo.AddressImplicitAccountCreation:
+		return axongo.ImplicitAccountCreationAddressFromPubKey(pubKey)
 	default:
 		panic(fmt.Sprintf("address type %s is not supported", addressType))
 	}

@@ -5,28 +5,28 @@ import (
 	"time"
 
 	"github.com/axonfibre/fibre.go/ierrors"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 // NewBasicBlockBuilder creates a new BasicBlockBuilder.
-func NewBasicBlockBuilder(api iotago.API) *BasicBlockBuilder {
+func NewBasicBlockBuilder(api axongo.API) *BasicBlockBuilder {
 	// TODO: burn the correct amount of Mana in all cases according to block work and RMC with issue #285
-	basicBlock := &iotago.BasicBlockBody{
+	basicBlock := &axongo.BasicBlockBody{
 		API:                api,
-		StrongParents:      iotago.BlockIDs{},
-		WeakParents:        iotago.BlockIDs{},
-		ShallowLikeParents: iotago.BlockIDs{},
+		StrongParents:      axongo.BlockIDs{},
+		WeakParents:        axongo.BlockIDs{},
+		ShallowLikeParents: axongo.BlockIDs{},
 	}
 
-	protocolBlock := &iotago.Block{
+	protocolBlock := &axongo.Block{
 		API: api,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion:  api.ProtocolParameters().Version(),
-			SlotCommitmentID: iotago.EmptyCommitmentID,
+			SlotCommitmentID: axongo.EmptyCommitmentID,
 			NetworkID:        api.ProtocolParameters().NetworkID(),
 			IssuingTime:      time.Now().UTC(),
 		},
-		Signature: &iotago.Ed25519Signature{},
+		Signature: &axongo.Ed25519Signature{},
 		Body:      basicBlock,
 	}
 
@@ -38,14 +38,14 @@ func NewBasicBlockBuilder(api iotago.API) *BasicBlockBuilder {
 
 // BasicBlockBuilder is used to easily build up a Basic Block.
 type BasicBlockBuilder struct {
-	basicBlock *iotago.BasicBlockBody
+	basicBlock *axongo.BasicBlockBody
 
-	protocolBlock *iotago.Block
+	protocolBlock *axongo.Block
 	err           error
 }
 
 // Build builds the Block or returns any error which occurred during the build steps.
-func (b *BasicBlockBuilder) Build() (*iotago.Block, error) {
+func (b *BasicBlockBuilder) Build() (*axongo.Block, error) {
 	b.basicBlock.ShallowLikeParents.Sort()
 	b.basicBlock.WeakParents.Sort()
 	b.basicBlock.StrongParents.Sort()
@@ -58,7 +58,7 @@ func (b *BasicBlockBuilder) Build() (*iotago.Block, error) {
 }
 
 // ProtocolVersion sets the protocol version.
-func (b *BasicBlockBuilder) ProtocolVersion(version iotago.Version) *BasicBlockBuilder {
+func (b *BasicBlockBuilder) ProtocolVersion(version axongo.Version) *BasicBlockBuilder {
 	if b.err != nil {
 		return b
 	}
@@ -79,7 +79,7 @@ func (b *BasicBlockBuilder) IssuingTime(time time.Time) *BasicBlockBuilder {
 }
 
 // SlotCommitmentID sets the slot commitment.
-func (b *BasicBlockBuilder) SlotCommitmentID(commitment iotago.CommitmentID) *BasicBlockBuilder {
+func (b *BasicBlockBuilder) SlotCommitmentID(commitment axongo.CommitmentID) *BasicBlockBuilder {
 	if b.err != nil {
 		return b
 	}
@@ -90,7 +90,7 @@ func (b *BasicBlockBuilder) SlotCommitmentID(commitment iotago.CommitmentID) *Ba
 }
 
 // LatestFinalizedSlot sets the latest finalized slot.
-func (b *BasicBlockBuilder) LatestFinalizedSlot(slot iotago.SlotIndex) *BasicBlockBuilder {
+func (b *BasicBlockBuilder) LatestFinalizedSlot(slot axongo.SlotIndex) *BasicBlockBuilder {
 	if b.err != nil {
 		return b
 	}
@@ -100,19 +100,19 @@ func (b *BasicBlockBuilder) LatestFinalizedSlot(slot iotago.SlotIndex) *BasicBlo
 	return b
 }
 
-func (b *BasicBlockBuilder) Sign(accountID iotago.AccountID, privKey ed25519.PrivateKey) *BasicBlockBuilder {
+func (b *BasicBlockBuilder) Sign(accountID axongo.AccountID, privKey ed25519.PrivateKey) *BasicBlockBuilder {
 	//nolint:forcetypeassert // we can safely assume that this is an ed25519.PublicKey
 	pubKey := privKey.Public().(ed25519.PublicKey)
-	ed25519Address := iotago.Ed25519AddressFromPubKey(pubKey)
+	ed25519Address := axongo.Ed25519AddressFromPubKey(pubKey)
 
-	signer := iotago.NewInMemoryAddressSigner(
-		iotago.NewAddressKeysForEd25519Address(ed25519Address, privKey),
+	signer := axongo.NewInMemoryAddressSigner(
+		axongo.NewAddressKeysForEd25519Address(ed25519Address, privKey),
 	)
 
 	return b.SignWithSigner(accountID, signer, ed25519Address)
 }
 
-func (b *BasicBlockBuilder) SignWithSigner(accountID iotago.AccountID, signer iotago.AddressSigner, addr iotago.Address) *BasicBlockBuilder {
+func (b *BasicBlockBuilder) SignWithSigner(accountID axongo.AccountID, signer axongo.AddressSigner, addr axongo.Address) *BasicBlockBuilder {
 	if b.err != nil {
 		return b
 	}
@@ -126,7 +126,7 @@ func (b *BasicBlockBuilder) SignWithSigner(accountID iotago.AccountID, signer io
 		return b
 	}
 
-	edSig, isEdSig := signature.(*iotago.Ed25519Signature)
+	edSig, isEdSig := signature.(*axongo.Ed25519Signature)
 	if !isEdSig {
 		panic("unsupported signature type")
 	}
@@ -137,7 +137,7 @@ func (b *BasicBlockBuilder) SignWithSigner(accountID iotago.AccountID, signer io
 }
 
 // StrongParents sets the strong parents.
-func (b *BasicBlockBuilder) StrongParents(parents iotago.BlockIDs) *BasicBlockBuilder {
+func (b *BasicBlockBuilder) StrongParents(parents axongo.BlockIDs) *BasicBlockBuilder {
 	if b.err != nil {
 		return b
 	}
@@ -148,7 +148,7 @@ func (b *BasicBlockBuilder) StrongParents(parents iotago.BlockIDs) *BasicBlockBu
 }
 
 // WeakParents sets the weak parents.
-func (b *BasicBlockBuilder) WeakParents(parents iotago.BlockIDs) *BasicBlockBuilder {
+func (b *BasicBlockBuilder) WeakParents(parents axongo.BlockIDs) *BasicBlockBuilder {
 	if b.err != nil {
 		return b
 	}
@@ -159,7 +159,7 @@ func (b *BasicBlockBuilder) WeakParents(parents iotago.BlockIDs) *BasicBlockBuil
 }
 
 // ShallowLikeParents sets the shallow like parents.
-func (b *BasicBlockBuilder) ShallowLikeParents(parents iotago.BlockIDs) *BasicBlockBuilder {
+func (b *BasicBlockBuilder) ShallowLikeParents(parents axongo.BlockIDs) *BasicBlockBuilder {
 	if b.err != nil {
 		return b
 	}
@@ -170,7 +170,7 @@ func (b *BasicBlockBuilder) ShallowLikeParents(parents iotago.BlockIDs) *BasicBl
 }
 
 // Payload sets the payload.
-func (b *BasicBlockBuilder) Payload(payload iotago.ApplicationPayload) *BasicBlockBuilder {
+func (b *BasicBlockBuilder) Payload(payload axongo.ApplicationPayload) *BasicBlockBuilder {
 	if b.err != nil {
 		return b
 	}
@@ -181,7 +181,7 @@ func (b *BasicBlockBuilder) Payload(payload iotago.ApplicationPayload) *BasicBlo
 }
 
 // MaxBurnedMana sets the maximum amount of mana allowed to be burned by the block.
-func (b *BasicBlockBuilder) MaxBurnedMana(maxBurnedMana iotago.Mana) *BasicBlockBuilder {
+func (b *BasicBlockBuilder) MaxBurnedMana(maxBurnedMana axongo.Mana) *BasicBlockBuilder {
 	if b.err != nil {
 		return b
 	}
@@ -192,7 +192,7 @@ func (b *BasicBlockBuilder) MaxBurnedMana(maxBurnedMana iotago.Mana) *BasicBlock
 }
 
 // CalculateAndSetMaxBurnedMana sets the maximum amount of mana allowed to be burned by the block based on the provided reference mana cost.
-func (b *BasicBlockBuilder) CalculateAndSetMaxBurnedMana(rmc iotago.Mana) *BasicBlockBuilder {
+func (b *BasicBlockBuilder) CalculateAndSetMaxBurnedMana(rmc axongo.Mana) *BasicBlockBuilder {
 	if b.err != nil {
 		return b
 	}
@@ -209,23 +209,23 @@ func (b *BasicBlockBuilder) CalculateAndSetMaxBurnedMana(rmc iotago.Mana) *Basic
 }
 
 // NewValidationBlockBuilder creates a new ValidationBlockBuilder.
-func NewValidationBlockBuilder(api iotago.API) *ValidationBlockBuilder {
-	validationBlock := &iotago.ValidationBlockBody{
+func NewValidationBlockBuilder(api axongo.API) *ValidationBlockBuilder {
+	validationBlock := &axongo.ValidationBlockBody{
 		API:                api,
-		StrongParents:      iotago.BlockIDs{},
-		WeakParents:        iotago.BlockIDs{},
-		ShallowLikeParents: iotago.BlockIDs{},
+		StrongParents:      axongo.BlockIDs{},
+		WeakParents:        axongo.BlockIDs{},
+		ShallowLikeParents: axongo.BlockIDs{},
 	}
 
-	protocolBlock := &iotago.Block{
+	protocolBlock := &axongo.Block{
 		API: api,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion:  api.ProtocolParameters().Version(),
-			SlotCommitmentID: iotago.NewEmptyCommitment(api).MustID(),
+			SlotCommitmentID: axongo.NewEmptyCommitment(api).MustID(),
 			NetworkID:        api.ProtocolParameters().NetworkID(),
 			IssuingTime:      time.Now().UTC(),
 		},
-		Signature: &iotago.Ed25519Signature{},
+		Signature: &axongo.Ed25519Signature{},
 		Body:      validationBlock,
 	}
 
@@ -237,14 +237,14 @@ func NewValidationBlockBuilder(api iotago.API) *ValidationBlockBuilder {
 
 // ValidationBlockBuilder is used to easily build up a Validation Block.
 type ValidationBlockBuilder struct {
-	validationBlock *iotago.ValidationBlockBody
+	validationBlock *axongo.ValidationBlockBody
 
-	protocolBlock *iotago.Block
+	protocolBlock *axongo.Block
 	err           error
 }
 
 // Build builds the Block or returns any error which occurred during the build steps.
-func (v *ValidationBlockBuilder) Build() (*iotago.Block, error) {
+func (v *ValidationBlockBuilder) Build() (*axongo.Block, error) {
 	v.validationBlock.ShallowLikeParents.Sort()
 	v.validationBlock.WeakParents.Sort()
 	v.validationBlock.StrongParents.Sort()
@@ -257,7 +257,7 @@ func (v *ValidationBlockBuilder) Build() (*iotago.Block, error) {
 }
 
 // ProtocolVersion sets the protocol version.
-func (v *ValidationBlockBuilder) ProtocolVersion(version iotago.Version) *ValidationBlockBuilder {
+func (v *ValidationBlockBuilder) ProtocolVersion(version axongo.Version) *ValidationBlockBuilder {
 	if v.err != nil {
 		return v
 	}
@@ -278,7 +278,7 @@ func (v *ValidationBlockBuilder) IssuingTime(time time.Time) *ValidationBlockBui
 }
 
 // SlotCommitmentID sets the slot commitment.
-func (v *ValidationBlockBuilder) SlotCommitmentID(commitmentID iotago.CommitmentID) *ValidationBlockBuilder {
+func (v *ValidationBlockBuilder) SlotCommitmentID(commitmentID axongo.CommitmentID) *ValidationBlockBuilder {
 	if v.err != nil {
 		return v
 	}
@@ -289,7 +289,7 @@ func (v *ValidationBlockBuilder) SlotCommitmentID(commitmentID iotago.Commitment
 }
 
 // LatestFinalizedSlot sets the latest finalized slot.
-func (v *ValidationBlockBuilder) LatestFinalizedSlot(slot iotago.SlotIndex) *ValidationBlockBuilder {
+func (v *ValidationBlockBuilder) LatestFinalizedSlot(slot axongo.SlotIndex) *ValidationBlockBuilder {
 	if v.err != nil {
 		return v
 	}
@@ -299,19 +299,19 @@ func (v *ValidationBlockBuilder) LatestFinalizedSlot(slot iotago.SlotIndex) *Val
 	return v
 }
 
-func (v *ValidationBlockBuilder) Sign(accountID iotago.AccountID, privKey ed25519.PrivateKey) *ValidationBlockBuilder {
+func (v *ValidationBlockBuilder) Sign(accountID axongo.AccountID, privKey ed25519.PrivateKey) *ValidationBlockBuilder {
 	//nolint:forcetypeassert // we can safely assume that this is an ed25519.PublicKey
 	pubKey := privKey.Public().(ed25519.PublicKey)
-	ed25519Address := iotago.Ed25519AddressFromPubKey(pubKey)
+	ed25519Address := axongo.Ed25519AddressFromPubKey(pubKey)
 
-	signer := iotago.NewInMemoryAddressSigner(
-		iotago.NewAddressKeysForEd25519Address(ed25519Address, privKey),
+	signer := axongo.NewInMemoryAddressSigner(
+		axongo.NewAddressKeysForEd25519Address(ed25519Address, privKey),
 	)
 
 	return v.SignWithSigner(accountID, signer, ed25519Address)
 }
 
-func (v *ValidationBlockBuilder) SignWithSigner(accountID iotago.AccountID, signer iotago.AddressSigner, addr iotago.Address) *ValidationBlockBuilder {
+func (v *ValidationBlockBuilder) SignWithSigner(accountID axongo.AccountID, signer axongo.AddressSigner, addr axongo.Address) *ValidationBlockBuilder {
 	if v.err != nil {
 		return v
 	}
@@ -325,7 +325,7 @@ func (v *ValidationBlockBuilder) SignWithSigner(accountID iotago.AccountID, sign
 		return v
 	}
 
-	edSig, isEdSig := signature.(*iotago.Ed25519Signature)
+	edSig, isEdSig := signature.(*axongo.Ed25519Signature)
 	if !isEdSig {
 		panic("unsupported signature type")
 	}
@@ -336,7 +336,7 @@ func (v *ValidationBlockBuilder) SignWithSigner(accountID iotago.AccountID, sign
 }
 
 // StrongParents sets the strong parents.
-func (v *ValidationBlockBuilder) StrongParents(parents iotago.BlockIDs) *ValidationBlockBuilder {
+func (v *ValidationBlockBuilder) StrongParents(parents axongo.BlockIDs) *ValidationBlockBuilder {
 	if v.err != nil {
 		return v
 	}
@@ -347,7 +347,7 @@ func (v *ValidationBlockBuilder) StrongParents(parents iotago.BlockIDs) *Validat
 }
 
 // WeakParents sets the weak parents.
-func (v *ValidationBlockBuilder) WeakParents(parents iotago.BlockIDs) *ValidationBlockBuilder {
+func (v *ValidationBlockBuilder) WeakParents(parents axongo.BlockIDs) *ValidationBlockBuilder {
 	if v.err != nil {
 		return v
 	}
@@ -358,7 +358,7 @@ func (v *ValidationBlockBuilder) WeakParents(parents iotago.BlockIDs) *Validatio
 }
 
 // ShallowLikeParents sets the shallow like parents.
-func (v *ValidationBlockBuilder) ShallowLikeParents(parents iotago.BlockIDs) *ValidationBlockBuilder {
+func (v *ValidationBlockBuilder) ShallowLikeParents(parents axongo.BlockIDs) *ValidationBlockBuilder {
 	if v.err != nil {
 		return v
 	}
@@ -369,7 +369,7 @@ func (v *ValidationBlockBuilder) ShallowLikeParents(parents iotago.BlockIDs) *Va
 }
 
 // HighestSupportedVersion sets the highest supported version.
-func (v *ValidationBlockBuilder) HighestSupportedVersion(highestSupportedVersion iotago.Version) *ValidationBlockBuilder {
+func (v *ValidationBlockBuilder) HighestSupportedVersion(highestSupportedVersion axongo.Version) *ValidationBlockBuilder {
 	if v.err != nil {
 		return v
 	}
@@ -380,7 +380,7 @@ func (v *ValidationBlockBuilder) HighestSupportedVersion(highestSupportedVersion
 }
 
 // ProtocolParametersHash sets the ProtocolParametersHash of the highest supported version.
-func (v *ValidationBlockBuilder) ProtocolParametersHash(hash iotago.Identifier) *ValidationBlockBuilder {
+func (v *ValidationBlockBuilder) ProtocolParametersHash(hash axongo.Identifier) *ValidationBlockBuilder {
 	if v.err != nil {
 		return v
 	}

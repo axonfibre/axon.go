@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/axonfibre/fibre.go/ierrors"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/api"
 )
 
@@ -22,16 +22,16 @@ type (
 	IndexerClient interface {
 		// Outputs returns a handle to query for outputs.
 		Outputs(ctx context.Context, query IndexerQuery) (*IndexerResultSet, error)
-		// Account queries for a specific iotago.AccountOutput by its address and returns the ledger index at which this output where available at.
-		Account(ctx context.Context, accountAddress *iotago.AccountAddress) (*iotago.OutputID, *iotago.AccountOutput, iotago.SlotIndex, error)
-		// Anchor queries for a specific iotago.AnchorOutput by its address and returns the ledger index at which this output where available at.
-		Anchor(ctx context.Context, anchorAddress *iotago.AnchorAddress) (*iotago.OutputID, *iotago.AnchorOutput, iotago.SlotIndex, error)
-		// Foundry queries for a specific iotago.FoundryOutput by its identifier and returns the ledger index at which this output where available at.
-		Foundry(ctx context.Context, foundryID iotago.FoundryID) (*iotago.OutputID, *iotago.FoundryOutput, iotago.SlotIndex, error)
-		// NFT queries for a specific iotago.NFTOutput by its address and returns the ledger index at which this output where available at.
-		NFT(ctx context.Context, nftAddress *iotago.NFTAddress) (*iotago.OutputID, *iotago.NFTOutput, iotago.SlotIndex, error)
-		// Delegation queries for a specific iotago.DelegationOutout by its identifier and returns the ledger index at which this output where available at.
-		Delegation(ctx context.Context, delegationID iotago.DelegationID) (*iotago.OutputID, *iotago.DelegationOutput, iotago.SlotIndex, error)
+		// Account queries for a specific axongo.AccountOutput by its address and returns the ledger index at which this output where available at.
+		Account(ctx context.Context, accountAddress *axongo.AccountAddress) (*axongo.OutputID, *axongo.AccountOutput, axongo.SlotIndex, error)
+		// Anchor queries for a specific axongo.AnchorOutput by its address and returns the ledger index at which this output where available at.
+		Anchor(ctx context.Context, anchorAddress *axongo.AnchorAddress) (*axongo.OutputID, *axongo.AnchorOutput, axongo.SlotIndex, error)
+		// Foundry queries for a specific axongo.FoundryOutput by its identifier and returns the ledger index at which this output where available at.
+		Foundry(ctx context.Context, foundryID axongo.FoundryID) (*axongo.OutputID, *axongo.FoundryOutput, axongo.SlotIndex, error)
+		// NFT queries for a specific axongo.NFTOutput by its address and returns the ledger index at which this output where available at.
+		NFT(ctx context.Context, nftAddress *axongo.NFTAddress) (*axongo.OutputID, *axongo.NFTOutput, axongo.SlotIndex, error)
+		// Delegation queries for a specific axongo.DelegationOutout by its identifier and returns the ledger index at which this output where available at.
+		Delegation(ctx context.Context, delegationID axongo.DelegationID) (*axongo.OutputID, *axongo.DelegationOutput, axongo.SlotIndex, error)
 	}
 
 	// IndexerQuery is a query executed against the indexer.
@@ -80,9 +80,9 @@ func (resultSet *IndexerResultSet) Next() bool {
 }
 
 // Outputs collects/fetches the outputs result from the query.
-func (resultSet *IndexerResultSet) Outputs(ctx context.Context) (iotago.Outputs[iotago.Output], error) {
+func (resultSet *IndexerResultSet) Outputs(ctx context.Context) (axongo.Outputs[axongo.Output], error) {
 	outputIDs := resultSet.Response.Items.MustOutputIDs()
-	outputs := make(iotago.Outputs[iotago.Output], len(outputIDs))
+	outputs := make(axongo.Outputs[axongo.Output], len(outputIDs))
 	for i, outputID := range outputIDs {
 		output, err := resultSet.client.OutputByID(ctx, outputID)
 		if err != nil {
@@ -152,7 +152,7 @@ func (client *indexerClient) Outputs(ctx context.Context, query IndexerQuery) (*
 	return res, nil
 }
 
-func (client *indexerClient) singleOutputQuery(ctx context.Context, route string) (*iotago.OutputID, iotago.Output, iotago.SlotIndex, error) {
+func (client *indexerClient) singleOutputQuery(ctx context.Context, route string) (*axongo.OutputID, axongo.Output, axongo.SlotIndex, error) {
 	res := &api.IndexerResponse{}
 	//nolint:bodyclose
 	if _, err := client.DoWithRequestHeaderHook(ctx, http.MethodGet, route, RequestHeaderHookAcceptJSON, nil, res); err != nil {
@@ -172,52 +172,52 @@ func (client *indexerClient) singleOutputQuery(ctx context.Context, route string
 	return &outputID, output, res.CommittedSlot, err
 }
 
-func (client *indexerClient) Account(ctx context.Context, accountAddress *iotago.AccountAddress) (*iotago.OutputID, *iotago.AccountOutput, iotago.SlotIndex, error) {
+func (client *indexerClient) Account(ctx context.Context, accountAddress *axongo.AccountAddress) (*axongo.OutputID, *axongo.AccountOutput, axongo.SlotIndex, error) {
 	outputID, output, ledgerIndex, err := client.singleOutputQuery(ctx, client.core.endpointReplaceAddressParameter(api.IndexerRouteOutputsAccountByAddress, accountAddress))
 	if err != nil {
 		return nil, nil, ledgerIndex, err
 	}
 
 	//nolint:forcetypeassert // we can safely assume that this is an AccountOutput
-	return outputID, output.(*iotago.AccountOutput), ledgerIndex, nil
+	return outputID, output.(*axongo.AccountOutput), ledgerIndex, nil
 }
 
-func (client *indexerClient) Anchor(ctx context.Context, anchorAddress *iotago.AnchorAddress) (*iotago.OutputID, *iotago.AnchorOutput, iotago.SlotIndex, error) {
+func (client *indexerClient) Anchor(ctx context.Context, anchorAddress *axongo.AnchorAddress) (*axongo.OutputID, *axongo.AnchorOutput, axongo.SlotIndex, error) {
 	outputID, output, ledgerIndex, err := client.singleOutputQuery(ctx, client.core.endpointReplaceAddressParameter(api.IndexerRouteOutputsAnchorByAddress, anchorAddress))
 	if err != nil {
 		return nil, nil, ledgerIndex, err
 	}
 
 	//nolint:forcetypeassert // we can safely assume that this is an AnchorOutput
-	return outputID, output.(*iotago.AnchorOutput), ledgerIndex, nil
+	return outputID, output.(*axongo.AnchorOutput), ledgerIndex, nil
 }
 
-func (client *indexerClient) Foundry(ctx context.Context, foundryID iotago.FoundryID) (*iotago.OutputID, *iotago.FoundryOutput, iotago.SlotIndex, error) {
+func (client *indexerClient) Foundry(ctx context.Context, foundryID axongo.FoundryID) (*axongo.OutputID, *axongo.FoundryOutput, axongo.SlotIndex, error) {
 	outputID, output, ledgerIndex, err := client.singleOutputQuery(ctx, api.EndpointWithNamedParameterValue(api.IndexerRouteOutputsFoundryByID, api.ParameterFoundryID, foundryID.ToHex()))
 	if err != nil {
 		return nil, nil, ledgerIndex, err
 	}
 
 	//nolint:forcetypeassert // we can safely assume that this is an FoundryOutput
-	return outputID, output.(*iotago.FoundryOutput), ledgerIndex, nil
+	return outputID, output.(*axongo.FoundryOutput), ledgerIndex, nil
 }
 
-func (client *indexerClient) NFT(ctx context.Context, nftAddress *iotago.NFTAddress) (*iotago.OutputID, *iotago.NFTOutput, iotago.SlotIndex, error) {
+func (client *indexerClient) NFT(ctx context.Context, nftAddress *axongo.NFTAddress) (*axongo.OutputID, *axongo.NFTOutput, axongo.SlotIndex, error) {
 	outputID, output, ledgerIndex, err := client.singleOutputQuery(ctx, client.core.endpointReplaceAddressParameter(api.IndexerRouteOutputsNFTByAddress, nftAddress))
 	if err != nil {
 		return nil, nil, ledgerIndex, err
 	}
 
 	//nolint:forcetypeassert // we can safely assume that this is an NFTOutput
-	return outputID, output.(*iotago.NFTOutput), ledgerIndex, nil
+	return outputID, output.(*axongo.NFTOutput), ledgerIndex, nil
 }
 
-func (client *indexerClient) Delegation(ctx context.Context, delegationID iotago.DelegationID) (*iotago.OutputID, *iotago.DelegationOutput, iotago.SlotIndex, error) {
+func (client *indexerClient) Delegation(ctx context.Context, delegationID axongo.DelegationID) (*axongo.OutputID, *axongo.DelegationOutput, axongo.SlotIndex, error) {
 	outputID, output, ledgerIndex, err := client.singleOutputQuery(ctx, api.EndpointWithNamedParameterValue(api.IndexerRouteOutputsDelegationByID, api.ParameterDelegationID, delegationID.ToHex()))
 	if err != nil {
 		return nil, nil, ledgerIndex, err
 	}
 
 	//nolint:forcetypeassert // we can safely assume that this is a DelegationOutput
-	return outputID, output.(*iotago.DelegationOutput), ledgerIndex, nil
+	return outputID, output.(*axongo.DelegationOutput), ledgerIndex, nil
 }

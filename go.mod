@@ -12,7 +12,7 @@ require (
 	github.com/axonfibre/fibre.go/ierrors v0.0.1
 	github.com/axonfibre/fibre.go/lo v0.0.1
 	github.com/axonfibre/fibre.go/runtime v0.0.1
-	github.com/axonfibre/fibre.go/serializer/v2 v2.0.0-rc.1.0.20240425095808-113b21573349
+	github.com/axonfibre/fibre.go/serializer/v2 v0.0.1
 	github.com/axonfibre/fibre.go/stringify v0.0.1
 	github.com/axonfibre/axon-crypto-demo v0.0.0-20240419094816-40260bb800f7
 	github.com/pasztorpisti/qs v0.0.0-20171216220353-8d6c33ee906c

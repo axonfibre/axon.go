@@ -1,4 +1,4 @@
-package iotago
+package axongo
 
 // CandidacyAnnouncement is a payload which is used to indicate candidacy for committee selection for the next epoch.
 type CandidacyAnnouncement struct {

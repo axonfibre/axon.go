@@ -5,7 +5,7 @@ import (
 
 	"github.com/axonfibre/fibre.go/ierrors"
 	"github.com/axonfibre/fibre.go/serializer/v2"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 type BlockState byte
@@ -280,124 +280,124 @@ var txErrorsFailureReasonMap = map[error]TransactionFailureReason{
 	// ================================
 
 	// tx level errors
-	iotago.ErrTxConflictRejected: TxFailureConflictRejected,
-	iotago.ErrTxOrphaned:         TxFailureOrphaned,
+	axongo.ErrTxConflictRejected: TxFailureConflictRejected,
+	axongo.ErrTxOrphaned:         TxFailureOrphaned,
 
 	// input
-	iotago.ErrInputAlreadySpent:            TxFailureInputAlreadySpent,
-	iotago.ErrInputCreationAfterTxCreation: TxFailureInputCreationAfterTxCreation,
-	iotago.ErrUnlockSignatureInvalid:       TxFailureUnlockSignatureInvalid,
+	axongo.ErrInputAlreadySpent:            TxFailureInputAlreadySpent,
+	axongo.ErrInputCreationAfterTxCreation: TxFailureInputCreationAfterTxCreation,
+	axongo.ErrUnlockSignatureInvalid:       TxFailureUnlockSignatureInvalid,
 
 	// unlock
-	iotago.ErrChainAddressUnlockInvalid:            TxFailureChainAddressUnlockInvalid,
-	iotago.ErrDirectUnlockableAddressUnlockInvalid: TxFailureDirectUnlockableAddressUnlockInvalid,
-	iotago.ErrMultiAddressUnlockInvalid:            TxFailureMultiAddressUnlockInvalid,
+	axongo.ErrChainAddressUnlockInvalid:            TxFailureChainAddressUnlockInvalid,
+	axongo.ErrDirectUnlockableAddressUnlockInvalid: TxFailureDirectUnlockableAddressUnlockInvalid,
+	axongo.ErrMultiAddressUnlockInvalid:            TxFailureMultiAddressUnlockInvalid,
 
 	// context inputs
-	iotago.ErrCommitmentInputReferenceInvalid: TxFailureCommitmentInputReferenceInvalid,
-	iotago.ErrBICInputReferenceInvalid:        TxFailureBICInputReferenceInvalid,
-	iotago.ErrRewardInputReferenceInvalid:     TxFailureRewardInputReferenceInvalid,
+	axongo.ErrCommitmentInputReferenceInvalid: TxFailureCommitmentInputReferenceInvalid,
+	axongo.ErrBICInputReferenceInvalid:        TxFailureBICInputReferenceInvalid,
+	axongo.ErrRewardInputReferenceInvalid:     TxFailureRewardInputReferenceInvalid,
 
 	// reward calculation
-	iotago.ErrStakingRewardCalculationFailure:    TxFailureStakingRewardCalculationFailure,
-	iotago.ErrDelegationRewardCalculationFailure: TxFailureDelegationRewardCalculationFailure,
+	axongo.ErrStakingRewardCalculationFailure:    TxFailureStakingRewardCalculationFailure,
+	axongo.ErrDelegationRewardCalculationFailure: TxFailureDelegationRewardCalculationFailure,
 
 	// ============================
 	// Transaction Execution Errors
 	// ============================
 
 	// amount
-	iotago.ErrInputOutputBaseTokenMismatch: TxFailureInputOutputBaseTokenMismatch,
+	axongo.ErrInputOutputBaseTokenMismatch: TxFailureInputOutputBaseTokenMismatch,
 
 	// mana
-	iotago.ErrManaOverflow:                             TxFailureManaOverflow,
-	iotago.ErrInputOutputManaMismatch:                  TxFailureInputOutputManaMismatch,
-	iotago.ErrManaDecayCreationIndexExceedsTargetIndex: TxFailureManaDecayCreationIndexExceedsTargetIndex,
+	axongo.ErrManaOverflow:                             TxFailureManaOverflow,
+	axongo.ErrInputOutputManaMismatch:                  TxFailureInputOutputManaMismatch,
+	axongo.ErrManaDecayCreationIndexExceedsTargetIndex: TxFailureManaDecayCreationIndexExceedsTargetIndex,
 
 	// native token
-	iotago.ErrNativeTokenSumUnbalanced: TxFailureNativeTokenSumUnbalanced,
+	axongo.ErrNativeTokenSumUnbalanced: TxFailureNativeTokenSumUnbalanced,
 
 	// simple token scheme
-	iotago.ErrSimpleTokenSchemeMintedMeltedTokenDecrease: TxFailureSimpleTokenSchemeMintedMeltedTokenDecrease,
-	iotago.ErrSimpleTokenSchemeMintingInvalid:            TxFailureSimpleTokenSchemeMintingInvalid,
-	iotago.ErrSimpleTokenSchemeMeltingInvalid:            TxFailureSimpleTokenSchemeMeltingInvalid,
-	iotago.ErrSimpleTokenSchemeMaximumSupplyChanged:      TxFailureSimpleTokenSchemeMaximumSupplyChanged,
-	iotago.ErrSimpleTokenSchemeGenesisInvalid:            TxFailureSimpleTokenSchemeGenesisInvalid,
+	axongo.ErrSimpleTokenSchemeMintedMeltedTokenDecrease: TxFailureSimpleTokenSchemeMintedMeltedTokenDecrease,
+	axongo.ErrSimpleTokenSchemeMintingInvalid:            TxFailureSimpleTokenSchemeMintingInvalid,
+	axongo.ErrSimpleTokenSchemeMeltingInvalid:            TxFailureSimpleTokenSchemeMeltingInvalid,
+	axongo.ErrSimpleTokenSchemeMaximumSupplyChanged:      TxFailureSimpleTokenSchemeMaximumSupplyChanged,
+	axongo.ErrSimpleTokenSchemeGenesisInvalid:            TxFailureSimpleTokenSchemeGenesisInvalid,
 
 	// multi address
-	iotago.ErrMultiAddressLengthUnlockLengthMismatch: TxFailureMultiAddressLengthUnlockLengthMismatch,
-	iotago.ErrMultiAddressUnlockThresholdNotReached:  TxFailureMultiAddressUnlockThresholdNotReached,
+	axongo.ErrMultiAddressLengthUnlockLengthMismatch: TxFailureMultiAddressLengthUnlockLengthMismatch,
+	axongo.ErrMultiAddressUnlockThresholdNotReached:  TxFailureMultiAddressUnlockThresholdNotReached,
 
 	// sender feature
-	iotago.ErrSenderFeatureNotUnlocked: TxFailureSenderFeatureNotUnlocked,
+	axongo.ErrSenderFeatureNotUnlocked: TxFailureSenderFeatureNotUnlocked,
 
 	// issuer feature
-	iotago.ErrIssuerFeatureNotUnlocked: TxFailureIssuerFeatureNotUnlocked,
+	axongo.ErrIssuerFeatureNotUnlocked: TxFailureIssuerFeatureNotUnlocked,
 
 	// staking feature
-	iotago.ErrStakingRewardInputMissing:             TxFailureStakingRewardInputMissing,
-	iotago.ErrStakingCommitmentInputMissing:         TxFailureStakingCommitmentInputMissing,
-	iotago.ErrStakingRewardClaimingInvalid:          TxFailureStakingRewardClaimingInvalid,
-	iotago.ErrStakingFeatureRemovedBeforeUnbonding:  TxFailureStakingFeatureRemovedBeforeUnbonding,
-	iotago.ErrStakingFeatureModifiedBeforeUnbonding: TxFailureStakingFeatureModifiedBeforeUnbonding,
-	iotago.ErrStakingStartEpochInvalid:              TxFailureStakingStartEpochInvalid,
-	iotago.ErrStakingEndEpochTooEarly:               TxFailureStakingEndEpochTooEarly,
+	axongo.ErrStakingRewardInputMissing:             TxFailureStakingRewardInputMissing,
+	axongo.ErrStakingCommitmentInputMissing:         TxFailureStakingCommitmentInputMissing,
+	axongo.ErrStakingRewardClaimingInvalid:          TxFailureStakingRewardClaimingInvalid,
+	axongo.ErrStakingFeatureRemovedBeforeUnbonding:  TxFailureStakingFeatureRemovedBeforeUnbonding,
+	axongo.ErrStakingFeatureModifiedBeforeUnbonding: TxFailureStakingFeatureModifiedBeforeUnbonding,
+	axongo.ErrStakingStartEpochInvalid:              TxFailureStakingStartEpochInvalid,
+	axongo.ErrStakingEndEpochTooEarly:               TxFailureStakingEndEpochTooEarly,
 
 	// block issuer feature
-	iotago.ErrBlockIssuerCommitmentInputMissing: TxFailureBlockIssuerCommitmentInputMissing,
-	iotago.ErrBlockIssuanceCreditInputMissing:   TxFailureBlockIssuanceCreditInputMissing,
-	iotago.ErrBlockIssuerNotExpired:             TxFailureBlockIssuerNotExpired,
-	iotago.ErrBlockIssuerExpiryTooEarly:         TxFailureBlockIssuerExpiryTooEarly,
-	iotago.ErrManaMovedOffBlockIssuerAccount:    TxFailureManaMovedOffBlockIssuerAccount,
-	iotago.ErrAccountLocked:                     TxFailureAccountLocked,
+	axongo.ErrBlockIssuerCommitmentInputMissing: TxFailureBlockIssuerCommitmentInputMissing,
+	axongo.ErrBlockIssuanceCreditInputMissing:   TxFailureBlockIssuanceCreditInputMissing,
+	axongo.ErrBlockIssuerNotExpired:             TxFailureBlockIssuerNotExpired,
+	axongo.ErrBlockIssuerExpiryTooEarly:         TxFailureBlockIssuerExpiryTooEarly,
+	axongo.ErrManaMovedOffBlockIssuerAccount:    TxFailureManaMovedOffBlockIssuerAccount,
+	axongo.ErrAccountLocked:                     TxFailureAccountLocked,
 
 	// timelock unlock condition
-	iotago.ErrTimelockCommitmentInputMissing: TxFailureTimelockCommitmentInputMissing,
-	iotago.ErrTimelockNotExpired:             TxFailureTimelockNotExpired,
+	axongo.ErrTimelockCommitmentInputMissing: TxFailureTimelockCommitmentInputMissing,
+	axongo.ErrTimelockNotExpired:             TxFailureTimelockNotExpired,
 
 	// expiration unlock condition
-	iotago.ErrExpirationCommitmentInputMissing: TxFailureExpirationCommitmentInputMissing,
-	iotago.ErrExpirationNotUnlockable:          TxFailureExpirationNotUnlockable,
+	axongo.ErrExpirationCommitmentInputMissing: TxFailureExpirationCommitmentInputMissing,
+	axongo.ErrExpirationNotUnlockable:          TxFailureExpirationNotUnlockable,
 
 	// storage deposit return unlock condition
-	iotago.ErrReturnAmountNotFulFilled: TxFailureReturnAmountNotFulFilled,
+	axongo.ErrReturnAmountNotFulFilled: TxFailureReturnAmountNotFulFilled,
 
 	// generic chain output errors
-	iotago.ErrNewChainOutputHasNonZeroedID:        TxFailureNewChainOutputHasNonZeroedID,
-	iotago.ErrChainOutputImmutableFeaturesChanged: TxFailureChainOutputImmutableFeaturesChanged,
+	axongo.ErrNewChainOutputHasNonZeroedID:        TxFailureNewChainOutputHasNonZeroedID,
+	axongo.ErrChainOutputImmutableFeaturesChanged: TxFailureChainOutputImmutableFeaturesChanged,
 
 	// implicit account
-	iotago.ErrImplicitAccountDestructionDisallowed:     TxFailureImplicitAccountDestructionDisallowed,
-	iotago.ErrMultipleImplicitAccountCreationAddresses: TxFailureMultipleImplicitAccountCreationAddresses,
+	axongo.ErrImplicitAccountDestructionDisallowed:     TxFailureImplicitAccountDestructionDisallowed,
+	axongo.ErrMultipleImplicitAccountCreationAddresses: TxFailureMultipleImplicitAccountCreationAddresses,
 
 	// account
-	iotago.ErrAccountInvalidFoundryCounter: TxFailureAccountInvalidFoundryCounter,
+	axongo.ErrAccountInvalidFoundryCounter: TxFailureAccountInvalidFoundryCounter,
 
-	iotago.ErrAnchorInvalidStateTransition:      TxFailureAnchorInvalidStateTransition,
-	iotago.ErrAnchorInvalidGovernanceTransition: TxFailureAnchorInvalidGovernanceTransition,
+	axongo.ErrAnchorInvalidStateTransition:      TxFailureAnchorInvalidStateTransition,
+	axongo.ErrAnchorInvalidGovernanceTransition: TxFailureAnchorInvalidGovernanceTransition,
 
 	// foundry
-	iotago.ErrFoundryTransitionWithoutAccount: TxFailureFoundryTransitionWithoutAccount,
-	iotago.ErrFoundrySerialInvalid:            TxFailureFoundrySerialInvalid,
+	axongo.ErrFoundryTransitionWithoutAccount: TxFailureFoundryTransitionWithoutAccount,
+	axongo.ErrFoundrySerialInvalid:            TxFailureFoundrySerialInvalid,
 
 	// delegation
-	iotago.ErrDelegationCommitmentInputMissing:  TxFailureDelegationCommitmentInputMissing,
-	iotago.ErrDelegationRewardInputMissing:      TxFailureDelegationRewardInputMissing,
-	iotago.ErrDelegationRewardsClaimingInvalid:  TxFailureDelegationRewardsClaimingInvalid,
-	iotago.ErrDelegationOutputTransitionedTwice: TxFailureDelegationOutputTransitionedTwice,
-	iotago.ErrDelegationModified:                TxFailureDelegationModified,
-	iotago.ErrDelegationStartEpochInvalid:       TxFailureDelegationStartEpochInvalid,
-	iotago.ErrDelegationAmountMismatch:          TxFailureDelegationAmountMismatch,
-	iotago.ErrDelegationEndEpochNotZero:         TxFailureDelegationEndEpochNotZero,
-	iotago.ErrDelegationEndEpochInvalid:         TxFailureDelegationEndEpochInvalid,
+	axongo.ErrDelegationCommitmentInputMissing:  TxFailureDelegationCommitmentInputMissing,
+	axongo.ErrDelegationRewardInputMissing:      TxFailureDelegationRewardInputMissing,
+	axongo.ErrDelegationRewardsClaimingInvalid:  TxFailureDelegationRewardsClaimingInvalid,
+	axongo.ErrDelegationOutputTransitionedTwice: TxFailureDelegationOutputTransitionedTwice,
+	axongo.ErrDelegationModified:                TxFailureDelegationModified,
+	axongo.ErrDelegationStartEpochInvalid:       TxFailureDelegationStartEpochInvalid,
+	axongo.ErrDelegationAmountMismatch:          TxFailureDelegationAmountMismatch,
+	axongo.ErrDelegationEndEpochNotZero:         TxFailureDelegationEndEpochNotZero,
+	axongo.ErrDelegationEndEpochInvalid:         TxFailureDelegationEndEpochInvalid,
 
 	// tx capabilities
-	iotago.ErrTxCapabilitiesNativeTokenBurningNotAllowed: TxFailureCapabilitiesNativeTokenBurningNotAllowed,
-	iotago.ErrTxCapabilitiesManaBurningNotAllowed:        TxFailureCapabilitiesManaBurningNotAllowed,
-	iotago.ErrTxCapabilitiesAccountDestructionNotAllowed: TxFailureCapabilitiesAccountDestructionNotAllowed,
-	iotago.ErrTxCapabilitiesAnchorDestructionNotAllowed:  TxFailureCapabilitiesAnchorDestructionNotAllowed,
-	iotago.ErrTxCapabilitiesFoundryDestructionNotAllowed: TxFailureCapabilitiesFoundryDestructionNotAllowed,
-	iotago.ErrTxCapabilitiesNFTDestructionNotAllowed:     TxFailureCapabilitiesNFTDestructionNotAllowed,
+	axongo.ErrTxCapabilitiesNativeTokenBurningNotAllowed: TxFailureCapabilitiesNativeTokenBurningNotAllowed,
+	axongo.ErrTxCapabilitiesManaBurningNotAllowed:        TxFailureCapabilitiesManaBurningNotAllowed,
+	axongo.ErrTxCapabilitiesAccountDestructionNotAllowed: TxFailureCapabilitiesAccountDestructionNotAllowed,
+	axongo.ErrTxCapabilitiesAnchorDestructionNotAllowed:  TxFailureCapabilitiesAnchorDestructionNotAllowed,
+	axongo.ErrTxCapabilitiesFoundryDestructionNotAllowed: TxFailureCapabilitiesFoundryDestructionNotAllowed,
+	axongo.ErrTxCapabilitiesNFTDestructionNotAllowed:     TxFailureCapabilitiesNFTDestructionNotAllowed,
 }
 
 func (t TransactionFailureReason) Bytes() ([]byte, error) {
@@ -576,8 +576,8 @@ type (
 
 	// InfoResProtocolParameters defines the protocol parameters of a node in the InfoResponse.
 	InfoResProtocolParameters struct {
-		StartEpoch iotago.EpochIndex         `serix:""`
-		Parameters iotago.ProtocolParameters `serix:""`
+		StartEpoch axongo.EpochIndex         `serix:""`
+		Parameters axongo.ProtocolParameters `serix:""`
 	}
 
 	// InfoResNodeStatus defines the status of the node in the InfoResponse.
@@ -595,15 +595,15 @@ type (
 		// The relative confirmed tangle time.
 		RelativeConfirmedTangleTime time.Time `serix:""`
 		// The id of the latest known commitment.
-		LatestCommitmentID iotago.CommitmentID `serix:""`
+		LatestCommitmentID axongo.CommitmentID `serix:""`
 		// The latest finalized slot.
-		LatestFinalizedSlot iotago.SlotIndex `serix:""`
+		LatestFinalizedSlot axongo.SlotIndex `serix:""`
 		// The slot of the latest accepted block.
-		LatestAcceptedBlockSlot iotago.SlotIndex `serix:""`
+		LatestAcceptedBlockSlot axongo.SlotIndex `serix:""`
 		// The slot of the latest confirmed block.
-		LatestConfirmedBlockSlot iotago.SlotIndex `serix:""`
+		LatestConfirmedBlockSlot axongo.SlotIndex `serix:""`
 		// The epoch at which the tangle data was pruned.
-		PruningEpoch iotago.EpochIndex `serix:""`
+		PruningEpoch axongo.EpochIndex `serix:""`
 	}
 
 	// InfoResBaseToken defines the base token of the node in the InfoResponse.
@@ -639,47 +639,47 @@ type (
 	// IssuanceBlockHeaderResponse defines the response of a GET block issuance REST API call.
 	IssuanceBlockHeaderResponse struct {
 		// StrongParents are the strong parents of the block.
-		StrongParents iotago.BlockIDs `serix:",lenPrefix=uint8"`
+		StrongParents axongo.BlockIDs `serix:",lenPrefix=uint8"`
 		// WeakParents are the weak parents of the block.
-		WeakParents iotago.BlockIDs `serix:",lenPrefix=uint8,omitempty"`
+		WeakParents axongo.BlockIDs `serix:",lenPrefix=uint8,omitempty"`
 		// ShallowLikeParents are the shallow like parents of the block.
-		ShallowLikeParents iotago.BlockIDs `serix:",lenPrefix=uint8,omitempty"`
+		ShallowLikeParents axongo.BlockIDs `serix:",lenPrefix=uint8,omitempty"`
 		// LatestParentBlockIssuingTime is the latest issuing time of the returned parents.
 		LatestParentBlockIssuingTime time.Time `serix:""`
 		// LatestFinalizedSlot is the latest finalized slot.
-		LatestFinalizedSlot iotago.SlotIndex `serix:""`
+		LatestFinalizedSlot axongo.SlotIndex `serix:""`
 		// LatestCommitment is the latest commitment of the node.
-		LatestCommitment *iotago.Commitment `serix:""`
+		LatestCommitment *axongo.Commitment `serix:""`
 	}
 
 	// BlockCreatedResponse defines the response of a POST blocks REST API call.
 	BlockCreatedResponse struct {
 		// The hex encoded block ID of the block.
-		BlockID iotago.BlockID `serix:""`
+		BlockID axongo.BlockID `serix:""`
 	}
 
 	// BlockMetadataResponse defines the response of a GET block metadata REST API call.
 	BlockMetadataResponse struct {
 		// BlockID The hex encoded block ID of the block.
-		BlockID iotago.BlockID `serix:""`
+		BlockID axongo.BlockID `serix:""`
 		// BlockState might be unknown, pending, accepted, confirmed, finalized, dropped, orphaned.
 		BlockState BlockState `serix:""`
 	}
 
 	// BlockWithMetadataResponse defines the response of a GET full block REST API call.
 	BlockWithMetadataResponse struct {
-		Block    *iotago.Block          `serix:""`
+		Block    *axongo.Block          `serix:""`
 		Metadata *BlockMetadataResponse `serix:""`
 	}
 
 	// TransactionMetadataResponse defines the response of a GET transaction metadata REST API call.
 	TransactionMetadataResponse struct {
 		// TransactionID is the hex encoded transaction ID of the transaction.
-		TransactionID iotago.TransactionID `serix:""`
+		TransactionID axongo.TransactionID `serix:""`
 		// TransactionState might be pending, accepted, committed, finalized, failed.
 		TransactionState TransactionState `serix:""`
 		// EarliestAttachmentSlot is the slot of the earliest included valid block that contains an attachment of the transaction.
-		EarliestAttachmentSlot iotago.SlotIndex `serix:""`
+		EarliestAttachmentSlot axongo.SlotIndex `serix:""`
 		// TransactionFailureReason if applicable indicates the error that occurred during the transaction processing.
 		TransactionFailureReason TransactionFailureReason `serix:",omitempty"`
 		// TransactionFailureDetails contains the detailed error message that occurred during the transaction processing
@@ -689,70 +689,70 @@ type (
 
 	// OutputResponse defines the response of a GET outputs REST API call.
 	OutputResponse struct {
-		Output        iotago.TxEssenceOutput `serix:""`
-		OutputIDProof *iotago.OutputIDProof  `serix:""`
+		Output        axongo.TxEssenceOutput `serix:""`
+		OutputIDProof *axongo.OutputIDProof  `serix:""`
 	}
 
 	// OutputWithID returns an output with its corresponding ID.
 	OutputWithID struct {
-		OutputID iotago.OutputID        `serix:""`
-		Output   iotago.TxEssenceOutput `serix:""`
+		OutputID axongo.OutputID        `serix:""`
+		Output   axongo.TxEssenceOutput `serix:""`
 	}
 
 	OutputInclusionMetadata struct {
 		// Slot is the slot in which the output was included.
-		Slot iotago.SlotIndex `serix:""`
+		Slot axongo.SlotIndex `serix:""`
 		// TransactionID is the transaction ID that created the output.
-		TransactionID iotago.TransactionID `serix:""`
+		TransactionID axongo.TransactionID `serix:""`
 		// CommitmentID is the commitment ID that includes the creation of the output.
-		CommitmentID iotago.CommitmentID `serix:",omitempty"`
+		CommitmentID axongo.CommitmentID `serix:",omitempty"`
 	}
 
 	OutputConsumptionMetadata struct {
 		// Slot is the slot in which the output was spent.
-		Slot iotago.SlotIndex `serix:""`
+		Slot axongo.SlotIndex `serix:""`
 		// TransactionID is the transaction ID that spent the output.
-		TransactionID iotago.TransactionID `serix:""`
+		TransactionID axongo.TransactionID `serix:""`
 		// CommitmentID is the commitment ID that includes the spending of the output.
-		CommitmentID iotago.CommitmentID `serix:",omitempty"`
+		CommitmentID axongo.CommitmentID `serix:",omitempty"`
 	}
 
 	// OutputMetadata defines the response of a GET outputs metadata REST API call.
 	OutputMetadata struct {
 		// OutputID is the hex encoded output ID.
-		OutputID iotago.OutputID `serix:""`
+		OutputID axongo.OutputID `serix:""`
 		// BlockID is the block ID that contains the output.
-		BlockID iotago.BlockID `serix:""`
+		BlockID axongo.BlockID `serix:""`
 		// Included is the metadata of the output if it is included in the ledger.
 		Included *OutputInclusionMetadata `serix:""`
 		// Spent is the metadata of the output if it is marked as spent in the ledger.
 		Spent *OutputConsumptionMetadata `serix:",optional,omitempty"`
 		// LatestCommitmentID is the latest commitment ID of a node.
-		LatestCommitmentID iotago.CommitmentID `serix:""`
+		LatestCommitmentID axongo.CommitmentID `serix:""`
 	}
 
 	// OutputWithMetadataResponse defines the response of a GET full outputs REST API call.
 	OutputWithMetadataResponse struct {
-		Output        iotago.TxEssenceOutput `serix:""`
-		OutputIDProof *iotago.OutputIDProof  `serix:""`
+		Output        axongo.TxEssenceOutput `serix:""`
+		OutputIDProof *axongo.OutputIDProof  `serix:""`
 		Metadata      *OutputMetadata        `serix:""`
 	}
 
 	// UTXOChangesResponse defines the response for the UTXO changes per slot REST API call.
 	UTXOChangesResponse struct {
 		// CommitmentID is the commitment ID of the requested slot that contains the changes.
-		CommitmentID iotago.CommitmentID `serix:""`
+		CommitmentID axongo.CommitmentID `serix:""`
 		// The outputs that are created in this slot.
-		CreatedOutputs iotago.OutputIDs `serix:",lenPrefix=uint32"`
+		CreatedOutputs axongo.OutputIDs `serix:",lenPrefix=uint32"`
 		// The outputs that are consumed in this slot.
-		ConsumedOutputs iotago.OutputIDs `serix:",lenPrefix=uint32"`
+		ConsumedOutputs axongo.OutputIDs `serix:",lenPrefix=uint32"`
 	}
 
 	// UTXOChangesFullResponse defines the response for the UTXO changes per slot REST API call.
 	// It returns the full information about the outputs with their corresponding ID.
 	UTXOChangesFullResponse struct {
 		// CommitmentID is the commitment ID of the requested slot that contains the changes.
-		CommitmentID iotago.CommitmentID `serix:""`
+		CommitmentID axongo.CommitmentID `serix:""`
 		// The outputs that are created in this slot.
 		CreatedOutputs []*OutputWithID `serix:",lenPrefix=uint32"`
 		// The outputs that are consumed in this slot.
@@ -762,14 +762,14 @@ type (
 	// CongestionResponse defines the response for the congestion REST API call.
 	CongestionResponse struct {
 		// Slot is the slot for which the estimate is provided.
-		Slot iotago.SlotIndex `serix:""`
+		Slot axongo.SlotIndex `serix:""`
 		// Ready indicates if a node is ready to schedule a block issued by the specified account, or if the issuer should wait.
 		Ready bool `serix:""`
 		// ReferenceManaCost (RMC) is the mana cost a user needs to burn to issue a block in slot Slot.
-		ReferenceManaCost iotago.Mana `serix:""`
+		ReferenceManaCost axongo.Mana `serix:""`
 		// BlockIssuanceCredits (BIC) provides the BIC of the account in slot Slot.
 		// This balance needs to be non-negative, otherwise account is locked
-		BlockIssuanceCredits iotago.BlockIssuanceCredits `serix:""`
+		BlockIssuanceCredits axongo.BlockIssuanceCredits `serix:""`
 	}
 
 	// ValidatorResponse defines the response used in stakers response REST API calls.
@@ -777,19 +777,19 @@ type (
 		// AddressBech32 is the account address of the validator.
 		AddressBech32 string `serix:"address,lenPrefix=uint8"`
 		// StakingEndEpoch is the epoch until which the validator registered to stake.
-		StakingEndEpoch iotago.EpochIndex `serix:""`
+		StakingEndEpoch axongo.EpochIndex `serix:""`
 		// PoolStake is the sum of tokens delegated to the pool and the validator stake.
-		PoolStake iotago.BaseToken `serix:""`
+		PoolStake axongo.BaseToken `serix:""`
 		// ValidatorStake is the stake of the validator.
-		ValidatorStake iotago.BaseToken `serix:""`
+		ValidatorStake axongo.BaseToken `serix:""`
 		// FixedCost is the fixed cost that the validator receives from the total pool reward.
-		FixedCost iotago.Mana `serix:""`
+		FixedCost axongo.Mana `serix:""`
 		// Active indicates whether the validator was active recently, and would be considered during committee selection.
 		Active bool `serix:""`
 		// LatestSupportedProtocolVersion is the latest supported protocol version of the validator.
-		LatestSupportedProtocolVersion iotago.Version `serix:""`
+		LatestSupportedProtocolVersion axongo.Version `serix:""`
 		// LatestSupportedProtocolHash is the protocol hash of the latest supported protocol of the validator.
-		LatestSupportedProtocolHash iotago.Identifier `serix:""`
+		LatestSupportedProtocolHash axongo.Identifier `serix:""`
 	}
 
 	// ValidatorsResponse defines the response for the staking REST API call.
@@ -804,16 +804,16 @@ type (
 		// StartEpoch is the first epoch for which rewards can be claimed.
 		// This value is useful for checking if rewards have expired (by comparing against the staking or delegation start)
 		// or would expire soon (by checking its relation to the rewards retention period).
-		StartEpoch iotago.EpochIndex `serix:""`
+		StartEpoch axongo.EpochIndex `serix:""`
 		// EndEpoch is the last epoch for which rewards can be claimed.
-		EndEpoch iotago.EpochIndex `serix:""`
+		EndEpoch axongo.EpochIndex `serix:""`
 		// The amount of totally available decayed rewards the requested output may claim.
-		Rewards iotago.Mana `serix:""`
+		Rewards axongo.Mana `serix:""`
 		// The rewards of the latest committed epoch of the staking pool to which this validator or delegator belongs.
 		// The ratio of this value and the maximally possible rewards for the latest committed epoch can be used to determine
 		// how well the validator of this staking pool performed in that epoch.
 		// Note that if the pool was not part of the committee in the latest committed epoch, this value is 0.
-		LatestCommittedEpochPoolRewards iotago.Mana `serix:""`
+		LatestCommittedEpochPoolRewards axongo.Mana `serix:""`
 	}
 
 	// CommitteeMemberResponse defines the response used in committee and staking response REST API calls.
@@ -821,18 +821,18 @@ type (
 		// AddressBech32 is the account address of the validator.
 		AddressBech32 string `serix:"address,lenPrefix=uint8"`
 		// PoolStake is the sum of tokens delegated to the pool and the validator stake.
-		PoolStake iotago.BaseToken `serix:""`
+		PoolStake axongo.BaseToken `serix:""`
 		// ValidatorStake is the stake of the validator.
-		ValidatorStake iotago.BaseToken `serix:""`
+		ValidatorStake axongo.BaseToken `serix:""`
 		// FixedCost is the fixed cost that the validator received from the total pool reward.
-		FixedCost iotago.Mana `serix:""`
+		FixedCost axongo.Mana `serix:""`
 	}
 
 	// CommitteeResponse defines the response for the staking REST API call.
 	CommitteeResponse struct {
 		Committee           []*CommitteeMemberResponse `serix:",lenPrefix=uint8"`
-		TotalStake          iotago.BaseToken           `serix:""`
-		TotalValidatorStake iotago.BaseToken           `serix:""`
-		Epoch               iotago.EpochIndex          `serix:""`
+		TotalStake          axongo.BaseToken           `serix:""`
+		TotalValidatorStake axongo.BaseToken           `serix:""`
+		Epoch               axongo.EpochIndex          `serix:""`
 	}
 )

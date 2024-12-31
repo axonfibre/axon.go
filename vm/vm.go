@@ -7,23 +7,23 @@ import (
 
 	"github.com/axonfibre/fibre.go/core/safemath"
 	"github.com/axonfibre/fibre.go/ierrors"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/hexutil"
 )
 
 // VirtualMachine executes and validates transactions.
 type VirtualMachine interface {
 	// ValidateUnlocks validates the unlocks of the given SignedTransaction and returns the unlocked addresses.
-	ValidateUnlocks(signedTransaction *iotago.SignedTransaction, inputs ResolvedInputs) (unlockedAddrs UnlockedAddresses, err error)
+	ValidateUnlocks(signedTransaction *axongo.SignedTransaction, inputs ResolvedInputs) (unlockedAddrs UnlockedAddresses, err error)
 	// Execute executes the given tx in the VM. It is possible to optionally override the default execution functions.
-	Execute(transaction *iotago.Transaction, inputs ResolvedInputs, unlockedAddrs UnlockedAddresses, execFunctions ...ExecFunc) (outputs []iotago.Output, err error)
+	Execute(transaction *axongo.Transaction, inputs ResolvedInputs, unlockedAddrs UnlockedAddresses, execFunctions ...ExecFunc) (outputs []axongo.Output, err error)
 	// ChainSTVF executes the chain state transition validation function.
-	ChainSTVF(vmParams *Params, transType iotago.ChainTransitionType, input *ChainOutputWithIDs, next iotago.ChainOutput) error
+	ChainSTVF(vmParams *Params, transType axongo.ChainTransitionType, input *ChainOutputWithIDs, next axongo.ChainOutput) error
 }
 
 // Params defines the VirtualMachine parameters under which the VM operates.
 type Params struct {
-	API iotago.API
+	API axongo.API
 
 	// The working set which is auto. populated during the semantic validation.
 	WorkingSet *WorkingSet
@@ -35,21 +35,21 @@ type WorkingSet struct {
 	// The addresses which are successfully unlocked from the input side.
 	UnlockedAddrs UnlockedAddresses
 	// The UTXO inputs to the transaction.
-	UTXOInputs iotago.Outputs[iotago.Output]
+	UTXOInputs axongo.Outputs[axongo.Output]
 	// The mapping of OutputID to the actual inputs.
 	UTXOInputsSet InputSet
 	// The mapping of inputs' OutputID to the index.
-	InputIDToInputIndex map[iotago.OutputID]uint16
+	InputIDToInputIndex map[axongo.OutputID]uint16
 	// The transaction for which this semantic validation happens.
-	Tx *iotago.Transaction
+	Tx *axongo.Transaction
 	// The ChainOutput(s) at the input side.
 	InChains ChainInputSet
 	// The sum of NativeTokens at the input side.
-	InNativeTokens iotago.NativeTokenSum
+	InNativeTokens axongo.NativeTokenSum
 	// The ChainOutput(s) at the output side.
-	OutChains iotago.ChainOutputSet
+	OutChains axongo.ChainOutputSet
 	// The sum of NativeTokens at the output side.
-	OutNativeTokens iotago.NativeTokenSum
+	OutNativeTokens axongo.NativeTokenSum
 	// BIC is the block issuance credit for MCA slots prior to the transaction's creation slot (or for the slot to which the block commits)
 	// Contains one value for each account output touched in the transaction and empty if no account outputs touched.
 	BIC BlockIssuanceCreditInputSet
@@ -58,20 +58,20 @@ type WorkingSet struct {
 	// Rewards contains a set of account or delegation IDs mapped to their rewards amount.
 	Rewards RewardsInputSet
 	// TotalManaIn is the total decayed potential and stored Mana from the input side.
-	TotalManaIn iotago.Mana
+	TotalManaIn axongo.Mana
 	// TotalManaOut is the total stored and allotted Mana from the output side.
-	TotalManaOut iotago.Mana
+	TotalManaOut axongo.Mana
 }
 
 // UTXOInputAtIndex retrieves the UTXOInput at the given index.
 // Caller must ensure that the index is valid.
-func (workingSet *WorkingSet) UTXOInputAtIndex(inputIndex uint16) *iotago.UTXOInput {
+func (workingSet *WorkingSet) UTXOInputAtIndex(inputIndex uint16) *axongo.UTXOInput {
 	//nolint:forcetypeassert // we can safely assume that this is a UTXOInput
-	return workingSet.Tx.TransactionEssence.Inputs[inputIndex].(*iotago.UTXOInput)
+	return workingSet.Tx.TransactionEssence.Inputs[inputIndex].(*axongo.UTXOInput)
 }
 
-func TotalManaIn(manaDecayProvider *iotago.ManaDecayProvider, storageScoreStructure *iotago.StorageScoreStructure, txCreationSlot iotago.SlotIndex, inputSet InputSet, rewards RewardsInputSet) (iotago.Mana, error) {
-	var totalIn iotago.Mana
+func TotalManaIn(manaDecayProvider *axongo.ManaDecayProvider, storageScoreStructure *axongo.StorageScoreStructure, txCreationSlot axongo.SlotIndex, inputSet InputSet, rewards RewardsInputSet) (axongo.Mana, error) {
+	var totalIn axongo.Mana
 
 	for outputID, input := range inputSet {
 		// stored Mana
@@ -81,15 +81,15 @@ func TotalManaIn(manaDecayProvider *iotago.ManaDecayProvider, storageScoreStruct
 		}
 		totalIn, err = safemath.SafeAdd(totalIn, manaStored)
 		if err != nil {
-			return 0, ierrors.Chain(iotago.ErrManaOverflow, err)
+			return 0, ierrors.Chain(axongo.ErrManaOverflow, err)
 		}
-		manaPotential, err := iotago.PotentialMana(manaDecayProvider, storageScoreStructure, input, outputID.CreationSlot(), txCreationSlot)
+		manaPotential, err := axongo.PotentialMana(manaDecayProvider, storageScoreStructure, input, outputID.CreationSlot(), txCreationSlot)
 		if err != nil {
 			return 0, ierrors.Wrapf(err, "input %s potential mana calculation failed", outputID)
 		}
 		totalIn, err = safemath.SafeAdd(totalIn, manaPotential)
 		if err != nil {
-			return 0, ierrors.Chain(iotago.ErrManaOverflow, err)
+			return 0, ierrors.Chain(axongo.ErrManaOverflow, err)
 		}
 	}
 
@@ -98,27 +98,27 @@ func TotalManaIn(manaDecayProvider *iotago.ManaDecayProvider, storageScoreStruct
 		var err error
 		totalIn, err = safemath.SafeAdd(totalIn, reward)
 		if err != nil {
-			return 0, ierrors.Chain(iotago.ErrManaOverflow, err)
+			return 0, ierrors.Chain(axongo.ErrManaOverflow, err)
 		}
 	}
 
 	return totalIn, nil
 }
 
-func TotalManaOut(outputs iotago.Outputs[iotago.TxEssenceOutput], allotments iotago.Allotments) (iotago.Mana, error) {
-	var totalOut iotago.Mana
+func TotalManaOut(outputs axongo.Outputs[axongo.TxEssenceOutput], allotments axongo.Allotments) (axongo.Mana, error) {
+	var totalOut axongo.Mana
 	var err error
 
 	for _, output := range outputs {
 		totalOut, err = safemath.SafeAdd(totalOut, output.StoredMana())
 		if err != nil {
-			return 0, ierrors.Chain(iotago.ErrManaOverflow, err)
+			return 0, ierrors.Chain(axongo.ErrManaOverflow, err)
 		}
 	}
 	for _, allotment := range allotments {
 		totalOut, err = safemath.SafeAdd(totalOut, allotment.Mana)
 		if err != nil {
-			return 0, ierrors.Chain(iotago.ErrManaOverflow, err)
+			return 0, ierrors.Chain(axongo.ErrManaOverflow, err)
 		}
 	}
 
@@ -130,7 +130,7 @@ func TotalManaOut(outputs iotago.Outputs[iotago.TxEssenceOutput], allotments iot
 // that is at least equal to the slot of the block in which it was issued, or higher.
 // That means no commitment input can be chosen such that the index lies behind the slot index of the block,
 // hence the past is bounded.
-func (params *Params) PastBoundedSlotIndex(commitmentInputSlot iotago.SlotIndex) iotago.SlotIndex {
+func (params *Params) PastBoundedSlotIndex(commitmentInputSlot axongo.SlotIndex) axongo.SlotIndex {
 	return commitmentInputSlot + params.API.ProtocolParameters().MaxCommittableAge()
 }
 
@@ -139,7 +139,7 @@ func (params *Params) PastBoundedSlotIndex(commitmentInputSlot iotago.SlotIndex)
 // that is at most equal to the slot of the block in which it was issued, or lower.
 // That means no commitment input can be chosen such that the index lies ahead of the slot index of the block,
 // hence the future is bounded.
-func (params *Params) FutureBoundedSlotIndex(commitmentInputSlot iotago.SlotIndex) iotago.SlotIndex {
+func (params *Params) FutureBoundedSlotIndex(commitmentInputSlot axongo.SlotIndex) axongo.SlotIndex {
 	return commitmentInputSlot + params.API.ProtocolParameters().MinCommittableAge()
 }
 
@@ -169,7 +169,7 @@ type UnlockedAddresses map[string]*UnlockedAddress
 
 // SignatureUnlock performs a signature unlock check and adds the given address to the set of unlocked addresses if
 // the signature is valid, otherwise returns an error.
-func (s *unlockedAddressesSet) SignatureUnlock(addr iotago.DirectUnlockableAddress, essenceMsg []byte, sig iotago.Signature, inputIndex uint16, checkUnlockOnly bool) error {
+func (s *unlockedAddressesSet) SignatureUnlock(addr axongo.DirectUnlockableAddress, essenceMsg []byte, sig axongo.Signature, inputIndex uint16, checkUnlockOnly bool) error {
 	if err := addr.Unlock(essenceMsg, sig); err != nil {
 		return ierrors.Wrapf(err, "input %d's address is not unlocked through its signature unlock", inputIndex)
 	}
@@ -196,8 +196,8 @@ func (s *unlockedAddressesSet) SignatureUnlock(addr iotago.DirectUnlockableAddre
 
 // ReferentialUnlockNonDirectlyUnlockable expects a non-directly unlockable address and performs a check whether the given address
 // is unlocked at referencedInputIndex and if so, it adds the input index to the set of unlocked inputs by this address.
-func (s *unlockedAddressesSet) ReferentialUnlockNonDirectlyUnlockable(owner iotago.Address, inputIndex uint16, referencedInputIndex uint16, checkUnlockOnly bool) error {
-	if _, isDirectUnlockable := owner.(iotago.DirectUnlockableAddress); isDirectUnlockable {
+func (s *unlockedAddressesSet) ReferentialUnlockNonDirectlyUnlockable(owner axongo.Address, inputIndex uint16, referencedInputIndex uint16, checkUnlockOnly bool) error {
+	if _, isDirectUnlockable := owner.(axongo.DirectUnlockableAddress); isDirectUnlockable {
 		return ierrors.Errorf("input %d's address is a directly unlockable address, but a non-directly unlockable address was expected", inputIndex)
 	}
 
@@ -224,7 +224,7 @@ func (s *unlockedAddressesSet) ReferentialUnlockNonDirectlyUnlockable(owner iota
 // If all checks are successful, it adds the input index to the set of unlocked inputs by this address.
 // In case the given address is not yet unlocked, it is added to the set of unlocked addresses.
 // This is necessary if for example the signature was used before to unlock another address (e.g. derived from the same public key).
-func (s *unlockedAddressesSet) ReferentialUnlockDirectlyUnlockable(owner iotago.DirectUnlockableAddress, inputIndex uint16, referencedInputIndex uint16, checkUnlockOnly bool) error {
+func (s *unlockedAddressesSet) ReferentialUnlockDirectlyUnlockable(owner axongo.DirectUnlockableAddress, inputIndex uint16, referencedInputIndex uint16, checkUnlockOnly bool) error {
 	referencedAddrWithSignature, referenceExists := s.SignatureUnlockedAddrsByIndex[referencedInputIndex]
 	if !referenceExists {
 		return ierrors.Errorf("input %d's address was not previously unlocked by unlock %d", inputIndex, referencedInputIndex)
@@ -268,21 +268,21 @@ func (s *unlockedAddressesSet) ReferentialUnlockDirectlyUnlockable(owner iotago.
 
 // MultiUnlock performs a check whether all given unlocks are valid and if so,
 // adds the index of the input to the set of unlocked inputs by this address.
-func (s *unlockedAddressesSet) MultiUnlock(addr *iotago.MultiAddress, multiUnlock *iotago.MultiUnlock, essenceMsg []byte, inputIndex uint16) error {
+func (s *unlockedAddressesSet) MultiUnlock(addr *axongo.MultiAddress, multiUnlock *axongo.MultiUnlock, essenceMsg []byte, inputIndex uint16) error {
 	if len(addr.Addresses) != len(multiUnlock.Unlocks) {
-		return ierrors.WithMessagef(iotago.ErrMultiAddressLengthUnlockLengthMismatch, "input %d has a multi address (%T) but the amount of addresses does not match the unlocks %d != %d", inputIndex, addr, len(addr.Addresses), len(multiUnlock.Unlocks))
+		return ierrors.WithMessagef(axongo.ErrMultiAddressLengthUnlockLengthMismatch, "input %d has a multi address (%T) but the amount of addresses does not match the unlocks %d != %d", inputIndex, addr, len(addr.Addresses), len(multiUnlock.Unlocks))
 	}
 
 	var cumulativeUnlockedWeight uint16
 	for subIndex, unlock := range multiUnlock.Unlocks {
 		switch unlock.(type) {
-		case *iotago.EmptyUnlock:
+		case *axongo.EmptyUnlock:
 			// EmptyUnlocks are simply skipped. They are used to maintain correct index relationship between
 			// addresses and signatures if the signer doesn't know the signature of another signer.
 			continue
 
-		case *iotago.MultiUnlock:
-			return ierrors.WithMessagef(iotago.ErrNestedMultiUnlock, "unlock at index %d.%d is invalid", inputIndex, subIndex)
+		case *axongo.MultiUnlock:
+			return ierrors.WithMessagef(axongo.ErrNestedMultiUnlock, "unlock at index %d.%d is invalid", inputIndex, subIndex)
 
 		default:
 			// ATTENTION: we perform the checks only, but we do not unlock the input yet.
@@ -296,7 +296,7 @@ func (s *unlockedAddressesSet) MultiUnlock(addr *iotago.MultiAddress, multiUnloc
 
 	// check if the threshold for a successful unlock was reached
 	if cumulativeUnlockedWeight < addr.Threshold {
-		return ierrors.WithMessagef(iotago.ErrMultiAddressUnlockThresholdNotReached, "input %d has a multi address but the threshold of valid unlocks was not reached %d < %d", inputIndex, cumulativeUnlockedWeight, addr.Threshold)
+		return ierrors.WithMessagef(axongo.ErrMultiAddressUnlockThresholdNotReached, "input %d has a multi address but the threshold of valid unlocks was not reached %d < %d", inputIndex, cumulativeUnlockedWeight, addr.Threshold)
 	}
 
 	// for multi addresses we don't "unlock" the signatures, only the multi address itself so it can be used for a referential unlock.
@@ -314,7 +314,7 @@ func (s *unlockedAddressesSet) MultiUnlock(addr *iotago.MultiAddress, multiUnloc
 }
 
 // AddUnlockedChain unlocks the given chain.
-func (s *unlockedAddressesSet) AddUnlockedChain(chainAddr iotago.ChainAddress, inputIndex uint16) {
+func (s *unlockedAddressesSet) AddUnlockedChain(chainAddr axongo.ChainAddress, inputIndex uint16) {
 	s.UnlockedAddrsByAddrKey[chainAddr.Key()] = &UnlockedAddress{
 		Address:                chainAddr,
 		UnlockedAtInputIndex:   inputIndex,
@@ -332,7 +332,7 @@ func (unlockedAddrs UnlockedAddresses) String() string {
 		x, y := addrs[i].UnlockedAtInputIndex, addrs[j].UnlockedAtInputIndex
 		// prefer to show direct unlockable addresses first in string
 		if x == y {
-			if _, is := addrs[i].Address.(iotago.ChainAddress); is {
+			if _, is := addrs[i].Address.(axongo.ChainAddress); is {
 				return false
 			}
 
@@ -368,7 +368,7 @@ func (unlockedAddrs UnlockedAddresses) UnlockedBy(inputIndex uint16, addrKey str
 // UnlockedAddress represents an unlocked address.
 type UnlockedAddress struct {
 	// The source address which got unlocked.
-	Address iotago.Address
+	Address axongo.Address
 	// The index of the input/unlock by which this address has been unlocked.
 	UnlockedAtInputIndex uint16
 	// A set of input/unlock indexes which referenced this address.
@@ -379,7 +379,7 @@ type unlockedAddressWithSignature struct {
 	*UnlockedAddress
 
 	// Signature is the signature which unlocked the address.
-	Signature iotago.Signature
+	Signature axongo.Signature
 }
 
 func (unlockedAddr *UnlockedAddress) String() string {
@@ -395,7 +395,7 @@ func (unlockedAddr *UnlockedAddress) String() string {
 
 // IsIssuerOnOutputUnlocked checks whether the issuer in an IssuerFeature of this new ChainOutput has been unlocked.
 // This function is a no-op if the chain output does not contain an IssuerFeature.
-func IsIssuerOnOutputUnlocked(output iotago.ChainOutputImmutable, unlockedAddrs UnlockedAddresses) error {
+func IsIssuerOnOutputUnlocked(output axongo.ChainOutputImmutable, unlockedAddrs UnlockedAddresses) error {
 	immFeats := output.ImmutableFeatureSet()
 	if len(immFeats) == 0 {
 		return nil
@@ -408,7 +408,7 @@ func IsIssuerOnOutputUnlocked(output iotago.ChainOutputImmutable, unlockedAddrs 
 
 	issuer := resolveUnderlyingAddress(issuerFeat.Address)
 	if _, isUnlocked := unlockedAddrs[issuer.Key()]; !isUnlocked {
-		return iotago.ErrIssuerFeatureNotUnlocked
+		return axongo.ErrIssuerFeatureNotUnlocked
 	}
 
 	return nil
@@ -421,10 +421,10 @@ type ExecFunc func(vm VirtualMachine, svCtx *Params) error
 
 // ValidateUnlocks produces the UnlockedAddresses which will be set into the given Params and verifies that inputs are
 // correctly unlocked and that the inputs commitment matches.
-func ValidateUnlocks(signedTransaction *iotago.SignedTransaction, resolvedInputs ResolvedInputs) (unlockedAddrs UnlockedAddresses, err error) {
+func ValidateUnlocks(signedTransaction *axongo.SignedTransaction, resolvedInputs ResolvedInputs) (unlockedAddrs UnlockedAddresses, err error) {
 	utxoInputs := signedTransaction.Transaction.Inputs()
 
-	var inputs iotago.Outputs[iotago.Output]
+	var inputs axongo.Outputs[axongo.Output]
 	for _, input := range utxoInputs {
 		inputs = append(inputs, resolvedInputs.InputSet[input.OutputID()])
 	}
@@ -451,23 +451,23 @@ func ValidateUnlocks(signedTransaction *iotago.SignedTransaction, resolvedInputs
 		}
 
 		// since this input is now unlocked, and it is a ChainOutput, the chain's address becomes automatically unlocked
-		if chainConstrOutput, is := input.(iotago.ChainOutput); is && chainConstrOutput.ChainID().Addressable() {
+		if chainConstrOutput, is := input.(axongo.ChainOutput); is && chainConstrOutput.ChainID().Addressable() {
 			// mark this ChainOutput's address as unlocked by this input
 			chainID := chainConstrOutput.ChainID()
 			if chainID.Empty() {
 				//nolint:forcetypeassert // we can safely assume that this is an UTXOIDChainID
-				chainID = chainID.(iotago.UTXOIDChainID).FromOutputID(signedTransaction.Transaction.TransactionEssence.Inputs[inputIndex].(*iotago.UTXOInput).OutputID())
+				chainID = chainID.(axongo.UTXOIDChainID).FromOutputID(signedTransaction.Transaction.TransactionEssence.Inputs[inputIndex].(*axongo.UTXOInput).OutputID())
 			}
 
 			// for anchor outputs which are not state transitioning, we do not add it to the set of unlocked chains
-			if currentAnchor, ok := chainConstrOutput.(*iotago.AnchorOutput); ok {
+			if currentAnchor, ok := chainConstrOutput.(*axongo.AnchorOutput); ok {
 				next, hasNextState := outChains[chainID]
 				if !hasNextState {
 					continue
 				}
 				// note that isAnchor should never be false in practice,
 				// but we add it anyway as an additional safeguard
-				nextAnchor, isAnchor := next.(*iotago.AnchorOutput)
+				nextAnchor, isAnchor := next.(*axongo.AnchorOutput)
 				if !isAnchor || (currentAnchor.StateIndex+1 != nextAnchor.StateIndex) {
 					continue
 				}
@@ -480,20 +480,20 @@ func ValidateUnlocks(signedTransaction *iotago.SignedTransaction, resolvedInputs
 	return unlockedAddrsSet.UnlockedAddrsByAddrKey, err
 }
 
-func addressToUnlock(transaction *iotago.Transaction, input iotago.Output, inputIndex uint16, outChains iotago.ChainOutputSet) (iotago.Address, error) {
+func addressToUnlock(transaction *axongo.Transaction, input axongo.Output, inputIndex uint16, outChains axongo.ChainOutputSet) (axongo.Address, error) {
 	switch in := input.(type) {
-	case iotago.OwnerTransitionIndependentOutput:
+	case axongo.OwnerTransitionIndependentOutput:
 		return in.Owner(), nil
 
-	case iotago.OwnerTransitionDependentOutput:
+	case axongo.OwnerTransitionDependentOutput:
 		chainID := in.ChainID()
 		if chainID.Empty() {
-			utxoChainID, is := chainID.(iotago.UTXOIDChainID)
+			utxoChainID, is := chainID.(axongo.UTXOIDChainID)
 			if !is {
-				return nil, iotago.ErrOwnerTransitionDependentOutputNonUTXOChainID
+				return nil, axongo.ErrOwnerTransitionDependentOutputNonUTXOChainID
 			}
 			//nolint:forcetypeassert // we can safely assume that this is an UTXOInput
-			chainID = utxoChainID.FromOutputID(transaction.TransactionEssence.Inputs[inputIndex].(*iotago.UTXOInput).OutputID())
+			chainID = utxoChainID.FromOutputID(transaction.TransactionEssence.Inputs[inputIndex].(*axongo.UTXOInput).OutputID())
 		}
 
 		next := outChains[chainID]
@@ -501,9 +501,9 @@ func addressToUnlock(transaction *iotago.Transaction, input iotago.Output, input
 			return in.Owner(nil)
 		}
 
-		nextOwnerTransitionDependentOutput, ok := next.(iotago.OwnerTransitionDependentOutput)
+		nextOwnerTransitionDependentOutput, ok := next.(axongo.OwnerTransitionDependentOutput)
 		if !ok {
-			return nil, iotago.ErrOwnerTransitionDependentOutputNextInvalid
+			return nil, axongo.ErrOwnerTransitionDependentOutputNextInvalid
 		}
 
 		return in.Owner(nextOwnerTransitionDependentOutput)
@@ -513,10 +513,10 @@ func addressToUnlock(transaction *iotago.Transaction, input iotago.Output, input
 	}
 }
 
-func checkExpiration(output iotago.Output, commitmentInput VMCommitmentInput, protocolParameters iotago.ProtocolParameters) (iotago.Address, error) {
+func checkExpiration(output axongo.Output, commitmentInput VMCommitmentInput, protocolParameters axongo.ProtocolParameters) (axongo.Address, error) {
 	if output.UnlockConditionSet().HasExpirationCondition() {
 		if commitmentInput == nil {
-			return nil, iotago.ErrExpirationCommitmentInputMissing
+			return nil, axongo.ErrExpirationCommitmentInputMissing
 		}
 
 		pastBoundedSlotIndex := commitmentInput.Slot + protocolParameters.MaxCommittableAge()
@@ -528,9 +528,9 @@ func checkExpiration(output iotago.Output, commitmentInput VMCommitmentInput, pr
 	return nil, nil
 }
 
-func unlockAddress(ownerAddr iotago.Address, unlock iotago.Unlock, inputIndex uint16, unlockedAddrsSet *unlockedAddressesSet, essenceMsgToSign []byte, checkUnlockOnly bool) error {
+func unlockAddress(ownerAddr axongo.Address, unlock axongo.Unlock, inputIndex uint16, unlockedAddrsSet *unlockedAddressesSet, essenceMsgToSign []byte, checkUnlockOnly bool) error {
 	switch owner := ownerAddr.(type) {
-	case iotago.ChainAddress:
+	case axongo.ChainAddress:
 		// ChainAddress can either be AccountAddress, AnchorAddress or an NFTAddress.
 		// The ChainAddress itself must have been unlocked before (e.g. by a signature unlock of a DirectUnlockableAddress),
 		// that's why we only expect a ReferentialUnlock here.
@@ -541,23 +541,23 @@ func unlockAddress(ownerAddr iotago.Address, unlock iotago.Unlock, inputIndex ui
 		// 	MultiAddress is impossible because the switch statement over the "ownerAddr" type prevents it and the SourceAllowed check would have failed.
 		//
 		// Therefore the "ReferentialUnlock" must be an "AccountUnlock", "AnchorUnlock" or "NFTUnlock".
-		referentialUnlock, isReferentialUnlock := unlock.(iotago.ReferentialUnlock)
+		referentialUnlock, isReferentialUnlock := unlock.(axongo.ReferentialUnlock)
 		if !isReferentialUnlock || !referentialUnlock.Chainable() || !referentialUnlock.SourceAllowed(ownerAddr) {
 			return ierrors.WithMessagef(
-				iotago.ErrChainAddressUnlockInvalid,
+				axongo.ErrChainAddressUnlockInvalid,
 				"input %d has a chain address of type %s but its corresponding unlock is of type %s", inputIndex, owner.Type(), unlock.Type(),
 			)
 		}
 
 		if err := unlockedAddrsSet.ReferentialUnlockNonDirectlyUnlockable(owner, inputIndex, referentialUnlock.ReferencedInputIndex(), checkUnlockOnly); err != nil {
-			return ierrors.Errorf("%w %s (%s): %w", iotago.ErrChainAddressUnlockInvalid, owner, owner.Type(), err)
+			return ierrors.Errorf("%w %s (%s): %w", axongo.ErrChainAddressUnlockInvalid, owner, owner.Type(), err)
 		}
 
-	case iotago.DirectUnlockableAddress:
+	case axongo.DirectUnlockableAddress:
 		// DirectUnlockableAddress can either be an Ed25519Address or an ImplicitAccountCreationAddress.
 		// The DirectUnlockableAddress can be unlocked by a SignatureUnlock or a ReferentialUnlock.
 		switch uBlock := unlock.(type) {
-		case iotago.ReferentialUnlock:
+		case axongo.ReferentialUnlock:
 			// ReferentialUnlock for DirectUnlockableAddress are only allowed if the unlock is not chainable, and the owner address is not a ChainAddress.
 			// This basically means that the ReferentialUnlock must be a ReferenceUnlock and the "ownerAddr" is an Ed25519Address or an ImplicitAccountCreationAddress.
 			//
@@ -567,63 +567,63 @@ func unlockAddress(ownerAddr iotago.Address, unlock iotago.Unlock, inputIndex ui
 			// 	MultiAddress is impossible because the switch statement over the "ownerAddr" type prevents it.
 			if uBlock.Chainable() || !uBlock.SourceAllowed(ownerAddr) {
 				return ierrors.WithMessagef(
-					iotago.ErrDirectUnlockableAddressUnlockInvalid,
+					axongo.ErrDirectUnlockableAddressUnlockInvalid,
 					"input %d has a non-chain address of type %s but its corresponding unlock of type %s is chainable or not allowed", inputIndex, owner.Type(), unlock.Type(),
 				)
 			}
 
 			if err := unlockedAddrsSet.ReferentialUnlockDirectlyUnlockable(owner, inputIndex, uBlock.ReferencedInputIndex(), checkUnlockOnly); err != nil {
-				return ierrors.Errorf("%w %s (%s): %w", iotago.ErrDirectUnlockableAddressUnlockInvalid, owner, owner.Type(), err)
+				return ierrors.Errorf("%w %s (%s): %w", axongo.ErrDirectUnlockableAddressUnlockInvalid, owner, owner.Type(), err)
 			}
 
-		case *iotago.SignatureUnlock:
+		case *axongo.SignatureUnlock:
 			// owner must not be unlocked already
 			if unlockedAddr, wasAlreadyUnlocked := unlockedAddrsSet.UnlockedAddrsByAddrKey[owner.Key()]; wasAlreadyUnlocked {
 				return ierrors.WithMessagef(
-					iotago.ErrDirectUnlockableAddressUnlockInvalid,
+					axongo.ErrDirectUnlockableAddressUnlockInvalid,
 					"input %d's address is already unlocked through input %d's unlock but the input uses a non referential unlock of type %s", inputIndex, unlockedAddr.UnlockedAtInputIndex, unlock.Type(),
 				)
 			}
 
 			if err := unlockedAddrsSet.SignatureUnlock(owner, essenceMsgToSign, uBlock.Signature, inputIndex, checkUnlockOnly); err != nil {
-				return ierrors.Join(iotago.ErrDirectUnlockableAddressUnlockInvalid, iotago.ErrUnlockSignatureInvalid, err)
+				return ierrors.Join(axongo.ErrDirectUnlockableAddressUnlockInvalid, axongo.ErrUnlockSignatureInvalid, err)
 			}
 
 		default:
-			return ierrors.WithMessagef(iotago.ErrDirectUnlockableAddressUnlockInvalid, "input %d has a direct unlockable address of type %s but its corresponding unlock is of type %s", inputIndex, owner.Type(), unlock.Type())
+			return ierrors.WithMessagef(axongo.ErrDirectUnlockableAddressUnlockInvalid, "input %d has a direct unlockable address of type %s but its corresponding unlock is of type %s", inputIndex, owner.Type(), unlock.Type())
 		}
 
-	case *iotago.MultiAddress:
+	case *axongo.MultiAddress:
 		switch uBlock := unlock.(type) {
 		// The MultiAddress can be unlocked by a MultiUnlock or a ReferentialUnlock.
-		case iotago.ReferentialUnlock:
+		case axongo.ReferentialUnlock:
 			// ReferentialUnlock for MultiAddress are only allowed if the unlock is not chainable, and the owner address is not a ChainAddress.
 			// This basically means that the ReferentialUnlock must be a ReferenceUnlock and the "ownerAddr" is a MultiAddress.
 			//
 			// "ownerAddr" can only be a MultiAddress here, because the switch statement over the "ownerAddr" type prevents other types.
 			if uBlock.Chainable() || !uBlock.SourceAllowed(ownerAddr) {
-				return ierrors.WithMessagef(iotago.ErrMultiAddressUnlockInvalid,
+				return ierrors.WithMessagef(axongo.ErrMultiAddressUnlockInvalid,
 					"input %d has a non-chain address of %s but its corresponding unlock of type %s is chainable or not allowed",
 					inputIndex, owner.Type(), unlock.Type(),
 				)
 			}
 
 			if err := unlockedAddrsSet.ReferentialUnlockNonDirectlyUnlockable(owner, inputIndex, uBlock.ReferencedInputIndex(), checkUnlockOnly); err != nil {
-				return ierrors.Errorf("%w %s (%s): %w", iotago.ErrMultiAddressUnlockInvalid, owner, owner.Type(), err)
+				return ierrors.Errorf("%w %s (%s): %w", axongo.ErrMultiAddressUnlockInvalid, owner, owner.Type(), err)
 			}
 
-		case *iotago.MultiUnlock:
+		case *axongo.MultiUnlock:
 			// owner must not be unlocked already
 			if unlockedAddr, wasAlreadyUnlocked := unlockedAddrsSet.UnlockedAddrsByAddrKey[owner.Key()]; wasAlreadyUnlocked {
-				return ierrors.WithMessagef(iotago.ErrMultiAddressUnlockInvalid, "input %d's address is already unlocked through input %d's unlock but the input uses a non referential unlock", inputIndex, unlockedAddr.UnlockedAtInputIndex)
+				return ierrors.WithMessagef(axongo.ErrMultiAddressUnlockInvalid, "input %d's address is already unlocked through input %d's unlock but the input uses a non referential unlock", inputIndex, unlockedAddr.UnlockedAtInputIndex)
 			}
 
 			if err := unlockedAddrsSet.MultiUnlock(owner, uBlock, essenceMsgToSign, inputIndex); err != nil {
-				return ierrors.Chain(iotago.ErrMultiAddressUnlockInvalid, err)
+				return ierrors.Chain(axongo.ErrMultiAddressUnlockInvalid, err)
 			}
 
 		default:
-			return ierrors.WithMessagef(iotago.ErrMultiAddressUnlockInvalid, "input %d has a multi address but its corresponding unlock is of type %s", inputIndex, unlock.Type())
+			return ierrors.WithMessagef(axongo.ErrMultiAddressUnlockInvalid, "input %d has a multi address but its corresponding unlock is of type %s", inputIndex, unlock.Type())
 		}
 
 	default:
@@ -635,16 +635,16 @@ func unlockAddress(ownerAddr iotago.Address, unlock iotago.Unlock, inputIndex ui
 
 // resolveUnderlyingAddress returns the underlying address in case of a restricted address.
 // this way we handle restricted addresses like normal addresses in the unlock logic.
-func resolveUnderlyingAddress(addr iotago.Address) iotago.Address {
+func resolveUnderlyingAddress(addr axongo.Address) axongo.Address {
 	switch addr := addr.(type) {
-	case *iotago.RestrictedAddress:
+	case *axongo.RestrictedAddress:
 		return addr.Address
 	default:
 		return addr
 	}
 }
 
-func unlockOutput(transaction *iotago.Transaction, commitmentInput VMCommitmentInput, input iotago.Output, unlock iotago.Unlock, inputIndex uint16, unlockedAddrsSet *unlockedAddressesSet, outChains iotago.ChainOutputSet, essenceMsgToSign []byte) error {
+func unlockOutput(transaction *axongo.Transaction, commitmentInput VMCommitmentInput, input axongo.Output, unlock axongo.Unlock, inputIndex uint16, unlockedAddrsSet *unlockedAddressesSet, outChains axongo.ChainOutputSet, essenceMsgToSign []byte) error {
 	ownerAddr, err := addressToUnlock(transaction, input, inputIndex, outChains)
 	if err != nil {
 		return ierrors.Wrapf(err, "unable to retrieve address to unlock of input %d", inputIndex)
@@ -672,7 +672,7 @@ func ExecFuncSenderUnlocked() ExecFunc {
 			// check unlocked
 			sender := resolveUnderlyingAddress(senderFeat.Address)
 			if _, isUnlocked := vmParams.WorkingSet.UnlockedAddrs[sender.Key()]; !isUnlocked {
-				return ierrors.Wrapf(iotago.ErrSenderFeatureNotUnlocked, "output %d", outputIndex)
+				return ierrors.Wrapf(axongo.ErrSenderFeatureNotUnlocked, "output %d", outputIndex)
 			}
 		}
 
@@ -686,7 +686,7 @@ func ExecFuncBalancedMana() ExecFunc {
 		txCreationSlot := vmParams.WorkingSet.Tx.CreationSlot
 		for outputID := range vmParams.WorkingSet.UTXOInputsSet {
 			if outputID.CreationSlot() > txCreationSlot {
-				return ierrors.WithMessagef(iotago.ErrInputCreationAfterTxCreation, "input %s has creation slot %d, tx creation slot %d", outputID, outputID.CreationSlot(), txCreationSlot)
+				return ierrors.WithMessagef(axongo.ErrInputCreationAfterTxCreation, "input %s has creation slot %d, tx creation slot %d", outputID, outputID.CreationSlot(), txCreationSlot)
 			}
 		}
 		manaIn := vmParams.WorkingSet.TotalManaIn
@@ -694,11 +694,11 @@ func ExecFuncBalancedMana() ExecFunc {
 
 		if manaIn < manaOut {
 			// less mana on input side than on output side => not allowed
-			return ierrors.WithMessagef(iotago.ErrInputOutputManaMismatch, "Mana in %d, Mana out %d", manaIn, manaOut)
+			return ierrors.WithMessagef(axongo.ErrInputOutputManaMismatch, "Mana in %d, Mana out %d", manaIn, manaOut)
 		} else if manaIn > manaOut {
 			// less mana on output side than on input side => check if mana burning is allowed
 			if vmParams.WorkingSet.Tx.Capabilities.CannotBurnMana() {
-				return ierrors.Chain(iotago.ErrInputOutputManaMismatch, ierrors.WithMessagef(iotago.ErrTxCapabilitiesManaBurningNotAllowed, "Mana in %d, Mana out %d", manaIn, manaOut))
+				return ierrors.Chain(axongo.ErrInputOutputManaMismatch, ierrors.WithMessagef(axongo.ErrTxCapabilitiesManaBurningNotAllowed, "Mana in %d, Mana out %d", manaIn, manaOut))
 			}
 		}
 
@@ -713,8 +713,8 @@ func ExecFuncBalancedBaseTokens() ExecFunc {
 	return func(_ VirtualMachine, vmParams *Params) error {
 		// note that due to syntactic validation of outputs, input and output base token amount sums
 		// are always within bounds of the total token supply
-		var in, out iotago.BaseToken
-		inputSumReturnAmountPerAddress := make(map[string]iotago.BaseToken)
+		var in, out axongo.BaseToken
+		inputSumReturnAmountPerAddress := make(map[string]axongo.BaseToken)
 		for inputID, input := range vmParams.WorkingSet.UTXOInputsSet {
 			in += input.BaseTokenAmount()
 
@@ -734,28 +734,28 @@ func ExecFuncBalancedBaseTokens() ExecFunc {
 			inputSumReturnAmountPerAddress[returnAddr] += returnUnlockCond.Amount
 		}
 
-		outputSimpleTransfersPerAddr := make(map[string]iotago.BaseToken)
+		outputSimpleTransfersPerAddr := make(map[string]axongo.BaseToken)
 		for _, output := range vmParams.WorkingSet.Tx.Outputs {
 			outAmount := output.BaseTokenAmount()
 			out += outAmount
 
 			// accumulate simple transfers for StorageDepositReturnUnlockCondition checks
-			if basicOutput, is := output.(*iotago.BasicOutput); is && basicOutput.IsSimpleTransfer() {
+			if basicOutput, is := output.(*axongo.BasicOutput); is && basicOutput.IsSimpleTransfer() {
 				outputSimpleTransfersPerAddr[basicOutput.Owner().Key()] += outAmount
 			}
 		}
 
 		if in != out {
-			return ierrors.WithMessagef(iotago.ErrInputOutputBaseTokenMismatch, "in %d, out %d", in, out)
+			return ierrors.WithMessagef(axongo.ErrInputOutputBaseTokenMismatch, "in %d, out %d", in, out)
 		}
 
 		for addr, returnSum := range inputSumReturnAmountPerAddress {
 			outSum, has := outputSimpleTransfersPerAddr[addr]
 			if !has {
-				return ierrors.WithMessagef(iotago.ErrReturnAmountNotFulFilled, "return amount of %d not fulfilled as there is no output for address (serialized) %s", returnSum, hexutil.EncodeHex([]byte(addr)))
+				return ierrors.WithMessagef(axongo.ErrReturnAmountNotFulFilled, "return amount of %d not fulfilled as there is no output for address (serialized) %s", returnSum, hexutil.EncodeHex([]byte(addr)))
 			}
 			if outSum < returnSum {
-				return ierrors.WithMessagef(iotago.ErrReturnAmountNotFulFilled, "return amount of %d not fulfilled as output is only %d for address (serialized) %s", returnSum, outSum, hexutil.EncodeHex([]byte(addr)))
+				return ierrors.WithMessagef(axongo.ErrReturnAmountNotFulFilled, "return amount of %d not fulfilled as output is only %d for address (serialized) %s", returnSum, outSum, hexutil.EncodeHex([]byte(addr)))
 			}
 		}
 
@@ -771,7 +771,7 @@ func ExecFuncTimelocks() ExecFunc {
 				commitment := vmParams.WorkingSet.Commitment
 
 				if commitment == nil {
-					return iotago.ErrTimelockCommitmentInputMissing
+					return axongo.ErrTimelockCommitmentInputMissing
 				}
 				futureBoundedIndex := vmParams.FutureBoundedSlotIndex(commitment.Slot)
 				if err := input.UnlockConditionSet().TimelocksExpired(futureBoundedIndex); err != nil {
@@ -790,13 +790,13 @@ func ExecFuncChainTransitions() ExecFunc {
 		for chainID, inputChain := range vmParams.WorkingSet.InChains {
 			next := vmParams.WorkingSet.OutChains[chainID]
 			if next == nil {
-				if err := vm.ChainSTVF(vmParams, iotago.ChainTransitionTypeDestroy, inputChain, nil); err != nil {
+				if err := vm.ChainSTVF(vmParams, axongo.ChainTransitionTypeDestroy, inputChain, nil); err != nil {
 					return ierrors.Wrapf(err, "invalid destruction for %s %s", inputChain.Output.Type(), chainID)
 				}
 
 				continue
 			}
-			if err := vm.ChainSTVF(vmParams, iotago.ChainTransitionTypeStateChange, inputChain, next); err != nil {
+			if err := vm.ChainSTVF(vmParams, axongo.ChainTransitionTypeStateChange, inputChain, next); err != nil {
 				return ierrors.Wrapf(err, "invalid transition for %s %s", inputChain.Output.Type(), chainID)
 			}
 		}
@@ -806,7 +806,7 @@ func ExecFuncChainTransitions() ExecFunc {
 				continue
 			}
 
-			if err := vm.ChainSTVF(vmParams, iotago.ChainTransitionTypeGenesis, nil, outputChain); err != nil {
+			if err := vm.ChainSTVF(vmParams, axongo.ChainTransitionTypeGenesis, nil, outputChain); err != nil {
 				return ierrors.Wrapf(err, "invalid creation of %s %s", outputChain.Type(), chainID)
 			}
 		}
@@ -824,12 +824,12 @@ func ExecFuncBalancedNativeTokens() ExecFunc {
 		var err error
 		vmParams.WorkingSet.InNativeTokens, err = vmParams.WorkingSet.UTXOInputs.NativeTokenSum()
 		if err != nil {
-			return ierrors.WithMessagef(iotago.ErrNativeTokenSetInvalid, "invalid input native token set: %w", err)
+			return ierrors.WithMessagef(axongo.ErrNativeTokenSetInvalid, "invalid input native token set: %w", err)
 		}
 
 		vmParams.WorkingSet.OutNativeTokens, err = vmParams.WorkingSet.Tx.Outputs.NativeTokenSum()
 		if err != nil {
-			return ierrors.Chain(iotago.ErrNativeTokenSetInvalid, err)
+			return ierrors.Chain(axongo.ErrNativeTokenSetInvalid, err)
 		}
 
 		// check invariants for when token foundry is absent
@@ -843,10 +843,10 @@ func ExecFuncBalancedNativeTokens() ExecFunc {
 
 			if vmParams.WorkingSet.Tx.Capabilities.CannotBurnNativeTokens() && (outSum == nil || inSum.Cmp(outSum) != 0) {
 				// if burning is not allowed, the input sum must be equal to the output sum
-				return ierrors.WithMessagef(iotago.ErrTxCapabilitiesNativeTokenBurningNotAllowed, "%w: native token %s is less on output (%d) than input (%d) side but burning is not allowed in the transaction and the foundry is absent for melting", iotago.ErrNativeTokenSumUnbalanced, nativeTokenID, outSum, inSum)
+				return ierrors.WithMessagef(axongo.ErrTxCapabilitiesNativeTokenBurningNotAllowed, "%w: native token %s is less on output (%d) than input (%d) side but burning is not allowed in the transaction and the foundry is absent for melting", axongo.ErrNativeTokenSumUnbalanced, nativeTokenID, outSum, inSum)
 			} else if (outSum != nil) && (inSum.Cmp(outSum) == -1) {
 				// input sum must be greater equal the output sum (burning allows it to be greater)
-				return ierrors.WithMessagef(iotago.ErrNativeTokenSumUnbalanced, "native token %s is less on input (%d) than output (%d) side but the foundry is absent for minting", nativeTokenID, inSum, outSum)
+				return ierrors.WithMessagef(axongo.ErrNativeTokenSumUnbalanced, "native token %s is less on input (%d) than output (%d) side but the foundry is absent for minting", nativeTokenID, inSum, outSum)
 			}
 		}
 
@@ -858,7 +858,7 @@ func ExecFuncBalancedNativeTokens() ExecFunc {
 			// foundry must be present when native tokens only reside on the output side
 			// as they need to get minted by it within the tx
 			if vmParams.WorkingSet.InNativeTokens[nativeTokenID] == nil {
-				return ierrors.WithMessagef(iotago.ErrNativeTokenSumUnbalanced, "native token %s is new on the output side but the foundry is not transitioning", nativeTokenID)
+				return ierrors.WithMessagef(axongo.ErrNativeTokenSumUnbalanced, "native token %s is new on the output side but the foundry is not transitioning", nativeTokenID)
 			}
 		}
 
@@ -875,10 +875,10 @@ func ExecFuncAtMostOneImplicitAccountCreationAddress() ExecFunc {
 		transactionHasImplicitAccountCreationAddress := false
 		for _, input := range vmParams.WorkingSet.UTXOInputs {
 			addressUnlockCondition := input.UnlockConditionSet().Address()
-			if input.Type() == iotago.OutputBasic && addressUnlockCondition != nil {
-				if addressUnlockCondition.Address.Type() == iotago.AddressImplicitAccountCreation {
+			if input.Type() == axongo.OutputBasic && addressUnlockCondition != nil {
+				if addressUnlockCondition.Address.Type() == axongo.AddressImplicitAccountCreation {
 					if transactionHasImplicitAccountCreationAddress {
-						return iotago.ErrMultipleImplicitAccountCreationAddresses
+						return axongo.ErrMultipleImplicitAccountCreationAddresses
 					}
 					transactionHasImplicitAccountCreationAddress = true
 				}

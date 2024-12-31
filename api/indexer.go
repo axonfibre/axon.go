@@ -3,17 +3,17 @@ package api
 import (
 	"github.com/pasztorpisti/qs"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 // IndexerResponse is the standard successful response by the indexer.
 type IndexerResponse struct {
 	// The committed slot at which these outputs where available at.
-	CommittedSlot iotago.SlotIndex `serix:""`
+	CommittedSlot axongo.SlotIndex `serix:""`
 	// The maximum count of results that are returned by the node.
 	PageSize uint32 `serix:""`
 	// The output IDs (transaction hash + output index) of the found outputs.
-	Items iotago.HexOutputIDs `serix:",lenPrefix=uint16"`
+	Items axongo.HexOutputIDs `serix:",lenPrefix=uint16"`
 	// The cursor to use for getting the next results.
 	Cursor string `serix:",omitempty,lenPrefix=uint8"`
 }
@@ -31,9 +31,9 @@ type IndexerTimelockParams struct {
 	// Filters outputs based on the presence of timelock unlock condition.
 	HasTimelock *bool `qs:"hasTimelock,omitempty"`
 	// Return outputs that are timelocked before a certain slot.
-	TimelockedBefore iotago.SlotIndex `qs:"timelockedBefore,omitempty"`
+	TimelockedBefore axongo.SlotIndex `qs:"timelockedBefore,omitempty"`
 	// Return outputs that are timelocked after a certain slot.
-	TimelockedAfter iotago.SlotIndex `qs:"timelockedAfter,omitempty"`
+	TimelockedAfter axongo.SlotIndex `qs:"timelockedAfter,omitempty"`
 }
 
 // IndexerExpirationParams define expiration query parameters.
@@ -41,9 +41,9 @@ type IndexerExpirationParams struct {
 	// Filters outputs based on the presence of expiration unlock condition.
 	HasExpiration *bool `qs:"hasExpiration,omitempty"`
 	// Return outputs that expire before a certain slot.
-	ExpiresBefore iotago.SlotIndex `qs:"expiresBefore,omitempty"`
+	ExpiresBefore axongo.SlotIndex `qs:"expiresBefore,omitempty"`
 	// Return outputs that expire after a certain slot.
-	ExpiresAfter iotago.SlotIndex `qs:"expiresAfter,omitempty"`
+	ExpiresAfter axongo.SlotIndex `qs:"expiresAfter,omitempty"`
 	// Filter outputs based on the presence of a specific return address in the expiration unlock condition.
 	ExpirationReturnAddressBech32 string `qs:"expirationReturnAddress,omitempty"`
 }
@@ -51,9 +51,9 @@ type IndexerExpirationParams struct {
 // IndexerCreationParams define creation time query parameters.
 type IndexerCreationParams struct {
 	// Return outputs that were created before a certain slot.
-	CreatedBefore iotago.SlotIndex `qs:"createdBefore,omitempty"`
+	CreatedBefore axongo.SlotIndex `qs:"createdBefore,omitempty"`
 	// Return outputs that were created after a certain slot.
-	CreatedAfter iotago.SlotIndex `qs:"createdAfter,omitempty"`
+	CreatedAfter axongo.SlotIndex `qs:"createdAfter,omitempty"`
 }
 
 // IndexerStorageDepositParams define storage deposit based query parameters.

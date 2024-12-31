@@ -3,7 +3,7 @@ package api_test
 import (
 	"testing"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/api"
 	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
@@ -20,7 +20,7 @@ func Test_RootAPIDeSerialize(t *testing.T) {
 		{
 			Name: "ok - RoutesResponse",
 			Source: &api.RoutesResponse{
-				Routes: []iotago.PrefixedStringUint8{"route1", "route2"},
+				Routes: []axongo.PrefixedStringUint8{"route1", "route2"},
 			},
 			Target: &api.RoutesResponse{},
 		},
@@ -45,7 +45,7 @@ func Test_RootAPIJSONSerialization(t *testing.T) {
 		{
 			Name: "ok - RoutesResponse",
 			Source: &api.RoutesResponse{
-				Routes: []iotago.PrefixedStringUint8{"route1", "route2"},
+				Routes: []axongo.PrefixedStringUint8{"route1", "route2"},
 			},
 			Target: `{
 	"routes": [

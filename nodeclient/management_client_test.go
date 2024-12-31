@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/api"
 	"github.com/axonfibre/axon.go/v4/nodeclient"
 )
@@ -17,7 +17,7 @@ func TestManagementClient_Enabled(t *testing.T) {
 	defer gock.Off()
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.ManagementPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -32,7 +32,7 @@ func TestManagementClient_Disabled(t *testing.T) {
 	defer gock.Off()
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{"someplugin/v1"},
+		Routes: []axongo.PrefixedStringUint8{"someplugin/v1"},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -47,7 +47,7 @@ func TestManagementClient_PeerByID(t *testing.T) {
 	defer gock.Off()
 
 	originRes := &api.PeerInfo{
-		MultiAddresses: []iotago.PrefixedStringUint8{iotago.PrefixedStringUint8(fmt.Sprintf("/ip4/127.0.0.1/tcp/15600/p2p/%s", peerID))},
+		MultiAddresses: []axongo.PrefixedStringUint8{axongo.PrefixedStringUint8(fmt.Sprintf("/ip4/127.0.0.1/tcp/15600/p2p/%s", peerID))},
 		ID:             peerID,
 		Connected:      true,
 		Relation:       "autopeered",
@@ -58,7 +58,7 @@ func TestManagementClient_PeerByID(t *testing.T) {
 	}
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.ManagementPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -83,7 +83,7 @@ func TestManagementClient_RemovePeerByID(t *testing.T) {
 		Status(200)
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.ManagementPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -106,7 +106,7 @@ func TestManagementClient_Peers(t *testing.T) {
 		Peers: []*api.PeerInfo{
 			{
 				ID:             peerID,
-				MultiAddresses: []iotago.PrefixedStringUint8{iotago.PrefixedStringUint8(fmt.Sprintf("/ip4/127.0.0.1/tcp/15600/p2p/%s", peerID))},
+				MultiAddresses: []axongo.PrefixedStringUint8{axongo.PrefixedStringUint8(fmt.Sprintf("/ip4/127.0.0.1/tcp/15600/p2p/%s", peerID))},
 				Relation:       "autopeered",
 				GossipMetrics: &api.PeerGossipMetrics{
 					PacketsReceived: 1,
@@ -116,7 +116,7 @@ func TestManagementClient_Peers(t *testing.T) {
 			},
 			{
 				ID:             peerID2,
-				MultiAddresses: []iotago.PrefixedStringUint8{iotago.PrefixedStringUint8(fmt.Sprintf("/ip4/127.0.0.1/tcp/15600/p2p/%s", peerID2))},
+				MultiAddresses: []axongo.PrefixedStringUint8{axongo.PrefixedStringUint8(fmt.Sprintf("/ip4/127.0.0.1/tcp/15600/p2p/%s", peerID2))},
 				Alias:          "Peer2",
 				Relation:       "static",
 				GossipMetrics: &api.PeerGossipMetrics{
@@ -129,7 +129,7 @@ func TestManagementClient_Peers(t *testing.T) {
 	}
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.ManagementPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -152,7 +152,7 @@ func TestManagementClient_AddPeer(t *testing.T) {
 
 	originRes := &api.PeerInfo{
 		ID:             peerID,
-		MultiAddresses: []iotago.PrefixedStringUint8{iotago.PrefixedStringUint8(multiAddr)},
+		MultiAddresses: []axongo.PrefixedStringUint8{axongo.PrefixedStringUint8(multiAddr)},
 		Relation:       "autopeered",
 		Connected:      true,
 		GossipMetrics: &api.PeerGossipMetrics{
@@ -164,7 +164,7 @@ func TestManagementClient_AddPeer(t *testing.T) {
 	req := &api.AddPeerRequest{MultiAddress: multiAddr}
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.ManagementPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -192,7 +192,7 @@ func TestManagementClient_PruneDatabaseBySize(t *testing.T) {
 	req := &api.PruneDatabaseRequest{TargetDatabaseSize: targetSize}
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.ManagementPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -211,7 +211,7 @@ func TestManagementClient_PruneDatabaseBySize(t *testing.T) {
 func TestManagementClient_PruneDatabaseByEpoch(t *testing.T) {
 	defer gock.Off()
 
-	epoch := iotago.EpochIndex(1)
+	epoch := axongo.EpochIndex(1)
 
 	originRes := &api.PruneDatabaseResponse{
 		Epoch: 1,
@@ -220,7 +220,7 @@ func TestManagementClient_PruneDatabaseByEpoch(t *testing.T) {
 	req := &api.PruneDatabaseRequest{Epoch: epoch}
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.ManagementPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -239,7 +239,7 @@ func TestManagementClient_PruneDatabaseByEpoch(t *testing.T) {
 func TestManagementClient_PruneDatabaseByDepth(t *testing.T) {
 	defer gock.Off()
 
-	depth := iotago.EpochIndex(1)
+	depth := axongo.EpochIndex(1)
 
 	originRes := &api.PruneDatabaseResponse{
 		Epoch: 1,
@@ -248,7 +248,7 @@ func TestManagementClient_PruneDatabaseByDepth(t *testing.T) {
 	req := &api.PruneDatabaseRequest{Depth: depth}
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.ManagementPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -273,7 +273,7 @@ func TestManagementClient_CreateSnapshot(t *testing.T) {
 	}
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.ManagementPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.ManagementPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)

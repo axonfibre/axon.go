@@ -1,4 +1,4 @@
-package iotago
+package axongo
 
 import (
 	"crypto/ed25519"

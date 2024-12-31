@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/axonfibre/fibre.go/serializer/v2/serix"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
@@ -33,7 +33,7 @@ func (test *DeSerializeTest) assertBinaryEncodeDecode(t *testing.T) {
 		require.NoError(t, err, "binary encoding")
 	}
 
-	if src, ok := test.Source.(iotago.Sizer); ok {
+	if src, ok := test.Source.(axongo.Sizer); ok {
 		require.Len(t, serixData, src.Size(), "binary encoding")
 	}
 

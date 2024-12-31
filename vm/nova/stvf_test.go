@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 	"github.com/axonfibre/axon.go/v4/vm"
 )
@@ -40,39 +40,39 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 
 	exampleAddress := tpkg.RandEd25519Address()
 
-	exampleExistingFoundryOutput := &iotago.FoundryOutput{
+	exampleExistingFoundryOutput := &axongo.FoundryOutput{
 		Amount:       100,
 		SerialNumber: 5,
-		TokenScheme: &iotago.SimpleTokenScheme{
+		TokenScheme: &axongo.SimpleTokenScheme{
 			MintedTokens:  new(big.Int).SetInt64(1000),
 			MeltedTokens:  big.NewInt(0),
 			MaximumSupply: new(big.Int).SetInt64(10000),
 		},
-		UnlockConditions: iotago.FoundryOutputUnlockConditions{
-			&iotago.ImmutableAccountUnlockCondition{Address: exampleAccountID.ToAddress().(*iotago.AccountAddress)},
+		UnlockConditions: axongo.FoundryOutputUnlockConditions{
+			&axongo.ImmutableAccountUnlockCondition{Address: exampleAccountID.ToAddress().(*axongo.AccountAddress)},
 		},
 	}
 	exampleExistingFoundryOutputFoundryID := exampleExistingFoundryOutput.MustFoundryID()
 
-	currentEpoch := iotago.EpochIndex(20)
+	currentEpoch := axongo.EpochIndex(20)
 	currentSlot := tpkg.ZeroCostTestAPI.TimeProvider().EpochStart(currentEpoch)
 
-	blockIssuerPubKey := iotago.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(tpkg.Rand32ByteArray())
-	exampleBlockIssuerFeature := &iotago.BlockIssuerFeature{
-		BlockIssuerKeys: iotago.NewBlockIssuerKeys(blockIssuerPubKey),
+	blockIssuerPubKey := axongo.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(tpkg.Rand32ByteArray())
+	exampleBlockIssuerFeature := &axongo.BlockIssuerFeature{
+		BlockIssuerKeys: axongo.NewBlockIssuerKeys(blockIssuerPubKey),
 		ExpirySlot:      currentSlot + tpkg.ZeroCostTestAPI.ProtocolParameters().MaxCommittableAge(),
 	}
 
-	exampleBIC := map[iotago.AccountID]iotago.BlockIssuanceCredits{
+	exampleBIC := map[axongo.AccountID]axongo.BlockIssuanceCredits{
 		exampleAccountID: 100,
 	}
 
 	type test struct {
 		name      string
 		input     *vm.ChainOutputWithIDs
-		next      *iotago.AccountOutput
+		next      *axongo.AccountOutput
 		nextMut   map[string]fieldMutations
-		transType iotago.ChainTransitionType
+		transType axongo.ChainTransitionType
 		svCtx     *vm.Params
 		wantErr   error
 	}
@@ -80,27 +80,27 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 	tests := []*test{
 		{
 			name: "ok - genesis transition",
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
-				AccountID: iotago.AccountID{},
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				AccountID: axongo.AccountID{},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				ImmutableFeatures: iotago.AccountOutputImmFeatures{
-					&iotago.IssuerFeature{Address: exampleIssuer},
+				ImmutableFeatures: axongo.AccountOutputImmFeatures{
+					&axongo.IssuerFeature{Address: exampleIssuer},
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -109,38 +109,38 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 		},
 		{
 			name: "ok - block issuer genesis transition",
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
-				AccountID: iotago.AccountID{},
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				AccountID: axongo.AccountID{},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				ImmutableFeatures: iotago.AccountOutputImmFeatures{
-					&iotago.IssuerFeature{Address: exampleIssuer},
+				ImmutableFeatures: axongo.AccountOutputImmFeatures{
+					&axongo.IssuerFeature{Address: exampleIssuer},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      1000,
 					},
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 900,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: 900,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -149,118 +149,118 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 		},
 		{
 			name: "fail - block issuer genesis expiry too early",
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
-				AccountID: iotago.AccountID{},
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				AccountID: axongo.AccountID{},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				ImmutableFeatures: iotago.AccountOutputImmFeatures{
-					&iotago.IssuerFeature{Address: exampleIssuer},
+				ImmutableFeatures: axongo.AccountOutputImmFeatures{
+					&axongo.IssuerFeature{Address: exampleIssuer},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      1000,
 					},
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 10001,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: 10001,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrBlockIssuerExpiryTooEarly,
+			wantErr: axongo.ErrBlockIssuerExpiryTooEarly,
 		},
 		{
 			name: "fail - block issuer genesis expired but within MCA",
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
-				AccountID: iotago.AccountID{},
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				AccountID: axongo.AccountID{},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				ImmutableFeatures: iotago.AccountOutputImmFeatures{
-					&iotago.IssuerFeature{Address: exampleIssuer},
+				ImmutableFeatures: axongo.AccountOutputImmFeatures{
+					&axongo.IssuerFeature{Address: exampleIssuer},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      1000,
 					},
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 991,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: 991,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrBlockIssuerExpiryTooEarly,
+			wantErr: axongo.ErrBlockIssuerExpiryTooEarly,
 		},
 		{
 			name: "ok - staking genesis transition",
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
-				AccountID: iotago.AccountID{},
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				AccountID: axongo.AccountID{},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.StakingFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.StakingFeature{
 						StakedAmount: 50,
 						FixedCost:    5,
 						StartEpoch:   currentEpoch,
-						EndEpoch:     iotago.MaxEpochIndex,
+						EndEpoch:     axongo.MaxEpochIndex,
 					},
 					exampleBlockIssuerFeature,
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
@@ -270,55 +270,55 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 		},
 		{
 			name: "fail - staking genesis start epoch invalid",
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
-				AccountID: iotago.AccountID{},
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				AccountID: axongo.AccountID{},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.StakingFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.StakingFeature{
 						StakedAmount: 50,
 						FixedCost:    5,
 						StartEpoch:   currentEpoch - 2,
-						EndEpoch:     iotago.MaxEpochIndex,
+						EndEpoch:     axongo.MaxEpochIndex,
 					},
 					exampleBlockIssuerFeature,
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
 				},
 			},
-			wantErr: iotago.ErrStakingStartEpochInvalid,
+			wantErr: axongo.ErrStakingStartEpochInvalid,
 		},
 		{
 			name: "fail - staking genesis end epoch too early",
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
-				AccountID: iotago.AccountID{},
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				AccountID: axongo.AccountID{},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.StakingFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.StakingFeature{
 						StakedAmount: 50,
 						FixedCost:    5,
 						StartEpoch:   currentEpoch,
@@ -328,41 +328,41 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
 				},
 			},
-			wantErr: iotago.ErrStakingEndEpochTooEarly,
+			wantErr: axongo.ErrStakingEndEpochTooEarly,
 		},
 		{
 			name: "ok - valid staking transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.StakingFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.StakingFeature{
 							StakedAmount: 100,
 							FixedCost:    50,
 							StartEpoch:   currentEpoch,
@@ -372,14 +372,14 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.StakingFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.StakingFeature{
 						StakedAmount: 100,
 						FixedCost:    50,
 						StartEpoch:   currentEpoch,
@@ -388,21 +388,21 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					exampleBlockIssuerFeature,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
@@ -414,25 +414,25 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
+					Features: axongo.AccountOutputFeatures{
 						exampleBlockIssuerFeature,
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.StakingFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.StakingFeature{
 						StakedAmount: 100,
 						FixedCost:    50,
 						StartEpoch:   currentEpoch,
@@ -441,19 +441,19 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					exampleBlockIssuerFeature,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
@@ -465,25 +465,25 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
+					Features: axongo.AccountOutputFeatures{
 						exampleBlockIssuerFeature,
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.StakingFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.StakingFeature{
 						StakedAmount: 100,
 						FixedCost:    50,
 						StartEpoch:   currentEpoch - 5,
@@ -492,89 +492,89 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					exampleBlockIssuerFeature,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
 				},
 			},
-			wantErr: iotago.ErrStakingStartEpochInvalid,
+			wantErr: axongo.ErrStakingStartEpochInvalid,
 		},
 		{
 			name: "fail - negative BIC during account state transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
+					Features: axongo.AccountOutputFeatures{
 						exampleBlockIssuerFeature,
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
+				Features: axongo.AccountOutputFeatures{
 					exampleBlockIssuerFeature,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
-					BIC: map[iotago.AccountID]iotago.BlockIssuanceCredits{
+					BIC: map[axongo.AccountID]axongo.BlockIssuanceCredits{
 						exampleAccountID: -100,
 					},
 				},
 			},
-			wantErr: iotago.ErrAccountLocked,
+			wantErr: axongo.ErrAccountLocked,
 		},
 		{
 			name: "fail - removing staking feature before end epoch",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.StakingFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.StakingFeature{
 							StakedAmount: 100,
 							FixedCost:    50,
 							StartEpoch:   currentEpoch,
@@ -584,51 +584,51 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
+				Features: axongo.AccountOutputFeatures{
 					exampleBlockIssuerFeature,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
 				},
 			},
-			wantErr: iotago.ErrStakingFeatureRemovedBeforeUnbonding,
+			wantErr: axongo.ErrStakingFeatureRemovedBeforeUnbonding,
 		},
 		{
 			name: "fail - changing staking feature's staked amount",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.StakingFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.StakingFeature{
 							StakedAmount: 100,
 							FixedCost:    50,
 							StartEpoch:   currentEpoch,
@@ -638,14 +638,14 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.StakingFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.StakingFeature{
 						StakedAmount: 90,
 						FixedCost:    50,
 						StartEpoch:   currentEpoch,
@@ -654,41 +654,41 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					exampleBlockIssuerFeature,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
 				},
 			},
-			wantErr: iotago.ErrStakingFeatureModifiedBeforeUnbonding,
+			wantErr: axongo.ErrStakingFeatureModifiedBeforeUnbonding,
 		},
 		{
 			name: "fail - reducing staking feature's end epoch by more than the unbonding period",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.StakingFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.StakingFeature{
 							StakedAmount: 100,
 							FixedCost:    50,
 							StartEpoch:   currentEpoch,
@@ -698,14 +698,14 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.StakingFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.StakingFeature{
 						StakedAmount: 100,
 						FixedCost:    50,
 						StartEpoch:   currentEpoch,
@@ -714,41 +714,41 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					exampleBlockIssuerFeature,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
 				},
 			},
-			wantErr: iotago.ErrStakingEndEpochTooEarly,
+			wantErr: axongo.ErrStakingEndEpochTooEarly,
 		},
 		{
 			name: "fail - expired staking feature removed without specifying reward input",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(1000, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.StakingFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.StakingFeature{
 							StakedAmount: 50,
 							FixedCost:    5,
 							StartEpoch:   currentEpoch - 10,
@@ -758,51 +758,51 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
+				Features: axongo.AccountOutputFeatures{
 					exampleBlockIssuerFeature,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
 				},
 			},
-			wantErr: iotago.ErrStakingRewardInputMissing,
+			wantErr: axongo.ErrStakingRewardInputMissing,
 		},
 		{
 			name: "fail - changing an expired staking feature without claiming",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(1000, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.StakingFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.StakingFeature{
 							StakedAmount: 50,
 							FixedCost:    5,
 							StartEpoch:   currentEpoch - 10,
@@ -812,14 +812,14 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.StakingFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.StakingFeature{
 						StakedAmount: 80,
 						FixedCost:    5,
 						StartEpoch:   currentEpoch,
@@ -828,41 +828,41 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					exampleBlockIssuerFeature,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
 				},
 			},
-			wantErr: iotago.ErrStakingRewardInputMissing,
+			wantErr: axongo.ErrStakingRewardInputMissing,
 		},
 		{
 			name: "fail - claiming rewards of an expired staking feature without resetting start epoch",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(1000, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.StakingFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.StakingFeature{
 							StakedAmount: 50,
 							FixedCost:    5,
 							StartEpoch:   currentEpoch - 10,
@@ -872,14 +872,14 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.StakingFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.StakingFeature{
 						StakedAmount: 50,
 						FixedCost:    5,
 						StartEpoch:   currentEpoch - 10,
@@ -888,44 +888,44 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					exampleBlockIssuerFeature,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
-					Rewards: map[iotago.ChainID]iotago.Mana{
+					Rewards: map[axongo.ChainID]axongo.Mana{
 						exampleAccountID: 200,
 					},
 				},
 			},
-			wantErr: iotago.ErrStakingStartEpochInvalid,
+			wantErr: axongo.ErrStakingStartEpochInvalid,
 		},
 		{
 			name: "fail - claiming rewards without removing staking feature",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(1000, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.StakingFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.StakingFeature{
 							StakedAmount: 50,
 							FixedCost:    5,
 							StartEpoch:   currentEpoch - 10,
@@ -935,14 +935,14 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.StakingFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.StakingFeature{
 						StakedAmount: 50,
 						FixedCost:    5,
 						StartEpoch:   currentEpoch - 10,
@@ -951,50 +951,50 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					exampleBlockIssuerFeature,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC: exampleBIC,
-					Rewards: map[iotago.ChainID]iotago.Mana{
+					Rewards: map[axongo.ChainID]axongo.Mana{
 						exampleAccountID: 200,
 					},
 				},
 			},
-			wantErr: iotago.ErrStakingRewardClaimingInvalid,
+			wantErr: axongo.ErrStakingRewardClaimingInvalid,
 		},
 		{
 			name: "fail - destroy account with expired staking feature but without claiming rewards",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(1000, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.StakingFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.StakingFeature{
 							StakedAmount: 50,
 							FixedCost:    5,
 							StartEpoch:   currentEpoch - 10,
 							EndEpoch:     currentEpoch - 5,
 						},
-						&iotago.BlockIssuerFeature{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      currentSlot - 50,
 						},
@@ -1002,51 +1002,51 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 				},
 			},
 			next:      nil,
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 					BIC:     exampleBIC,
-					Rewards: map[iotago.ChainID]iotago.Mana{},
+					Rewards: map[axongo.ChainID]axongo.Mana{},
 				},
 			},
-			wantErr: iotago.ErrStakingRewardInputMissing,
+			wantErr: axongo.ErrStakingRewardInputMissing,
 		},
 		{
 			name: "ok - destroy transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: tpkg.RandAccountAddress().AccountID(),
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
 				},
 			},
 			next:      nil,
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -1058,14 +1058,14 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1000,
 						},
@@ -1073,41 +1073,41 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 				},
 			},
 			next:      nil,
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 1001,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: 1001,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
-					BIC: map[iotago.AccountID]iotago.BlockIssuanceCredits{
+					BIC: map[axongo.AccountID]axongo.BlockIssuanceCredits{
 						exampleAccountID: -1,
 					},
 				},
 			},
-			wantErr: iotago.ErrAccountLocked,
+			wantErr: axongo.ErrAccountLocked,
 		},
 		{
 			name: "fail - destroy block issuer account no BIC provided",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1000,
 						},
@@ -1115,37 +1115,37 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 				},
 			},
 			next:      nil,
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 1001,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: 1001,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrBlockIssuanceCreditInputMissing,
+			wantErr: axongo.ErrBlockIssuanceCreditInputMissing,
 		},
 		{
 			name: "fail - non-expired block issuer destroy transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: tpkg.RandAccountAddress().AccountID(),
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1000,
 						},
@@ -1153,38 +1153,38 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 				},
 			},
 			next:      nil,
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 1000,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: 1000,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrBlockIssuerNotExpired,
+			wantErr: axongo.ErrBlockIssuerNotExpired,
 		},
 		{
 			name: "ok - expired block issuer destroy transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1000,
 						},
@@ -1192,23 +1192,23 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 				},
 			},
 			next:      nil,
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 1001,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					BIC: map[iotago.AccountID]iotago.BlockIssuanceCredits{
+					BIC: map[axongo.AccountID]axongo.BlockIssuanceCredits{
 						exampleAccountID: 0,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							Inputs:       nil,
 							CreationSlot: 1001,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -1220,95 +1220,95 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1000,
 						},
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{},
+				Features: axongo.AccountOutputFeatures{},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 999,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					BIC: map[iotago.AccountID]iotago.BlockIssuanceCredits{
+					BIC: map[axongo.AccountID]axongo.BlockIssuanceCredits{
 						exampleAccountID: 0,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							Inputs:       nil,
 							CreationSlot: 999,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrBlockIssuerNotExpired,
+			wantErr: axongo.ErrBlockIssuerNotExpired,
 		},
 		{
 			name: "ok - remove expired block issuer feature transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1000,
 						},
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{},
+				Features: axongo.AccountOutputFeatures{},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 1001,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					BIC: map[iotago.AccountID]iotago.BlockIssuanceCredits{
+					BIC: map[axongo.AccountID]axongo.BlockIssuanceCredits{
 						exampleAccountID: 0,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							Inputs:       nil,
 							CreationSlot: 1001,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -1319,44 +1319,44 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 			name: "ok - foundry counter increased by number of new foundries",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
 					FoundryCounter: 5,
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    200,
 				AccountID: exampleAccountID,
 				// mutating owner
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
 				FoundryCounter: 7,
-				Features: iotago.AccountOutputFeatures{
-					&iotago.SenderFeature{Address: exampleAddress},
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("1337")}},
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.SenderFeature{Address: exampleAddress},
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("1337")}},
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      1015,
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleAddress.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 990,
 					},
 					BIC: exampleBIC,
-					InChains: map[iotago.ChainID]*vm.ChainOutputWithIDs{
+					InChains: map[axongo.ChainID]*vm.ChainOutputWithIDs{
 						// serial number 5
 						exampleExistingFoundryOutputFoundryID: {
 							ChainID:  exampleExistingFoundryOutputFoundryID,
@@ -1364,27 +1364,27 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 							Output:   exampleExistingFoundryOutput,
 						},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: 900,
 							Inputs:       nil,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything())},
-						Outputs: iotago.TxEssenceOutputs{
-							&iotago.FoundryOutput{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything())},
+						Outputs: axongo.TxEssenceOutputs{
+							&axongo.FoundryOutput{
 								Amount:       100,
 								SerialNumber: 6,
-								TokenScheme:  &iotago.SimpleTokenScheme{},
-								UnlockConditions: iotago.FoundryOutputUnlockConditions{
-									&iotago.ImmutableAccountUnlockCondition{Address: exampleAccountID.ToAddress().(*iotago.AccountAddress)},
+								TokenScheme:  &axongo.SimpleTokenScheme{},
+								UnlockConditions: axongo.FoundryOutputUnlockConditions{
+									&axongo.ImmutableAccountUnlockCondition{Address: exampleAccountID.ToAddress().(*axongo.AccountAddress)},
 								},
 							},
-							&iotago.FoundryOutput{
+							&axongo.FoundryOutput{
 								Amount:       100,
 								SerialNumber: 7,
-								TokenScheme:  &iotago.SimpleTokenScheme{},
-								UnlockConditions: iotago.FoundryOutputUnlockConditions{
-									&iotago.ImmutableAccountUnlockCondition{Address: exampleAccountID.ToAddress().(*iotago.AccountAddress)},
+								TokenScheme:  &axongo.SimpleTokenScheme{},
+								UnlockConditions: axongo.FoundryOutputUnlockConditions{
+									&axongo.ImmutableAccountUnlockCondition{Address: exampleAccountID.ToAddress().(*axongo.AccountAddress)},
 								},
 							},
 						},
@@ -1398,53 +1398,53 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1000,
 						},
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.SenderFeature{Address: exampleAddress},
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.SenderFeature{Address: exampleAddress},
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      1000,
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 990,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleAddress.Key(): {UnlockedAtInputIndex: 0},
 					},
-					BIC: map[iotago.AccountID]iotago.BlockIssuanceCredits{
+					BIC: map[axongo.AccountID]axongo.BlockIssuanceCredits{
 						exampleAccountID: 10,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							Inputs:       nil,
 							CreationSlot: 990,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -1455,331 +1455,331 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 			name: "fail - update account immutable features",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					ImmutableFeatures: iotago.AccountOutputImmFeatures{
-						&iotago.BlockIssuerFeature{
+					ImmutableFeatures: axongo.AccountOutputImmFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      900,
 						},
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    200,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				ImmutableFeatures: iotago.AccountOutputImmFeatures{
-					&iotago.BlockIssuerFeature{
+				ImmutableFeatures: axongo.AccountOutputImmFeatures{
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      999,
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleAddress.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrChainOutputImmutableFeaturesChanged,
+			wantErr: axongo.ErrChainOutputImmutableFeaturesChanged,
 		},
 		{
 			name: "fail - update expired block issuer feature with extending expiration before MCA",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      900,
 						},
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.SenderFeature{Address: exampleAddress},
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.SenderFeature{Address: exampleAddress},
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      999,
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 990,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleAddress.Key(): {UnlockedAtInputIndex: 0},
 					},
-					BIC: map[iotago.AccountID]iotago.BlockIssuanceCredits{
+					BIC: map[axongo.AccountID]axongo.BlockIssuanceCredits{
 						exampleAccountID: 10,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							Inputs:       nil,
 							CreationSlot: 990,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrBlockIssuerExpiryTooEarly,
+			wantErr: axongo.ErrBlockIssuerExpiryTooEarly,
 		},
 		{
 			name: "fail - update expired block issuer feature with extending expiration to the past before MCA",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1100,
 						},
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.SenderFeature{Address: exampleAddress},
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.SenderFeature{Address: exampleAddress},
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      999,
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 990,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleAddress.Key(): {UnlockedAtInputIndex: 0},
 					},
-					BIC: map[iotago.AccountID]iotago.BlockIssuanceCredits{
+					BIC: map[axongo.AccountID]axongo.BlockIssuanceCredits{
 						exampleAccountID: 10,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							Inputs:       nil,
 							CreationSlot: 990,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrBlockIssuerExpiryTooEarly,
+			wantErr: axongo.ErrBlockIssuerExpiryTooEarly,
 		},
 		{
 			name: "fail - update block issuer account with negative BIC",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1000,
 						},
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("1337")}},
-					&iotago.SenderFeature{Address: exampleAddress},
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("1337")}},
+					&axongo.SenderFeature{Address: exampleAddress},
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      1000,
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 900,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleAddress.Key(): {UnlockedAtInputIndex: 0},
 					},
-					BIC: map[iotago.AccountID]iotago.BlockIssuanceCredits{
+					BIC: map[axongo.AccountID]axongo.BlockIssuanceCredits{
 						exampleAccountID: -1,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							Inputs:       nil,
 							CreationSlot: 900,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrAccountLocked,
+			wantErr: axongo.ErrAccountLocked,
 		},
 		{
 			name: "fail - update block issuer account without BIC provided",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1000,
 						},
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.SenderFeature{Address: exampleAddress},
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.SenderFeature{Address: exampleAddress},
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      1000,
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 900,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleAddress.Key(): {UnlockedAtInputIndex: 0},
 					},
 
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: 900,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrBlockIssuanceCreditInputMissing,
+			wantErr: axongo.ErrBlockIssuanceCreditInputMissing,
 		},
 		{
 			name: "ok - update block issuer feature expiration to earlier slot",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1000,
 						},
 					},
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("1337")}},
-					&iotago.SenderFeature{Address: exampleAddress},
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("1337")}},
+					&axongo.SenderFeature{Address: exampleAddress},
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      999,
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 900,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleAddress.Key(): {UnlockedAtInputIndex: 0},
 					},
-					BIC: map[iotago.AccountID]iotago.BlockIssuanceCredits{
+					BIC: map[axongo.AccountID]axongo.BlockIssuanceCredits{
 						exampleAccountID: 10,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: 900,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -1791,14 +1791,14 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				ChainID:  exampleAccountID,
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:    100,
 					AccountID: exampleAccountID,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.BlockIssuerFeature{
+					Features: axongo.AccountOutputFeatures{
+						&axongo.BlockIssuerFeature{
 							BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 							ExpirySlot:      1000,
 						},
@@ -1806,32 +1806,32 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					FoundryCounter: 5,
 				},
 			},
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    100,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: exampleAddress},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: exampleAddress},
 				},
 				FoundryCounter: 5,
-				Features: iotago.AccountOutputFeatures{
-					&iotago.SenderFeature{Address: exampleAddress},
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.SenderFeature{Address: exampleAddress},
+					&axongo.BlockIssuerFeature{
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(1),
 						ExpirySlot:      1000,
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 0,
 					},
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleAddress.Key(): {UnlockedAtInputIndex: 0},
 					},
-					InChains: map[iotago.ChainID]*vm.ChainOutputWithIDs{
+					InChains: map[axongo.ChainID]*vm.ChainOutputWithIDs{
 						// serial number 5
 						exampleExistingFoundryOutputFoundryID: {
 							ChainID:  exampleExistingFoundryOutputFoundryID,
@@ -1839,29 +1839,29 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 							Output:   exampleExistingFoundryOutput,
 						},
 					},
-					BIC: map[iotago.AccountID]iotago.BlockIssuanceCredits{
+					BIC: map[axongo.AccountID]axongo.BlockIssuanceCredits{
 						exampleAccountID: 10,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							Inputs:       nil,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything())},
-						Outputs: iotago.TxEssenceOutputs{
-							&iotago.FoundryOutput{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything())},
+						Outputs: axongo.TxEssenceOutputs{
+							&axongo.FoundryOutput{
 								Amount:       100,
 								SerialNumber: 6,
-								TokenScheme:  &iotago.SimpleTokenScheme{},
-								UnlockConditions: iotago.FoundryOutputUnlockConditions{
-									&iotago.ImmutableAccountUnlockCondition{Address: exampleAccountID.ToAddress().(*iotago.AccountAddress)},
+								TokenScheme:  &axongo.SimpleTokenScheme{},
+								UnlockConditions: axongo.FoundryOutputUnlockConditions{
+									&axongo.ImmutableAccountUnlockCondition{Address: exampleAccountID.ToAddress().(*axongo.AccountAddress)},
 								},
 							},
-							&iotago.FoundryOutput{
+							&axongo.FoundryOutput{
 								Amount:       100,
 								SerialNumber: 7,
-								TokenScheme:  &iotago.SimpleTokenScheme{},
-								UnlockConditions: iotago.FoundryOutputUnlockConditions{
-									&iotago.ImmutableAccountUnlockCondition{Address: exampleAccountID.ToAddress().(*iotago.AccountAddress)},
+								TokenScheme:  &axongo.SimpleTokenScheme{},
+								UnlockConditions: axongo.FoundryOutputUnlockConditions{
+									&axongo.ImmutableAccountUnlockCondition{Address: exampleAccountID.ToAddress().(*axongo.AccountAddress)},
 								},
 							},
 						},
@@ -1874,15 +1874,15 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 			name: "fail - invalid foundry counters",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AccountOutput{
+				Output: &axongo.AccountOutput{
 					Amount:         100,
 					AccountID:      exampleAccountID,
 					FoundryCounter: 5,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: exampleAddress},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: exampleAddress},
 					},
-					ImmutableFeatures: iotago.AccountOutputImmFeatures{
-						&iotago.IssuerFeature{Address: exampleIssuer},
+					ImmutableFeatures: axongo.AccountOutputImmFeatures{
+						&axongo.IssuerFeature{Address: exampleIssuer},
 					},
 				},
 			},
@@ -1894,21 +1894,21 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 					"FoundryCounter": uint32(7),
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
 					InChains:      vm.ChainInputSet{},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrAccountInvalidFoundryCounter,
+			wantErr: axongo.ErrAccountInvalidFoundryCounter,
 		},
 	}
 
@@ -1918,7 +1918,7 @@ func TestAccountOutput_ValidateStateTransition(t *testing.T) {
 		if tt.nextMut != nil {
 			for mutName, muts := range tt.nextMut {
 				t.Run(fmt.Sprintf("%s_%s", tt.name, mutName), func(t *testing.T) {
-					cpy := copyObjectAndMutate(t, tt.input.Output, muts).(*iotago.AccountOutput)
+					cpy := copyObjectAndMutate(t, tt.input.Output, muts).(*axongo.AccountOutput)
 
 					createWorkingSet(t, tt.input, tt.svCtx.WorkingSet)
 
@@ -1956,9 +1956,9 @@ func TestAnchorOutput_ValidateStateTransition(t *testing.T) {
 	type test struct {
 		name      string
 		input     *vm.ChainOutputWithIDs
-		next      *iotago.AnchorOutput
+		next      *axongo.AnchorOutput
 		nextMut   map[string]fieldMutations
-		transType iotago.ChainTransitionType
+		transType axongo.ChainTransitionType
 		svCtx     *vm.Params
 		wantErr   error
 	}
@@ -1966,28 +1966,28 @@ func TestAnchorOutput_ValidateStateTransition(t *testing.T) {
 	tests := []*test{
 		{
 			name: "ok - genesis transition",
-			next: &iotago.AnchorOutput{
+			next: &axongo.AnchorOutput{
 				Amount:   100,
-				AnchorID: iotago.AnchorID{},
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
-					&iotago.StateControllerAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-					&iotago.GovernorAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				AnchorID: axongo.AnchorID{},
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
+					&axongo.StateControllerAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					&axongo.GovernorAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				ImmutableFeatures: iotago.AnchorOutputImmFeatures{
-					&iotago.IssuerFeature{Address: exampleIssuer},
+				ImmutableFeatures: axongo.AnchorOutputImmFeatures{
+					&axongo.IssuerFeature{Address: exampleIssuer},
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -1998,25 +1998,25 @@ func TestAnchorOutput_ValidateStateTransition(t *testing.T) {
 			name: "ok - destroy transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AnchorOutput{
+				Output: &axongo.AnchorOutput{
 					Amount:   100,
 					AnchorID: tpkg.RandAnchorAddress().AnchorID(),
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
 					},
 				},
 			},
 			next:      nil,
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -2027,50 +2027,50 @@ func TestAnchorOutput_ValidateStateTransition(t *testing.T) {
 			name: "ok - gov transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AnchorOutput{
+				Output: &axongo.AnchorOutput{
 					Amount:   100,
 					AnchorID: exampleAnchorID,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
 					},
 					StateIndex: 10,
-					Features: iotago.AnchorOutputFeatures{
-						&iotago.StateMetadataFeature{Entries: iotago.StateMetadataFeatureEntries{"data": []byte("1337")}},
+					Features: axongo.AnchorOutputFeatures{
+						&axongo.StateMetadataFeature{Entries: axongo.StateMetadataFeatureEntries{"data": []byte("1337")}},
 					},
 				},
 			},
-			next: &iotago.AnchorOutput{
+			next: &axongo.AnchorOutput{
 				Amount:     100,
 				AnchorID:   exampleAnchorID,
 				StateIndex: 10,
 				// mutating controllers
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
-					&iotago.StateControllerAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-					&iotago.GovernorAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
+					&axongo.StateControllerAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					&axongo.GovernorAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				Features: iotago.AnchorOutputFeatures{
-					&iotago.SenderFeature{Address: exampleGovCtrl},
-					&iotago.StateMetadataFeature{Entries: iotago.StateMetadataFeatureEntries{"data": []byte("1337")}},
+				Features: axongo.AnchorOutputFeatures{
+					&axongo.SenderFeature{Address: exampleGovCtrl},
+					&axongo.StateMetadataFeature{Entries: axongo.StateMetadataFeatureEntries{"data": []byte("1337")}},
 					// adding metadata feature
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("1338")}},
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("1338")}},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleGovCtrl.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: 990,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: 900,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -2081,46 +2081,46 @@ func TestAnchorOutput_ValidateStateTransition(t *testing.T) {
 			name: "ok - state transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AnchorOutput{
+				Output: &axongo.AnchorOutput{
 					Amount:   100,
 					AnchorID: exampleAnchorID,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
 					},
 					StateIndex: 10,
-					Features: iotago.AnchorOutputFeatures{
-						&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("1338")}},
+					Features: axongo.AnchorOutputFeatures{
+						&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("1338")}},
 					},
 				},
 			},
-			next: &iotago.AnchorOutput{
+			next: &axongo.AnchorOutput{
 				Amount:   200,
 				AnchorID: exampleAnchorID,
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
-					&iotago.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
-					&iotago.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
+					&axongo.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
+					&axongo.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
 				},
 				StateIndex: 11,
-				Features: iotago.AnchorOutputFeatures{
-					&iotago.SenderFeature{Address: exampleStateCtrl},
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("1338")}},
+				Features: axongo.AnchorOutputFeatures{
+					&axongo.SenderFeature{Address: exampleStateCtrl},
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("1338")}},
 					// adding state metadata feature
-					&iotago.StateMetadataFeature{Entries: iotago.StateMetadataFeatureEntries{"data": []byte("1337")}},
+					&axongo.StateMetadataFeature{Entries: axongo.StateMetadataFeatureEntries{"data": []byte("1337")}},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleStateCtrl.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							Inputs:       nil,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -2131,107 +2131,107 @@ func TestAnchorOutput_ValidateStateTransition(t *testing.T) {
 			name: "fail - update anchor immutable features in gov transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AnchorOutput{
+				Output: &axongo.AnchorOutput{
 					Amount:   100,
 					AnchorID: exampleAnchorID,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
 					},
-					ImmutableFeatures: iotago.AnchorOutputImmFeatures{
-						&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("1337")}},
+					ImmutableFeatures: axongo.AnchorOutputImmFeatures{
+						&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("1337")}},
 					},
 					StateIndex: 10,
 				},
 			},
-			next: &iotago.AnchorOutput{
+			next: &axongo.AnchorOutput{
 				Amount:   100,
 				AnchorID: exampleAnchorID,
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
-					&iotago.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
-					&iotago.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
+					&axongo.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
+					&axongo.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
 				},
 				StateIndex: 10,
-				ImmutableFeatures: iotago.AnchorOutputImmFeatures{
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("1338")}},
+				ImmutableFeatures: axongo.AnchorOutputImmFeatures{
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("1338")}},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleStateCtrl.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrAnchorInvalidGovernanceTransition,
+			wantErr: axongo.ErrAnchorInvalidGovernanceTransition,
 		},
 		{
 			name: "fail - update anchor immutable features in state transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AnchorOutput{
+				Output: &axongo.AnchorOutput{
 					Amount:   100,
 					AnchorID: exampleAnchorID,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
 					},
-					ImmutableFeatures: iotago.AnchorOutputImmFeatures{
-						&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("1337")}},
+					ImmutableFeatures: axongo.AnchorOutputImmFeatures{
+						&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("1337")}},
 					},
 					StateIndex: 10,
 				},
 			},
-			next: &iotago.AnchorOutput{
+			next: &axongo.AnchorOutput{
 				Amount:   200,
 				AnchorID: exampleAnchorID,
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
-					&iotago.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
-					&iotago.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
+					&axongo.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
+					&axongo.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
 				},
 				StateIndex: 11,
-				ImmutableFeatures: iotago.AnchorOutputImmFeatures{
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("1338")}},
+				ImmutableFeatures: axongo.AnchorOutputImmFeatures{
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("1338")}},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleStateCtrl.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrAnchorInvalidStateTransition,
+			wantErr: axongo.ErrAnchorInvalidStateTransition,
 		},
 		{
 			name: "fail - gov transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AnchorOutput{
+				Output: &axongo.AnchorOutput{
 					Amount:     100,
 					AnchorID:   exampleAnchorID,
 					StateIndex: 10,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
 					},
-					Features: iotago.AnchorOutputFeatures{
-						&iotago.StateMetadataFeature{
-							Entries: iotago.StateMetadataFeatureEntries{
+					Features: axongo.AnchorOutputFeatures{
+						&axongo.StateMetadataFeature{
+							Entries: axongo.StateMetadataFeatureEntries{
 								"data": []byte("foo"),
 							},
 						},
@@ -2240,65 +2240,65 @@ func TestAnchorOutput_ValidateStateTransition(t *testing.T) {
 			},
 			nextMut: map[string]fieldMutations{
 				"amount": {
-					"Amount": iotago.BaseToken(1337),
+					"Amount": axongo.BaseToken(1337),
 				},
 				"state_metadata_feature_changed": {
-					"Features": iotago.AnchorOutputFeatures{
-						&iotago.StateMetadataFeature{
-							Entries: iotago.StateMetadataFeatureEntries{
+					"Features": axongo.AnchorOutputFeatures{
+						&axongo.StateMetadataFeature{
+							Entries: axongo.StateMetadataFeatureEntries{
 								"data": []byte("bar"),
 							},
 						},
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrAnchorInvalidGovernanceTransition,
+			wantErr: axongo.ErrAnchorInvalidGovernanceTransition,
 		},
 		{
 			name: "fail - state transition",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.AnchorOutput{
+				Output: &axongo.AnchorOutput{
 					Amount:     100,
 					AnchorID:   exampleAnchorID,
 					StateIndex: 10,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
 					},
-					Features: iotago.AnchorOutputFeatures{
-						&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("foo")}},
+					Features: axongo.AnchorOutputFeatures{
+						&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("foo")}},
 					},
-					ImmutableFeatures: iotago.AnchorOutputImmFeatures{
-						&iotago.IssuerFeature{Address: exampleIssuer},
+					ImmutableFeatures: axongo.AnchorOutputImmFeatures{
+						&axongo.IssuerFeature{Address: exampleIssuer},
 					},
 				},
 			},
 			nextMut: map[string]fieldMutations{
 				"state_controller": {
 					"StateIndex": uint32(11),
-					"UnlockConditions": iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-						&iotago.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
+					"UnlockConditions": axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+						&axongo.GovernorAddressUnlockCondition{Address: exampleGovCtrl},
 					},
 				},
 				"governance_controller": {
 					"StateIndex": uint32(11),
-					"UnlockConditions": iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					"UnlockConditions": axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: exampleStateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 				"state_index_lower": {
@@ -2309,26 +2309,26 @@ func TestAnchorOutput_ValidateStateTransition(t *testing.T) {
 				},
 				"metadata_feature_changed": {
 					"StateIndex": uint32(11),
-					"Features": iotago.AnchorOutputFeatures{
-						&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("bar")}},
+					"Features": axongo.AnchorOutputFeatures{
+						&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("bar")}},
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
 					InChains:      vm.ChainInputSet{},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrAnchorInvalidStateTransition,
+			wantErr: axongo.ErrAnchorInvalidStateTransition,
 		},
 	}
 
@@ -2338,7 +2338,7 @@ func TestAnchorOutput_ValidateStateTransition(t *testing.T) {
 		if tt.nextMut != nil {
 			for mutName, muts := range tt.nextMut {
 				t.Run(fmt.Sprintf("%s_%s", tt.name, mutName), func(t *testing.T) {
-					cpy := copyObjectAndMutate(t, tt.input.Output, muts).(*iotago.AnchorOutput)
+					cpy := copyObjectAndMutate(t, tt.input.Output, muts).(*axongo.AnchorOutput)
 
 					createWorkingSet(t, tt.input, tt.svCtx.WorkingSet)
 
@@ -2370,38 +2370,38 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 	exampleAccountAddr := tpkg.RandAccountAddress()
 
 	startingSupply := new(big.Int).SetUint64(100)
-	exampleFoundry := &iotago.FoundryOutput{
+	exampleFoundry := &axongo.FoundryOutput{
 		Amount:       100,
 		SerialNumber: 6,
-		TokenScheme: &iotago.SimpleTokenScheme{
+		TokenScheme: &axongo.SimpleTokenScheme{
 			MintedTokens:  startingSupply,
 			MeltedTokens:  big.NewInt(0),
 			MaximumSupply: new(big.Int).SetUint64(1000),
 		},
-		UnlockConditions: iotago.FoundryOutputUnlockConditions{
-			&iotago.ImmutableAccountUnlockCondition{Address: exampleAccountAddr},
+		UnlockConditions: axongo.FoundryOutputUnlockConditions{
+			&axongo.ImmutableAccountUnlockCondition{Address: exampleAccountAddr},
 		},
 	}
 
-	toBeDestoyedFoundry := &iotago.FoundryOutput{
+	toBeDestoyedFoundry := &axongo.FoundryOutput{
 		Amount:       100,
 		SerialNumber: 6,
-		TokenScheme: &iotago.SimpleTokenScheme{
+		TokenScheme: &axongo.SimpleTokenScheme{
 			MintedTokens:  startingSupply,
 			MeltedTokens:  startingSupply,
 			MaximumSupply: new(big.Int).SetUint64(1000),
 		},
-		UnlockConditions: iotago.FoundryOutputUnlockConditions{
-			&iotago.ImmutableAccountUnlockCondition{Address: exampleAccountAddr},
+		UnlockConditions: axongo.FoundryOutputUnlockConditions{
+			&axongo.ImmutableAccountUnlockCondition{Address: exampleAccountAddr},
 		},
 	}
 
 	type test struct {
 		name      string
 		input     *vm.ChainOutputWithIDs
-		next      *iotago.FoundryOutput
+		next      *axongo.FoundryOutput
 		nextMut   map[string]fieldMutations
-		transType iotago.ChainTransitionType
+		transType axongo.ChainTransitionType
 		svCtx     *vm.Params
 		wantErr   error
 	}
@@ -2411,28 +2411,28 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 			name:      "ok - genesis transition",
 			next:      exampleFoundry,
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
-						Outputs: iotago.TxEssenceOutputs{exampleFoundry},
+						Outputs: axongo.TxEssenceOutputs{exampleFoundry},
 					},
 					InChains: vm.ChainInputSet{
 						exampleAccountAddr.AccountID(): &vm.ChainOutputWithIDs{
 							ChainID:  exampleAccountAddr.AccountID(),
 							OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-							Output:   &iotago.AccountOutput{FoundryCounter: 5},
+							Output:   &axongo.AccountOutput{FoundryCounter: 5},
 						},
 					},
-					OutChains: map[iotago.ChainID]iotago.ChainOutput{
-						exampleAccountAddr.AccountID(): &iotago.AccountOutput{FoundryCounter: 6},
+					OutChains: map[axongo.ChainID]axongo.ChainOutput{
+						exampleAccountAddr.AccountID(): &axongo.AccountOutput{FoundryCounter: 6},
 					},
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): startingSupply,
 					},
 				},
@@ -2443,91 +2443,91 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 			name:      "fail - genesis transition - mint supply not equal to out",
 			next:      exampleFoundry,
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
-						Outputs: iotago.TxEssenceOutputs{exampleFoundry},
+						Outputs: axongo.TxEssenceOutputs{exampleFoundry},
 					},
 					InChains: vm.ChainInputSet{
 						exampleAccountAddr.AccountID(): &vm.ChainOutputWithIDs{
 							ChainID:  exampleAccountAddr.AccountID(),
 							OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-							Output:   &iotago.AccountOutput{FoundryCounter: 5},
+							Output:   &axongo.AccountOutput{FoundryCounter: 5},
 						},
 					},
-					OutChains: map[iotago.ChainID]iotago.ChainOutput{
-						exampleAccountAddr.AccountID(): &iotago.AccountOutput{FoundryCounter: 6},
+					OutChains: map[axongo.ChainID]axongo.ChainOutput{
+						exampleAccountAddr.AccountID(): &axongo.AccountOutput{FoundryCounter: 6},
 					},
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						// absent but should be there
 					},
 				},
 			},
-			wantErr: iotago.ErrSimpleTokenSchemeGenesisInvalid,
+			wantErr: axongo.ErrSimpleTokenSchemeGenesisInvalid,
 		},
 		{
 			name:      "fail - genesis transition - serial number not in interval",
 			next:      exampleFoundry,
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
-						Outputs: iotago.TxEssenceOutputs{exampleFoundry},
+						Outputs: axongo.TxEssenceOutputs{exampleFoundry},
 					},
 					InChains: vm.ChainInputSet{
 						exampleAccountAddr.AccountID(): &vm.ChainOutputWithIDs{
 							ChainID:  exampleAccountAddr.AccountID(),
 							OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-							Output:   &iotago.AccountOutput{FoundryCounter: 6},
+							Output:   &axongo.AccountOutput{FoundryCounter: 6},
 						},
 					},
-					OutChains: map[iotago.ChainID]iotago.ChainOutput{
-						exampleAccountAddr.AccountID(): &iotago.AccountOutput{FoundryCounter: 7},
+					OutChains: map[axongo.ChainID]axongo.ChainOutput{
+						exampleAccountAddr.AccountID(): &axongo.AccountOutput{FoundryCounter: 7},
 					},
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): startingSupply,
 					},
 				},
 			},
-			wantErr: iotago.ErrFoundrySerialInvalid,
+			wantErr: axongo.ErrFoundrySerialInvalid,
 		},
 		{
 			name:      "fail - genesis transition - foundries unsorted",
 			next:      exampleFoundry,
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
-						Outputs: iotago.TxEssenceOutputs{
-							&iotago.FoundryOutput{
+						Outputs: axongo.TxEssenceOutputs{
+							&axongo.FoundryOutput{
 								Amount: 100,
 								// exampleFoundry has serial number 6
 								SerialNumber: 7,
-								TokenScheme: &iotago.SimpleTokenScheme{
+								TokenScheme: &axongo.SimpleTokenScheme{
 									MintedTokens:  startingSupply,
 									MeltedTokens:  big.NewInt(0),
 									MaximumSupply: new(big.Int).SetUint64(1000),
 								},
-								UnlockConditions: iotago.FoundryOutputUnlockConditions{
-									&iotago.ImmutableAccountUnlockCondition{Address: exampleAccountAddr},
+								UnlockConditions: axongo.FoundryOutputUnlockConditions{
+									&axongo.ImmutableAccountUnlockCondition{Address: exampleAccountAddr},
 								},
 							},
 							exampleFoundry,
@@ -2537,18 +2537,18 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 						exampleAccountAddr.AccountID(): &vm.ChainOutputWithIDs{
 							ChainID:  exampleAccountAddr.AccountID(),
 							OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-							Output:   &iotago.AccountOutput{FoundryCounter: 5},
+							Output:   &axongo.AccountOutput{FoundryCounter: 5},
 						},
 					},
-					OutChains: map[iotago.ChainID]iotago.ChainOutput{
-						exampleAccountAddr.AccountID(): &iotago.AccountOutput{FoundryCounter: 7},
+					OutChains: map[axongo.ChainID]axongo.ChainOutput{
+						exampleAccountAddr.AccountID(): &axongo.AccountOutput{FoundryCounter: 7},
 					},
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): startingSupply,
 					},
 				},
 			},
-			wantErr: iotago.ErrFoundrySerialInvalid,
+			wantErr: axongo.ErrFoundrySerialInvalid,
 		},
 		{
 			name: "ok - state transition - metadata feature",
@@ -2558,18 +2558,18 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 			},
 			nextMut: map[string]fieldMutations{
 				"change_metadata": {
-					"Features": iotago.FoundryOutputFeatures{
-						&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": tpkg.RandBytes(20)}},
+					"Features": axongo.FoundryOutputFeatures{
+						&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": tpkg.RandBytes(20)}},
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{},
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -2584,22 +2584,22 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 			},
 			nextMut: map[string]fieldMutations{
 				"+300": {
-					"TokenScheme": &iotago.SimpleTokenScheme{
+					"TokenScheme": &axongo.SimpleTokenScheme{
 						MintedTokens:  big.NewInt(400),
 						MeltedTokens:  big.NewInt(0),
 						MaximumSupply: new(big.Int).SetUint64(1000),
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): new(big.Int).SetUint64(300),
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -2614,25 +2614,25 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 			},
 			nextMut: map[string]fieldMutations{
 				"-50": {
-					"TokenScheme": &iotago.SimpleTokenScheme{
+					"TokenScheme": &axongo.SimpleTokenScheme{
 						MintedTokens:  big.NewInt(100),
 						MeltedTokens:  big.NewInt(50),
 						MaximumSupply: new(big.Int).SetUint64(1000),
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
-					InNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					InNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): startingSupply,
 					},
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): new(big.Int).SetUint64(50),
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -2646,18 +2646,18 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 				Output:   exampleFoundry,
 			},
 			nextMut:   map[string]fieldMutations{},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
-					InNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					InNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): startingSupply,
 					},
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): new(big.Int).SetUint64(50),
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -2672,23 +2672,23 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 			},
 			nextMut: map[string]fieldMutations{
 				"-100": {
-					"TokenScheme": &iotago.SimpleTokenScheme{
+					"TokenScheme": &axongo.SimpleTokenScheme{
 						MintedTokens:  big.NewInt(100),
 						MeltedTokens:  big.NewInt(100),
 						MaximumSupply: new(big.Int).SetUint64(1000),
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
-					InNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					InNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): startingSupply,
 					},
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{},
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -2703,28 +2703,28 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 			},
 			nextMut: map[string]fieldMutations{
 				"+100": {
-					"TokenScheme": &iotago.SimpleTokenScheme{
+					"TokenScheme": &axongo.SimpleTokenScheme{
 						MintedTokens:  big.NewInt(200),
 						MeltedTokens:  big.NewInt(0),
 						MaximumSupply: new(big.Int).SetUint64(1000),
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						// 100 excess
 						exampleFoundry.MustNativeTokenID(): new(big.Int).SetUint64(200),
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrSimpleTokenSchemeMintingInvalid,
+			wantErr: axongo.ErrSimpleTokenSchemeMintingInvalid,
 		},
 		{
 			name: "fail - state transition - mint (out: deficit)",
@@ -2734,28 +2734,28 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 			},
 			nextMut: map[string]fieldMutations{
 				"+100": {
-					"TokenScheme": &iotago.SimpleTokenScheme{
+					"TokenScheme": &axongo.SimpleTokenScheme{
 						MintedTokens:  big.NewInt(200),
 						MeltedTokens:  big.NewInt(0),
 						MaximumSupply: new(big.Int).SetUint64(1000),
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						// 50 deficit
 						exampleFoundry.MustNativeTokenID(): new(big.Int).SetUint64(50),
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrSimpleTokenSchemeMintingInvalid,
+			wantErr: axongo.ErrSimpleTokenSchemeMintingInvalid,
 		},
 		{
 			name: "fail - state transition - melt (out: excess)",
@@ -2765,31 +2765,31 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 			},
 			nextMut: map[string]fieldMutations{
 				"-50": {
-					"TokenScheme": &iotago.SimpleTokenScheme{
+					"TokenScheme": &axongo.SimpleTokenScheme{
 						MintedTokens:  big.NewInt(100),
 						MeltedTokens:  big.NewInt(50),
 						MaximumSupply: new(big.Int).SetUint64(1000),
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
-					InNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					InNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): startingSupply,
 					},
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						// 25 excess
 						exampleFoundry.MustNativeTokenID(): new(big.Int).SetUint64(75),
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrSimpleTokenSchemeMeltingInvalid,
+			wantErr: axongo.ErrSimpleTokenSchemeMeltingInvalid,
 		},
 		{
 			name: "fail - state transition",
@@ -2799,24 +2799,24 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 			},
 			nextMut: map[string]fieldMutations{
 				"maximum_supply": {
-					"TokenScheme": &iotago.SimpleTokenScheme{
+					"TokenScheme": &axongo.SimpleTokenScheme{
 						MintedTokens:  startingSupply,
 						MeltedTokens:  big.NewInt(0),
 						MaximumSupply: big.NewInt(1337),
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrSimpleTokenSchemeMaximumSupplyChanged,
+			wantErr: axongo.ErrSimpleTokenSchemeMaximumSupplyChanged,
 		},
 		{
 			name: "ok - destroy transition",
@@ -2824,14 +2824,14 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				Output:   toBeDestoyedFoundry,
 			},
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
-					InNativeTokens:  map[iotago.NativeTokenID]*big.Int{},
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					InNativeTokens:  map[axongo.NativeTokenID]*big.Int{},
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{},
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -2844,23 +2844,23 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
 				Output:   exampleFoundry,
 			},
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				WorkingSet: &vm.WorkingSet{
-					InNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					InNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): startingSupply,
 					},
-					OutNativeTokens: map[iotago.NativeTokenID]*big.Int{
+					OutNativeTokens: map[axongo.NativeTokenID]*big.Int{
 						exampleFoundry.MustNativeTokenID(): new(big.Int).Mul(startingSupply, new(big.Int).SetUint64(2)),
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrNativeTokenSumUnbalanced,
+			wantErr: axongo.ErrNativeTokenSumUnbalanced,
 		},
 	}
 
@@ -2869,7 +2869,7 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 		if tt.nextMut != nil {
 			for mutName, muts := range tt.nextMut {
 				t.Run(fmt.Sprintf("%s_%s", tt.name, mutName), func(t *testing.T) {
-					cpy := copyObjectAndMutate(t, tt.input.Output, muts).(*iotago.FoundryOutput)
+					cpy := copyObjectAndMutate(t, tt.input.Output, muts).(*axongo.FoundryOutput)
 
 					createWorkingSet(t, tt.input, tt.svCtx.WorkingSet)
 
@@ -2900,24 +2900,24 @@ func TestFoundryOutput_ValidateStateTransition(t *testing.T) {
 func TestNFTOutput_ValidateStateTransition(t *testing.T) {
 	exampleIssuer := tpkg.RandEd25519Address()
 
-	exampleCurrentNFTOutput := &iotago.NFTOutput{
+	exampleCurrentNFTOutput := &axongo.NFTOutput{
 		Amount: 100,
-		NFTID:  iotago.NFTID{},
-		UnlockConditions: iotago.NFTOutputUnlockConditions{
-			&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+		NFTID:  axongo.NFTID{},
+		UnlockConditions: axongo.NFTOutputUnlockConditions{
+			&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 		},
-		ImmutableFeatures: iotago.NFTOutputImmFeatures{
-			&iotago.IssuerFeature{Address: exampleIssuer},
-			&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("some-ipfs-link")}},
+		ImmutableFeatures: axongo.NFTOutputImmFeatures{
+			&axongo.IssuerFeature{Address: exampleIssuer},
+			&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("some-ipfs-link")}},
 		},
 	}
 
 	type test struct {
 		name      string
 		input     *vm.ChainOutputWithIDs
-		next      *iotago.NFTOutput
+		next      *axongo.NFTOutput
 		nextMut   map[string]fieldMutations
-		transType iotago.ChainTransitionType
+		transType axongo.ChainTransitionType
 		svCtx     *vm.Params
 		wantErr   error
 	}
@@ -2927,16 +2927,16 @@ func TestNFTOutput_ValidateStateTransition(t *testing.T) {
 			name:      "ok - genesis transition",
 			next:      exampleCurrentNFTOutput,
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -2950,14 +2950,14 @@ func TestNFTOutput_ValidateStateTransition(t *testing.T) {
 				Output:   exampleCurrentNFTOutput,
 			},
 			next:      nil,
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -2972,22 +2972,22 @@ func TestNFTOutput_ValidateStateTransition(t *testing.T) {
 			},
 			nextMut: map[string]fieldMutations{
 				"amount": {
-					"Amount": iotago.BaseToken(1337),
+					"Amount": axongo.BaseToken(1337),
 				},
 				"address": {
-					"UnlockConditions": iotago.NFTOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					"UnlockConditions": axongo.NFTOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -3002,29 +3002,29 @@ func TestNFTOutput_ValidateStateTransition(t *testing.T) {
 			},
 			nextMut: map[string]fieldMutations{
 				"immutable_metadata": {
-					"ImmutableFeatures": iotago.NFTOutputImmFeatures{
-						&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": []byte("link-to-cat.gif")}},
+					"ImmutableFeatures": axongo.NFTOutputImmFeatures{
+						&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": []byte("link-to-cat.gif")}},
 					},
 				},
 				"issuer": {
-					"ImmutableFeatures": iotago.NFTOutputImmFeatures{
-						&iotago.IssuerFeature{Address: tpkg.RandEd25519Address()},
+					"ImmutableFeatures": axongo.NFTOutputImmFeatures{
+						&axongo.IssuerFeature{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrChainOutputImmutableFeaturesChanged,
+			wantErr: axongo.ErrChainOutputImmutableFeaturesChanged,
 		},
 	}
 
@@ -3033,7 +3033,7 @@ func TestNFTOutput_ValidateStateTransition(t *testing.T) {
 		if tt.nextMut != nil {
 			for mutName, muts := range tt.nextMut {
 				t.Run(fmt.Sprintf("%s_%s", tt.name, mutName), func(t *testing.T) {
-					cpy := copyObjectAndMutate(t, tt.input.Output, muts).(*iotago.NFTOutput)
+					cpy := copyObjectAndMutate(t, tt.input.Output, muts).(*axongo.NFTOutput)
 
 					createWorkingSet(t, tt.input, tt.svCtx.WorkingSet)
 
@@ -3062,7 +3062,7 @@ func TestNFTOutput_ValidateStateTransition(t *testing.T) {
 }
 
 func TestDelegationOutput_ValidateStateTransition(t *testing.T) {
-	currentEpoch := iotago.EpochIndex(20)
+	currentEpoch := axongo.EpochIndex(20)
 	epochStartSlot := tpkg.ZeroCostTestAPI.TimeProvider().EpochStart(currentEpoch)
 	epochEndSlot := tpkg.ZeroCostTestAPI.TimeProvider().EpochEnd(currentEpoch)
 	minCommittableAge := tpkg.ZeroCostTestAPI.ProtocolParameters().MinCommittableAge()
@@ -3073,14 +3073,14 @@ func TestDelegationOutput_ValidateStateTransition(t *testing.T) {
 	epochStartCommitmentIndex := epochStartSlot - minCommittableAge
 	epochEndCommitmentIndex := epochEndSlot - maxCommittableAge
 
-	exampleDelegationID := iotago.DelegationIDFromOutputID(tpkg.RandOutputID(0))
+	exampleDelegationID := axongo.DelegationIDFromOutputID(tpkg.RandOutputID(0))
 
 	type test struct {
 		name      string
 		input     *vm.ChainOutputWithIDs
-		next      *iotago.DelegationOutput
+		next      *axongo.DelegationOutput
 		nextMut   map[string]fieldMutations
-		transType iotago.ChainTransitionType
+		transType axongo.ChainTransitionType
 		svCtx     *vm.Params
 		wantErr   error
 	}
@@ -3088,29 +3088,29 @@ func TestDelegationOutput_ValidateStateTransition(t *testing.T) {
 	tests := []*test{
 		{
 			name: "ok - valid genesis",
-			next: &iotago.DelegationOutput{
+			next: &axongo.DelegationOutput{
 				Amount:           100,
 				DelegatedAmount:  100,
-				DelegationID:     iotago.EmptyDelegationID(),
+				DelegationID:     axongo.EmptyDelegationID(),
 				ValidatorAddress: tpkg.RandAccountAddress(),
 				StartEpoch:       currentEpoch + 1,
 				EndEpoch:         0,
-				UnlockConditions: iotago.DelegationOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.DelegationOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochStartCommitmentIndex,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -3119,187 +3119,187 @@ func TestDelegationOutput_ValidateStateTransition(t *testing.T) {
 		},
 		{
 			name: "fail - invalid genesis - non-zero delegation ID",
-			next: &iotago.DelegationOutput{
+			next: &axongo.DelegationOutput{
 				Amount:           100,
 				DelegatedAmount:  100,
 				DelegationID:     exampleDelegationID,
 				ValidatorAddress: tpkg.RandAccountAddress(),
 				StartEpoch:       currentEpoch + 1,
 				EndEpoch:         0,
-				UnlockConditions: iotago.DelegationOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.DelegationOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochStartCommitmentIndex,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrNewChainOutputHasNonZeroedID,
+			wantErr: axongo.ErrNewChainOutputHasNonZeroedID,
 		},
 		{
 			name: "fail - invalid genesis - delegated amount does not match amount",
-			next: &iotago.DelegationOutput{
+			next: &axongo.DelegationOutput{
 				Amount:           100,
 				DelegatedAmount:  120,
-				DelegationID:     iotago.EmptyDelegationID(),
+				DelegationID:     axongo.EmptyDelegationID(),
 				ValidatorAddress: tpkg.RandAccountAddress(),
 				StartEpoch:       currentEpoch + 1,
 				EndEpoch:         0,
-				UnlockConditions: iotago.DelegationOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.DelegationOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochStartCommitmentIndex,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrDelegationAmountMismatch,
+			wantErr: axongo.ErrDelegationAmountMismatch,
 		},
 		{
 			name: "fail - invalid genesis - non-zero end epoch",
-			next: &iotago.DelegationOutput{
+			next: &axongo.DelegationOutput{
 				Amount:           100,
 				DelegatedAmount:  100,
-				DelegationID:     iotago.EmptyDelegationID(),
+				DelegationID:     axongo.EmptyDelegationID(),
 				ValidatorAddress: tpkg.RandAccountAddress(),
 				StartEpoch:       currentEpoch + 1,
 				EndEpoch:         currentEpoch + 5,
-				UnlockConditions: iotago.DelegationOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.DelegationOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
 			},
 			input:     nil,
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochStartCommitmentIndex,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrDelegationEndEpochNotZero,
+			wantErr: axongo.ErrDelegationEndEpochNotZero,
 		},
 		{
 			name: "fail - invalid transition - start epoch not set to expected epoch",
-			next: &iotago.DelegationOutput{
+			next: &axongo.DelegationOutput{
 				Amount:           100,
 				DelegatedAmount:  100,
-				DelegationID:     iotago.EmptyDelegationID(),
+				DelegationID:     axongo.EmptyDelegationID(),
 				ValidatorAddress: tpkg.RandAccountAddress(),
 				StartEpoch:       currentEpoch - 3,
 				EndEpoch:         0,
-				UnlockConditions: iotago.DelegationOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.DelegationOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
 			},
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochStartCommitmentIndex,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrDelegationStartEpochInvalid,
+			wantErr: axongo.ErrDelegationStartEpochInvalid,
 		},
 		{
 			name: "fail - invalid transition - non-zero delegation id on input",
 			input: &vm.ChainOutputWithIDs{
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.DelegationOutput{
+				Output: &axongo.DelegationOutput{
 					Amount:           100,
 					DelegatedAmount:  100,
 					DelegationID:     tpkg.RandDelegationID(),
 					ValidatorAddress: tpkg.RandAccountAddress(),
 					StartEpoch:       currentEpoch + 1,
 					EndEpoch:         0,
-					UnlockConditions: iotago.DelegationOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.DelegationOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
-			next:      &iotago.DelegationOutput{},
-			transType: iotago.ChainTransitionTypeStateChange,
+			next:      &axongo.DelegationOutput{},
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochStartCommitmentIndex,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrDelegationOutputTransitionedTwice,
+			wantErr: axongo.ErrDelegationOutputTransitionedTwice,
 		},
 		{
 			name: "fail - invalid transition - modified delegated amount, start epoch and validator id",
 			input: &vm.ChainOutputWithIDs{
 				ChainID:  exampleDelegationID,
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.DelegationOutput{
+				Output: &axongo.DelegationOutput{
 					Amount:           100,
 					DelegatedAmount:  100,
-					DelegationID:     iotago.EmptyDelegationID(),
+					DelegationID:     axongo.EmptyDelegationID(),
 					ValidatorAddress: tpkg.RandAccountAddress(),
 					StartEpoch:       currentEpoch + 1,
 					EndEpoch:         0,
-					UnlockConditions: iotago.DelegationOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.DelegationOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
 			nextMut: map[string]fieldMutations{
 				"delegated_amount_modified": {
-					"DelegatedAmount": iotago.BaseToken(1337),
-					"Amount":          iotago.BaseToken(5),
+					"DelegatedAmount": axongo.BaseToken(1337),
+					"Amount":          axongo.BaseToken(5),
 					"DelegationID":    exampleDelegationID,
 					"EndEpoch":        currentEpoch,
 				},
 				"start_epoch_modified": {
-					"StartEpoch":   iotago.EpochIndex(3),
+					"StartEpoch":   axongo.EpochIndex(3),
 					"DelegationID": exampleDelegationID,
 					"EndEpoch":     currentEpoch,
 				},
@@ -3309,37 +3309,37 @@ func TestDelegationOutput_ValidateStateTransition(t *testing.T) {
 					"EndEpoch":         currentEpoch,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochStartCommitmentIndex,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrDelegationModified,
+			wantErr: axongo.ErrDelegationModified,
 		},
 		{
 			name: "fail - invalid pre-registration slot transition - end epoch not set to expected epoch",
 			input: &vm.ChainOutputWithIDs{
 				ChainID:  exampleDelegationID,
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.DelegationOutput{
+				Output: &axongo.DelegationOutput{
 					Amount:           100,
 					DelegatedAmount:  100,
-					DelegationID:     iotago.EmptyDelegationID(),
+					DelegationID:     axongo.EmptyDelegationID(),
 					ValidatorAddress: tpkg.RandAccountAddress(),
 					StartEpoch:       currentEpoch + 1,
 					EndEpoch:         0,
-					UnlockConditions: iotago.DelegationOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.DelegationOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
@@ -3353,37 +3353,37 @@ func TestDelegationOutput_ValidateStateTransition(t *testing.T) {
 					"EndEpoch":     currentEpoch + 1,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochStartCommitmentIndex,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrDelegationEndEpochInvalid,
+			wantErr: axongo.ErrDelegationEndEpochInvalid,
 		},
 		{
 			name: "fail - invalid post-registration slot transition - end epoch not set to expected epoch",
 			input: &vm.ChainOutputWithIDs{
 				ChainID:  exampleDelegationID,
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.DelegationOutput{
+				Output: &axongo.DelegationOutput{
 					Amount:           100,
 					DelegatedAmount:  100,
-					DelegationID:     iotago.EmptyDelegationID(),
+					DelegationID:     axongo.EmptyDelegationID(),
 					ValidatorAddress: tpkg.RandAccountAddress(),
 					StartEpoch:       currentEpoch + 1,
 					EndEpoch:         0,
-					UnlockConditions: iotago.DelegationOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.DelegationOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
@@ -3397,93 +3397,93 @@ func TestDelegationOutput_ValidateStateTransition(t *testing.T) {
 					"EndEpoch":     currentEpoch + 2,
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochEndCommitmentIndex,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrDelegationEndEpochInvalid,
+			wantErr: axongo.ErrDelegationEndEpochInvalid,
 		},
 		{
 			name: "fail - invalid transition - cannot claim rewards during transition",
 			input: &vm.ChainOutputWithIDs{
 				ChainID:  exampleDelegationID,
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.DelegationOutput{
+				Output: &axongo.DelegationOutput{
 					Amount:           100,
 					DelegatedAmount:  100,
-					DelegationID:     iotago.EmptyDelegationID(),
+					DelegationID:     axongo.EmptyDelegationID(),
 					ValidatorAddress: tpkg.RandAccountAddress(),
 					StartEpoch:       currentEpoch + 1,
 					EndEpoch:         0,
-					UnlockConditions: iotago.DelegationOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.DelegationOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
-			next:      &iotago.DelegationOutput{},
-			transType: iotago.ChainTransitionTypeStateChange,
+			next:      &axongo.DelegationOutput{},
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochStartCommitmentIndex,
 					},
-					Rewards: map[iotago.ChainID]iotago.Mana{
+					Rewards: map[axongo.ChainID]axongo.Mana{
 						exampleDelegationID: 1,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrDelegationRewardsClaimingInvalid,
+			wantErr: axongo.ErrDelegationRewardsClaimingInvalid,
 		},
 		{
 			name: "ok - valid destruction",
 			input: &vm.ChainOutputWithIDs{
 				ChainID:  exampleDelegationID,
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.DelegationOutput{
+				Output: &axongo.DelegationOutput{
 					Amount:           100,
 					DelegatedAmount:  100,
-					DelegationID:     iotago.EmptyDelegationID(),
+					DelegationID:     axongo.EmptyDelegationID(),
 					ValidatorAddress: tpkg.RandAccountAddress(),
 					StartEpoch:       currentEpoch + 1,
 					EndEpoch:         0,
-					UnlockConditions: iotago.DelegationOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.DelegationOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
 			nextMut:   nil,
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochStartCommitmentIndex,
 					},
-					Rewards: map[iotago.ChainID]iotago.Mana{
+					Rewards: map[axongo.ChainID]axongo.Mana{
 						exampleDelegationID: 0,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -3495,65 +3495,65 @@ func TestDelegationOutput_ValidateStateTransition(t *testing.T) {
 			input: &vm.ChainOutputWithIDs{
 				ChainID:  exampleDelegationID,
 				OutputID: tpkg.RandOutputIDWithCreationSlot(0, 0),
-				Output: &iotago.DelegationOutput{
+				Output: &axongo.DelegationOutput{
 					Amount:           100,
 					DelegatedAmount:  100,
-					DelegationID:     iotago.EmptyDelegationID(),
+					DelegationID:     axongo.EmptyDelegationID(),
 					ValidatorAddress: tpkg.RandAccountAddress(),
 					StartEpoch:       currentEpoch + 1,
 					EndEpoch:         0,
-					UnlockConditions: iotago.DelegationOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.DelegationOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
 			nextMut:   nil,
-			transType: iotago.ChainTransitionTypeDestroy,
+			transType: axongo.ChainTransitionTypeDestroy,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: epochStartCommitmentIndex,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrDelegationRewardInputMissing,
+			wantErr: axongo.ErrDelegationRewardInputMissing,
 		},
 		{
 			name: "fail - invalid genesis - missing commitment input",
-			next: &iotago.DelegationOutput{
+			next: &axongo.DelegationOutput{
 				Amount:           100,
 				DelegatedAmount:  100,
-				DelegationID:     iotago.EmptyDelegationID(),
+				DelegationID:     axongo.EmptyDelegationID(),
 				ValidatorAddress: tpkg.RandAccountAddress(),
 				StartEpoch:       currentEpoch + 1,
 				EndEpoch:         0,
-				UnlockConditions: iotago.DelegationOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.DelegationOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
 			},
-			transType: iotago.ChainTransitionTypeGenesis,
+			transType: axongo.ChainTransitionTypeGenesis,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
 					UnlockedAddrs: vm.UnlockedAddresses{},
-					Rewards: map[iotago.ChainID]iotago.Mana{
+					Rewards: map[axongo.ChainID]axongo.Mana{
 						exampleDelegationID: 0,
 					},
-					Tx: &iotago.Transaction{
-						TransactionEssence: &iotago.TransactionEssence{
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+					Tx: &axongo.Transaction{
+						TransactionEssence: &axongo.TransactionEssence{
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrDelegationCommitmentInputMissing,
+			wantErr: axongo.ErrDelegationCommitmentInputMissing,
 		},
 	}
 
@@ -3561,7 +3561,7 @@ func TestDelegationOutput_ValidateStateTransition(t *testing.T) {
 		if tt.nextMut != nil {
 			for mutName, muts := range tt.nextMut {
 				t.Run(fmt.Sprintf("%s_%s", tt.name, mutName), func(t *testing.T) {
-					cpy := copyObjectAndMutate(t, tt.input.Output, muts).(*iotago.DelegationOutput)
+					cpy := copyObjectAndMutate(t, tt.input.Output, muts).(*axongo.DelegationOutput)
 
 					createWorkingSet(t, tt.input, tt.svCtx.WorkingSet)
 
@@ -3593,57 +3593,57 @@ func TestImplicitAccountOutput_ValidateStateTransition(t *testing.T) {
 	exampleIssuer := tpkg.RandEd25519Address()
 	exampleAccountID := tpkg.RandAccountAddress().AccountID()
 
-	currentEpoch := iotago.EpochIndex(20)
+	currentEpoch := axongo.EpochIndex(20)
 	currentSlot := tpkg.ZeroCostTestAPI.TimeProvider().EpochStart(currentEpoch)
-	blockIssuerPubKey := iotago.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(tpkg.Rand32ByteArray())
-	exampleBlockIssuerFeature := &iotago.BlockIssuerFeature{
-		BlockIssuerKeys: iotago.NewBlockIssuerKeys(blockIssuerPubKey),
+	blockIssuerPubKey := axongo.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(tpkg.Rand32ByteArray())
+	exampleBlockIssuerFeature := &axongo.BlockIssuerFeature{
+		BlockIssuerKeys: axongo.NewBlockIssuerKeys(blockIssuerPubKey),
 		ExpirySlot:      currentSlot + tpkg.ZeroCostTestAPI.ProtocolParameters().MaxCommittableAge(),
 	}
 
-	exampleBIC := map[iotago.AccountID]iotago.BlockIssuanceCredits{
+	exampleBIC := map[axongo.AccountID]axongo.BlockIssuanceCredits{
 		exampleAccountID: 100,
 	}
 
 	type test struct {
 		name      string
 		input     *vm.ChainOutputWithIDs
-		next      *iotago.AccountOutput
-		transType iotago.ChainTransitionType
+		next      *axongo.AccountOutput
+		transType axongo.ChainTransitionType
 		svCtx     *vm.Params
 		wantErr   error
 	}
 
-	implicitAccountCreationAddr := iotago.ImplicitAccountCreationAddressFromPubKey(tpkg.RandEd25519Signature().PublicKey[:])
-	exampleAmount := iotago.BaseToken(100_000)
+	implicitAccountCreationAddr := axongo.ImplicitAccountCreationAddressFromPubKey(tpkg.RandEd25519Signature().PublicKey[:])
+	exampleAmount := axongo.BaseToken(100_000)
 
 	tests := []*test{
 		{
 			name: "ok - implicit account conversion transition",
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    exampleAmount,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				Features: iotago.AccountOutputFeatures{
+				Features: axongo.AccountOutputFeatures{
 					exampleBlockIssuerFeature,
 				},
 			},
 			input: &vm.ChainOutputWithIDs{
 				ChainID: exampleAccountID,
 				Output: &vm.ImplicitAccountOutput{
-					BasicOutput: &iotago.BasicOutput{
+					BasicOutput: &axongo.BasicOutput{
 						Amount: exampleAmount,
-						UnlockConditions: iotago.BasicOutputUnlockConditions{
-							&iotago.AddressUnlockCondition{
+						UnlockConditions: axongo.BasicOutputUnlockConditions{
+							&axongo.AddressUnlockCondition{
 								Address: implicitAccountCreationAddr,
 							},
 						},
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 
 				API: tpkg.ZeroCostTestAPI,
@@ -3652,14 +3652,14 @@ func TestImplicitAccountOutput_ValidateStateTransition(t *testing.T) {
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
 					BIC: exampleBIC,
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
@@ -3668,28 +3668,28 @@ func TestImplicitAccountOutput_ValidateStateTransition(t *testing.T) {
 		},
 		{
 			name: "fail - explicit account lacks block issuer feature",
-			next: &iotago.AccountOutput{
+			next: &axongo.AccountOutput{
 				Amount:    exampleAmount,
 				AccountID: exampleAccountID,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				Features: iotago.AccountOutputFeatures{},
+				Features: axongo.AccountOutputFeatures{},
 			},
 			input: &vm.ChainOutputWithIDs{
 				ChainID: exampleAccountID,
 				Output: &vm.ImplicitAccountOutput{
-					BasicOutput: &iotago.BasicOutput{
+					BasicOutput: &axongo.BasicOutput{
 						Amount: exampleAmount,
-						UnlockConditions: iotago.BasicOutputUnlockConditions{
-							&iotago.AddressUnlockCondition{
+						UnlockConditions: axongo.BasicOutputUnlockConditions{
+							&axongo.AddressUnlockCondition{
 								Address: implicitAccountCreationAddr,
 							},
 						},
 					},
 				},
 			},
-			transType: iotago.ChainTransitionTypeStateChange,
+			transType: axongo.ChainTransitionTypeStateChange,
 			svCtx: &vm.Params{
 				API: tpkg.ZeroCostTestAPI,
 				WorkingSet: &vm.WorkingSet{
@@ -3697,19 +3697,19 @@ func TestImplicitAccountOutput_ValidateStateTransition(t *testing.T) {
 						exampleIssuer.Key(): {UnlockedAtInputIndex: 0},
 					},
 					BIC: exampleBIC,
-					Commitment: &iotago.Commitment{
+					Commitment: &axongo.Commitment{
 						Slot: currentSlot,
 					},
-					Tx: &iotago.Transaction{
+					Tx: &axongo.Transaction{
 						API: tpkg.ZeroCostTestAPI,
-						TransactionEssence: &iotago.TransactionEssence{
+						TransactionEssence: &axongo.TransactionEssence{
 							CreationSlot: currentSlot,
-							Capabilities: iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+							Capabilities: axongo.TransactionCapabilitiesBitMaskWithCapabilities(axongo.WithTransactionCanDoAnything()),
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrBlockIssuerNotExpired,
+			wantErr: axongo.ErrBlockIssuerNotExpired,
 		},
 	}
 

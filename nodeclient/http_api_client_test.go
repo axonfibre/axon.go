@@ -17,7 +17,7 @@ import (
 
 	"github.com/axonfibre/fibre.go/lo"
 	"github.com/axonfibre/fibre.go/serializer/v2/serix"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/api"
 	"github.com/axonfibre/axon.go/v4/hexutil"
 	"github.com/axonfibre/axon.go/v4/nodeclient"
@@ -30,7 +30,7 @@ const (
 )
 
 var (
-	mockAPI = iotago.V3API(tpkg.IOTAMainnetV3TestProtocolParameters)
+	mockAPI = axongo.V3API(tpkg.IOTAMainnetV3TestProtocolParameters)
 )
 
 //nolint:unparam // false positive
@@ -114,13 +114,13 @@ func nodeClient(t *testing.T) *nodeclient.Client {
 			IsNetworkHealthy:            true,
 			LatestAcceptedBlockSlot:     tpkg.RandSlot(),
 			LatestConfirmedBlockSlot:    tpkg.RandSlot(),
-			LatestFinalizedSlot:         iotago.SlotIndex(142857),
+			LatestFinalizedSlot:         axongo.SlotIndex(142857),
 			AcceptedTangleTime:          ts,
 			RelativeAcceptedTangleTime:  ts,
 			ConfirmedTangleTime:         ts,
 			RelativeConfirmedTangleTime: ts,
 			LatestCommitmentID:          tpkg.Rand36ByteArray(),
-			PruningEpoch:                iotago.EpochIndex(142800),
+			PruningEpoch:                axongo.EpochIndex(142800),
 		},
 		ProtocolParameters: []*api.InfoResProtocolParameters{
 			{
@@ -210,19 +210,19 @@ func TestClient_SubmitBlock(t *testing.T) {
 	blockHash := tpkg.Rand36ByteArray()
 	blockHashStr := hexutil.EncodeHex(blockHash[:])
 
-	incompleteBlock := &iotago.Block{
+	incompleteBlock := &axongo.Block{
 		API: mockAPI,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion:  mockAPI.Version(),
 			NetworkID:        mockAPI.ProtocolParameters().NetworkID(),
-			SlotCommitmentID: iotago.NewEmptyCommitment(mockAPI).MustID(),
+			SlotCommitmentID: axongo.NewEmptyCommitment(mockAPI).MustID(),
 		},
-		Signature: &iotago.Ed25519Signature{},
-		Body: &iotago.BasicBlockBody{
+		Signature: &axongo.Ed25519Signature{},
+		Body: &axongo.BasicBlockBody{
 			API:                mockAPI,
 			StrongParents:      tpkg.SortedRandBlockIDs(1),
-			WeakParents:        iotago.BlockIDs{},
-			ShallowLikeParents: iotago.BlockIDs{},
+			WeakParents:        axongo.BlockIDs{},
+			ShallowLikeParents: axongo.BlockIDs{},
 		},
 	}
 
@@ -247,20 +247,20 @@ func TestClient_BlockByBlockID(t *testing.T) {
 
 	blockID := tpkg.RandBlockID()
 
-	originBlock := &iotago.Block{
+	originBlock := &axongo.Block{
 		API: mockAPI,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion:  mockAPI.Version(),
 			NetworkID:        mockAPI.ProtocolParameters().NetworkID(),
 			IssuingTime:      tpkg.RandUTCTime(),
-			SlotCommitmentID: iotago.NewEmptyCommitment(mockAPI).MustID(),
+			SlotCommitmentID: axongo.NewEmptyCommitment(mockAPI).MustID(),
 		},
 		Signature: tpkg.RandEd25519Signature(),
-		Body: &iotago.BasicBlockBody{
+		Body: &axongo.BasicBlockBody{
 			API:                mockAPI,
 			StrongParents:      tpkg.SortedRandBlockIDs(1 + rand.Intn(7)),
-			WeakParents:        iotago.BlockIDs{},
-			ShallowLikeParents: iotago.BlockIDs{},
+			WeakParents:        axongo.BlockIDs{},
+			ShallowLikeParents: axongo.BlockIDs{},
 			Payload:            nil,
 		},
 	}
@@ -296,20 +296,20 @@ func TestClient_BlockWithMetadataByBlockID(t *testing.T) {
 
 	blockID := tpkg.RandBlockID()
 
-	originBlock := &iotago.Block{
+	originBlock := &axongo.Block{
 		API: mockAPI,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion:  mockAPI.Version(),
 			NetworkID:        mockAPI.ProtocolParameters().NetworkID(),
 			IssuingTime:      tpkg.RandUTCTime(),
-			SlotCommitmentID: iotago.NewEmptyCommitment(mockAPI).MustID(),
+			SlotCommitmentID: axongo.NewEmptyCommitment(mockAPI).MustID(),
 		},
 		Signature: tpkg.RandEd25519Signature(),
-		Body: &iotago.BasicBlockBody{
+		Body: &axongo.BasicBlockBody{
 			API:                mockAPI,
 			StrongParents:      tpkg.SortedRandBlockIDs(1 + rand.Intn(7)),
-			WeakParents:        iotago.BlockIDs{},
-			ShallowLikeParents: iotago.BlockIDs{},
+			WeakParents:        axongo.BlockIDs{},
+			ShallowLikeParents: axongo.BlockIDs{},
 			Payload:            nil,
 		},
 	}
@@ -335,7 +335,7 @@ func TestClient_BlockIssuance(t *testing.T) {
 	defer gock.Off()
 
 	parentsHex := []string{"0x733ed2810f2333e9d6cd702c7d5c8264cd9f1ae454b61e75cf702c451f68611d00000000", "0x5e4a89c549456dbec74ce3a21bde719e9cd84e655f3b1c5a09058d0fbf9417fe00000000"}
-	parents, err := iotago.BlockIDsFromHexString(parentsHex)
+	parents, err := axongo.BlockIDsFromHexString(parentsHex)
 	require.NoError(t, err)
 
 	originRes := &api.IssuanceBlockHeaderResponse{
@@ -343,17 +343,17 @@ func TestClient_BlockIssuance(t *testing.T) {
 		WeakParents:                  parents,
 		ShallowLikeParents:           parents,
 		LatestParentBlockIssuingTime: time.Now().UTC(),
-		LatestFinalizedSlot:          iotago.SlotIndex(20),
+		LatestFinalizedSlot:          axongo.SlotIndex(20),
 	}
 
-	prevID, err := iotago.CommitmentIDFromHexString(hexutil.EncodeHex(tpkg.RandBytes(36)))
+	prevID, err := axongo.CommitmentIDFromHexString(hexutil.EncodeHex(tpkg.RandBytes(36)))
 	require.NoError(t, err)
-	rootsID, err := iotago.IdentifierFromHexString(hexutil.EncodeHex(tpkg.RandBytes(32)))
+	rootsID, err := axongo.IdentifierFromHexString(hexutil.EncodeHex(tpkg.RandBytes(32)))
 	require.NoError(t, err)
 
-	originRes.LatestCommitment = &iotago.Commitment{
+	originRes.LatestCommitment = &axongo.Commitment{
 		ProtocolVersion:      1,
-		Slot:                 iotago.SlotIndex(25),
+		Slot:                 axongo.SlotIndex(25),
 		PreviousCommitmentID: prevID,
 		RootsID:              rootsID,
 		CumulativeWeight:     100_000,
@@ -370,9 +370,9 @@ func TestClient_BlockIssuance(t *testing.T) {
 func TestClient_OutputByID(t *testing.T) {
 	defer gock.Off()
 
-	originOutput := tpkg.RandBasicOutput(iotago.AddressEd25519)
+	originOutput := tpkg.RandBasicOutput(axongo.AddressEd25519)
 
-	originOutputProof, err := iotago.NewOutputIDProof(tpkg.ZeroCostTestAPI, tpkg.Rand32ByteArray(), tpkg.RandSlot(), iotago.TxEssenceOutputs{originOutput}, 0)
+	originOutputProof, err := axongo.NewOutputIDProof(tpkg.ZeroCostTestAPI, tpkg.Rand32ByteArray(), tpkg.RandSlot(), axongo.TxEssenceOutputs{originOutput}, 0)
 	require.NoError(t, err)
 
 	outputID, err := originOutputProof.OutputID(originOutput)
@@ -411,7 +411,7 @@ func TestClient_OutputMetadataByID(t *testing.T) {
 		LatestCommitmentID: tpkg.Rand36ByteArray(),
 	}
 
-	utxoInput := &iotago.UTXOInput{TransactionID: outputID.TransactionID(), TransactionOutputIndex: 3}
+	utxoInput := &axongo.UTXOInput{TransactionID: outputID.TransactionID(), TransactionOutputIndex: 3}
 	utxoInputID := utxoInput.OutputID()
 
 	mockGetJSON(api.EndpointWithNamedParameterValue(api.CoreRouteOutputMetadata, api.ParameterOutputID, utxoInputID.ToHex()), 200, originRes)
@@ -427,9 +427,9 @@ func TestClient_OutputMetadataByID(t *testing.T) {
 func TestClient_OutputWithMetadataByID(t *testing.T) {
 	defer gock.Off()
 
-	originOutput := tpkg.RandBasicOutput(iotago.AddressEd25519)
+	originOutput := tpkg.RandBasicOutput(axongo.AddressEd25519)
 
-	originOutputProof, err := iotago.NewOutputIDProof(tpkg.ZeroCostTestAPI, tpkg.Rand32ByteArray(), tpkg.RandSlot(), iotago.TxEssenceOutputs{originOutput}, 0)
+	originOutputProof, err := axongo.NewOutputIDProof(tpkg.ZeroCostTestAPI, tpkg.Rand32ByteArray(), tpkg.RandSlot(), axongo.TxEssenceOutputs{originOutput}, 0)
 	require.NoError(t, err)
 
 	outputID, err := originOutputProof.OutputID(originOutput)
@@ -492,20 +492,20 @@ func TestClient_TransactionIncludedBlock(t *testing.T) {
 
 	txID := tpkg.RandTransactionID()
 
-	originBlock := &iotago.Block{
+	originBlock := &axongo.Block{
 		API: mockAPI,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion:  mockAPI.Version(),
 			NetworkID:        mockAPI.ProtocolParameters().NetworkID(),
 			IssuingTime:      tpkg.RandUTCTime(),
-			SlotCommitmentID: iotago.NewEmptyCommitment(mockAPI).MustID(),
+			SlotCommitmentID: axongo.NewEmptyCommitment(mockAPI).MustID(),
 		},
 		Signature: tpkg.RandEd25519Signature(),
-		Body: &iotago.BasicBlockBody{
+		Body: &axongo.BasicBlockBody{
 			API:                mockAPI,
 			StrongParents:      tpkg.SortedRandBlockIDs(1 + rand.Intn(7)),
-			WeakParents:        iotago.BlockIDs{},
-			ShallowLikeParents: iotago.BlockIDs{},
+			WeakParents:        axongo.BlockIDs{},
+			ShallowLikeParents: axongo.BlockIDs{},
 			Payload:            nil,
 		},
 	}
@@ -558,12 +558,12 @@ func TestClient_TransactionMetadata(t *testing.T) {
 func TestClient_CommitmentByID(t *testing.T) {
 	defer gock.Off()
 
-	var slot iotago.SlotIndex = 5
+	var slot axongo.SlotIndex = 5
 
-	commitmentID := iotago.NewCommitmentID(slot, tpkg.Rand32ByteArray())
-	commitment := iotago.NewCommitment(mockAPI.Version(), slot, iotago.NewCommitmentID(slot-1, tpkg.Rand32ByteArray()), tpkg.Rand32ByteArray(), tpkg.RandUint64(math.MaxUint64), tpkg.RandMana(iotago.MaxMana))
+	commitmentID := axongo.NewCommitmentID(slot, tpkg.Rand32ByteArray())
+	commitment := axongo.NewCommitment(mockAPI.Version(), slot, axongo.NewCommitmentID(slot-1, tpkg.Rand32ByteArray()), tpkg.Rand32ByteArray(), tpkg.RandUint64(math.MaxUint64), tpkg.RandMana(axongo.MaxMana))
 
-	originRes := &iotago.Commitment{
+	originRes := &axongo.Commitment{
 		Slot:                 commitment.Slot,
 		PreviousCommitmentID: commitment.PreviousCommitmentID,
 		RootsID:              commitment.RootsID,
@@ -581,17 +581,17 @@ func TestClient_CommitmentByID(t *testing.T) {
 func TestClient_CommitmentUTXOChangesByID(t *testing.T) {
 	defer gock.Off()
 
-	commitmentID := iotago.NewCommitmentID(5, tpkg.Rand32ByteArray())
+	commitmentID := axongo.NewCommitmentID(5, tpkg.Rand32ByteArray())
 
 	randCreatedOutput := tpkg.RandUTXOInput()
 	randConsumedOutput := tpkg.RandUTXOInput()
 
 	originRes := &api.UTXOChangesResponse{
 		CommitmentID: commitmentID,
-		CreatedOutputs: iotago.OutputIDs{
+		CreatedOutputs: axongo.OutputIDs{
 			randCreatedOutput.OutputID(),
 		},
-		ConsumedOutputs: iotago.OutputIDs{
+		ConsumedOutputs: axongo.OutputIDs{
 			randConsumedOutput.OutputID(),
 		},
 	}
@@ -607,7 +607,7 @@ func TestClient_CommitmentUTXOChangesByID(t *testing.T) {
 func TestClient_CommitmentUTXOChangesFullByID(t *testing.T) {
 	defer gock.Off()
 
-	commitmentID := iotago.NewCommitmentID(5, tpkg.Rand32ByteArray())
+	commitmentID := axongo.NewCommitmentID(5, tpkg.Rand32ByteArray())
 
 	randCreatedOutputID := tpkg.RandOutputID(0)
 	randCreatedOutput := tpkg.RandBasicOutput()
@@ -642,11 +642,11 @@ func TestClient_CommitmentUTXOChangesFullByID(t *testing.T) {
 func TestClient_CommitmentBySlot(t *testing.T) {
 	defer gock.Off()
 
-	var slot iotago.SlotIndex = 1337
+	var slot axongo.SlotIndex = 1337
 
-	commitment := iotago.NewCommitment(mockAPI.Version(), slot, iotago.NewCommitmentID(slot-1, tpkg.Rand32ByteArray()), tpkg.Rand32ByteArray(), tpkg.RandUint64(math.MaxUint64), tpkg.RandMana(iotago.MaxMana))
+	commitment := axongo.NewCommitment(mockAPI.Version(), slot, axongo.NewCommitmentID(slot-1, tpkg.Rand32ByteArray()), tpkg.Rand32ByteArray(), tpkg.RandUint64(math.MaxUint64), tpkg.RandMana(axongo.MaxMana))
 
-	originRes := &iotago.Commitment{
+	originRes := &axongo.Commitment{
 		Slot:                 commitment.Slot,
 		PreviousCommitmentID: commitment.PreviousCommitmentID,
 		RootsID:              commitment.RootsID,
@@ -664,18 +664,18 @@ func TestClient_CommitmentBySlot(t *testing.T) {
 func TestClient_CommitmentUTXOChangesBySlot(t *testing.T) {
 	defer gock.Off()
 
-	var slot iotago.SlotIndex = 1337
-	commitmentID := iotago.NewCommitmentID(slot, tpkg.Rand32ByteArray())
+	var slot axongo.SlotIndex = 1337
+	commitmentID := axongo.NewCommitmentID(slot, tpkg.Rand32ByteArray())
 
 	randCreatedOutput := tpkg.RandUTXOInput()
 	randConsumedOutput := tpkg.RandUTXOInput()
 
 	originRes := &api.UTXOChangesResponse{
 		CommitmentID: commitmentID,
-		CreatedOutputs: iotago.OutputIDs{
+		CreatedOutputs: axongo.OutputIDs{
 			randCreatedOutput.OutputID(),
 		},
-		ConsumedOutputs: iotago.OutputIDs{
+		ConsumedOutputs: axongo.OutputIDs{
 			randConsumedOutput.OutputID(),
 		},
 	}
@@ -691,8 +691,8 @@ func TestClient_CommitmentUTXOChangesBySlot(t *testing.T) {
 func TestClient_CommitmentUTXOChangesFullBySlot(t *testing.T) {
 	defer gock.Off()
 
-	var slot iotago.SlotIndex = 1337
-	commitmentID := iotago.NewCommitmentID(slot, tpkg.Rand32ByteArray())
+	var slot axongo.SlotIndex = 1337
+	commitmentID := axongo.NewCommitmentID(slot, tpkg.Rand32ByteArray())
 
 	randCreatedOutputID := tpkg.RandOutputID(0)
 	randCreatedOutput := tpkg.RandBasicOutput()
@@ -727,13 +727,13 @@ func TestClient_CommitmentUTXOChangesFullBySlot(t *testing.T) {
 func TestClient_Congestion(t *testing.T) {
 	defer gock.Off()
 
-	accountAddress := tpkg.RandAccountID().ToAddress().(*iotago.AccountAddress)
+	accountAddress := tpkg.RandAccountID().ToAddress().(*axongo.AccountAddress)
 
 	originRes := &api.CongestionResponse{
-		Slot:                 iotago.SlotIndex(20),
+		Slot:                 axongo.SlotIndex(20),
 		Ready:                true,
-		ReferenceManaCost:    iotago.Mana(1000),
-		BlockIssuanceCredits: iotago.BlockIssuanceCredits(1000),
+		ReferenceManaCost:    axongo.Mana(1000),
+		BlockIssuanceCredits: axongo.BlockIssuanceCredits(1000),
 	}
 
 	nodeAPI := nodeClient(t)
@@ -757,20 +757,20 @@ func TestClient_Validators(t *testing.T) {
 	for i := 0; i < requestsNumber; i++ {
 		validators := &api.ValidatorsResponse{Validators: []*api.ValidatorResponse{
 			{
-				AddressBech32:                  tpkg.RandAccountID().ToAddress().Bech32(iotago.PrefixTestnet),
-				StakingEndEpoch:                iotago.EpochIndex(123),
-				PoolStake:                      iotago.BaseToken(100),
-				ValidatorStake:                 iotago.BaseToken(10),
-				FixedCost:                      iotago.Mana(10),
+				AddressBech32:                  tpkg.RandAccountID().ToAddress().Bech32(axongo.PrefixTestnet),
+				StakingEndEpoch:                axongo.EpochIndex(123),
+				PoolStake:                      axongo.BaseToken(100),
+				ValidatorStake:                 axongo.BaseToken(10),
+				FixedCost:                      axongo.Mana(10),
 				Active:                         true,
 				LatestSupportedProtocolVersion: 1,
 			},
 			{
-				AddressBech32:                  tpkg.RandAccountID().ToAddress().Bech32(iotago.PrefixTestnet),
-				StakingEndEpoch:                iotago.EpochIndex(123),
-				PoolStake:                      iotago.BaseToken(100),
-				ValidatorStake:                 iotago.BaseToken(10),
-				FixedCost:                      iotago.Mana(10),
+				AddressBech32:                  tpkg.RandAccountID().ToAddress().Bech32(axongo.PrefixTestnet),
+				StakingEndEpoch:                axongo.EpochIndex(123),
+				PoolStake:                      axongo.BaseToken(100),
+				ValidatorStake:                 axongo.BaseToken(10),
+				FixedCost:                      axongo.Mana(10),
 				Active:                         true,
 				LatestSupportedProtocolVersion: 1,
 			},
@@ -799,13 +799,13 @@ func TestClient_Validators(t *testing.T) {
 func TestClient_Validator(t *testing.T) {
 	defer gock.Off()
 
-	accountAddress := tpkg.RandAccountID().ToAddress().(*iotago.AccountAddress)
+	accountAddress := tpkg.RandAccountID().ToAddress().(*axongo.AccountAddress)
 	originRes := &api.ValidatorResponse{
-		AddressBech32:                  accountAddress.Bech32(iotago.PrefixTestnet),
-		StakingEndEpoch:                iotago.EpochIndex(123),
-		PoolStake:                      iotago.BaseToken(100),
-		ValidatorStake:                 iotago.BaseToken(10),
-		FixedCost:                      iotago.Mana(10),
+		AddressBech32:                  accountAddress.Bech32(axongo.PrefixTestnet),
+		StakingEndEpoch:                axongo.EpochIndex(123),
+		PoolStake:                      axongo.BaseToken(100),
+		ValidatorStake:                 axongo.BaseToken(10),
+		FixedCost:                      axongo.Mana(10),
 		Active:                         true,
 		LatestSupportedProtocolVersion: 1,
 	}
@@ -824,10 +824,10 @@ func TestClient_Rewards(t *testing.T) {
 	outID := tpkg.RandOutputID(1)
 
 	originRes := &api.ManaRewardsResponse{
-		StartEpoch:                      iotago.EpochIndex(20),
-		EndEpoch:                        iotago.EpochIndex(30),
-		Rewards:                         iotago.Mana(1000),
-		LatestCommittedEpochPoolRewards: iotago.Mana(1500),
+		StartEpoch:                      axongo.EpochIndex(20),
+		EndEpoch:                        axongo.EpochIndex(30),
+		Rewards:                         axongo.Mana(1000),
+		LatestCommittedEpochPoolRewards: axongo.Mana(1500),
 	}
 
 	mockGetJSON(api.EndpointWithNamedParameterValue(api.CoreRouteRewards, api.ParameterOutputID, outID.ToHex()), 200, originRes)
@@ -842,15 +842,15 @@ func TestClient_Committee(t *testing.T) {
 	defer gock.Off()
 
 	originRes := &api.CommitteeResponse{
-		Epoch:               iotago.EpochIndex(123),
+		Epoch:               axongo.EpochIndex(123),
 		TotalStake:          1000_1000,
 		TotalValidatorStake: 100_000,
 		Committee: []*api.CommitteeMemberResponse{
 			{
-				AddressBech32:  tpkg.RandAccountID().ToAddress().Bech32(iotago.PrefixTestnet),
+				AddressBech32:  tpkg.RandAccountID().ToAddress().Bech32(axongo.PrefixTestnet),
 				PoolStake:      1000_000,
 				ValidatorStake: 100_000,
-				FixedCost:      iotago.Mana(100),
+				FixedCost:      axongo.Mana(100),
 			},
 		},
 	}

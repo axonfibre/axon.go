@@ -1,11 +1,11 @@
-package iotago_test
+package axongo_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
@@ -15,7 +15,7 @@ func TestUTXOInput_DeSerialize(t *testing.T) {
 		{
 			Name:   "",
 			Source: tpkg.RandUTXOInput(),
-			Target: &iotago.UTXOInput{},
+			Target: &axongo.UTXOInput{},
 		},
 	}
 	for _, tt := range tests {
@@ -24,10 +24,10 @@ func TestUTXOInput_DeSerialize(t *testing.T) {
 }
 
 func TestUTXOInput_Equals(t *testing.T) {
-	input1 := &iotago.UTXOInput{iotago.TransactionID{1, 2, 3, 4, 5, 6, 7}, 10}
-	input2 := &iotago.UTXOInput{iotago.TransactionID{1, 2, 3, 4, 5, 6, 7}, 10}
-	input3 := &iotago.UTXOInput{iotago.TransactionID{1, 2, 3, 4, 5, 6, 8}, 10}
-	input4 := &iotago.UTXOInput{iotago.TransactionID{1, 2, 3, 4, 5, 6, 7}, 12}
+	input1 := &axongo.UTXOInput{axongo.TransactionID{1, 2, 3, 4, 5, 6, 7}, 10}
+	input2 := &axongo.UTXOInput{axongo.TransactionID{1, 2, 3, 4, 5, 6, 7}, 10}
+	input3 := &axongo.UTXOInput{axongo.TransactionID{1, 2, 3, 4, 5, 6, 8}, 10}
+	input4 := &axongo.UTXOInput{axongo.TransactionID{1, 2, 3, 4, 5, 6, 7}, 12}
 	//nolint:gocritic // false positive
 	require.True(t, input1.Equals(input1))
 	require.True(t, input1.Equals(input2))

@@ -1,4 +1,4 @@
-package iotago
+package axongo
 
 import (
 	"github.com/axonfibre/fibre.go/ierrors"

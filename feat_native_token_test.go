@@ -1,5 +1,5 @@
 //nolint:dupl
-package iotago_test
+package axongo_test
 
 import (
 	"math/big"
@@ -8,12 +8,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/axonfibre/fibre.go/serializer/v2/serix"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 func TestNativeTokenDeSerialization(t *testing.T) {
-	ntIn := &iotago.NativeTokenFeature{
+	ntIn := &axongo.NativeTokenFeature{
 		ID:     tpkg.Rand38ByteArray(),
 		Amount: new(big.Int).SetUint64(1000),
 	}
@@ -21,7 +21,7 @@ func TestNativeTokenDeSerialization(t *testing.T) {
 	ntBytes, err := tpkg.ZeroCostTestAPI.Encode(ntIn, serix.WithValidation())
 	require.NoError(t, err)
 
-	ntOut := &iotago.NativeTokenFeature{}
+	ntOut := &axongo.NativeTokenFeature{}
 	_, err = tpkg.ZeroCostTestAPI.Decode(ntBytes, ntOut, serix.WithValidation())
 	require.NoError(t, err)
 
@@ -35,7 +35,7 @@ func TestNativeToken_SyntacticalValidation(t *testing.T) {
 
 	type test struct {
 		name               string
-		nativeTokenFeature *iotago.NativeTokenFeature
+		nativeTokenFeature *axongo.NativeTokenFeature
 		wantErr            error
 	}
 
@@ -48,34 +48,34 @@ func TestNativeToken_SyntacticalValidation(t *testing.T) {
 		{
 			name:               "fail - NativeTokenFeature token ID != FoundryID",
 			nativeTokenFeature: tpkg.RandNativeTokenFeature(),
-			wantErr:            iotago.ErrFoundryIDNativeTokenIDMismatch,
+			wantErr:            axongo.ErrFoundryIDNativeTokenIDMismatch,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			foundryIn := &iotago.FoundryOutput{
+			foundryIn := &axongo.FoundryOutput{
 				Amount:       1000,
 				SerialNumber: nativeTokenFeature.ID.FoundrySerialNumber(),
-				TokenScheme: &iotago.SimpleTokenScheme{
+				TokenScheme: &axongo.SimpleTokenScheme{
 					MintedTokens:  big.NewInt(100),
 					MeltedTokens:  big.NewInt(0),
 					MaximumSupply: big.NewInt(100),
 				},
-				UnlockConditions: iotago.FoundryOutputUnlockConditions{
-					&iotago.ImmutableAccountUnlockCondition{
+				UnlockConditions: axongo.FoundryOutputUnlockConditions{
+					&axongo.ImmutableAccountUnlockCondition{
 						Address: accountAddress,
 					},
 				},
-				Features: iotago.FoundryOutputFeatures{
+				Features: axongo.FoundryOutputFeatures{
 					test.nativeTokenFeature,
 				},
-				ImmutableFeatures: iotago.FoundryOutputImmFeatures{},
+				ImmutableFeatures: axongo.FoundryOutputImmFeatures{},
 			}
 
 			foundryBytes, err := tpkg.ZeroCostTestAPI.Encode(foundryIn, serix.WithValidation())
 			if err == nil {
-				err = iotago.OutputsSyntacticalFoundry()(0, foundryIn)
+				err = axongo.OutputsSyntacticalFoundry()(0, foundryIn)
 			}
 			if test.wantErr != nil {
 				require.ErrorIs(t, err, test.wantErr)
@@ -83,7 +83,7 @@ func TestNativeToken_SyntacticalValidation(t *testing.T) {
 			}
 			require.NoError(t, err)
 
-			foundryOut := &iotago.FoundryOutput{}
+			foundryOut := &axongo.FoundryOutput{}
 			_, err = tpkg.ZeroCostTestAPI.Decode(foundryBytes, foundryOut, serix.WithValidation())
 			require.NoError(t, err)
 

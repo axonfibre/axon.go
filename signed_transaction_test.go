@@ -1,4 +1,4 @@
-package iotago_test
+package axongo_test
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/axonfibre/fibre.go/serializer/v2"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
@@ -16,20 +16,20 @@ func TestTransactionDeSerialize(t *testing.T) {
 		{
 			Name:   "ok - UTXO",
 			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI),
-			Target: &iotago.SignedTransaction{},
+			Target: &axongo.SignedTransaction{},
 		},
 		{
 			Name: "ok - Commitment",
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
 				tpkg.RandTransactionWithOptions(
 					tpkg.ZeroCostTestAPI,
-					tpkg.WithContextInputs(iotago.TxEssenceContextInputs{
-						&iotago.CommitmentInput{
-							CommitmentID: iotago.CommitmentID{},
+					tpkg.WithContextInputs(axongo.TxEssenceContextInputs{
+						&axongo.CommitmentInput{
+							CommitmentID: axongo.CommitmentID{},
 						},
 					}),
 				)),
-			Target:    &iotago.SignedTransaction{},
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},
@@ -38,14 +38,14 @@ func TestTransactionDeSerialize(t *testing.T) {
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
 				tpkg.RandTransactionWithOptions(
 					tpkg.ZeroCostTestAPI,
-					tpkg.WithContextInputs(iotago.TxEssenceContextInputs{
-						&iotago.CommitmentInput{},
-						&iotago.BlockIssuanceCreditInput{
+					tpkg.WithContextInputs(axongo.TxEssenceContextInputs{
+						&axongo.CommitmentInput{},
+						&axongo.BlockIssuanceCreditInput{
 							AccountID: tpkg.RandAccountID(),
 						},
 					}),
 				)),
-			Target:    &iotago.SignedTransaction{},
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},
@@ -54,16 +54,16 @@ func TestTransactionDeSerialize(t *testing.T) {
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
 				tpkg.RandTransactionWithOptions(
 					tpkg.ZeroCostTestAPI,
-					tpkg.WithContextInputs(iotago.TxEssenceContextInputs{
-						&iotago.CommitmentInput{
-							CommitmentID: iotago.CommitmentID{},
+					tpkg.WithContextInputs(axongo.TxEssenceContextInputs{
+						&axongo.CommitmentInput{
+							CommitmentID: axongo.CommitmentID{},
 						},
-						&iotago.BlockIssuanceCreditInput{
+						&axongo.BlockIssuanceCreditInput{
 							AccountID: tpkg.RandAccountID(),
 						},
 					}),
 				)),
-			Target:    &iotago.SignedTransaction{},
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},
@@ -80,12 +80,12 @@ func TestTransactionDeSerialize_MaxInputsCount(t *testing.T) {
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
 				tpkg.RandTransactionWithOptions(
 					tpkg.ZeroCostTestAPI,
-					tpkg.WithUTXOInputCount(iotago.MaxInputsCount),
-					tpkg.WithBlockIssuanceCreditInputCount(iotago.MaxContextInputsCount/2),
-					tpkg.WithRewardInputCount(iotago.MaxContextInputsCount/2-1),
+					tpkg.WithUTXOInputCount(axongo.MaxInputsCount),
+					tpkg.WithBlockIssuanceCreditInputCount(axongo.MaxContextInputsCount/2),
+					tpkg.WithRewardInputCount(axongo.MaxContextInputsCount/2-1),
 					tpkg.WithCommitmentInput(),
 				)),
-			Target:    &iotago.SignedTransaction{},
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},
@@ -94,9 +94,9 @@ func TestTransactionDeSerialize_MaxInputsCount(t *testing.T) {
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
 				tpkg.RandTransactionWithOptions(
 					tpkg.ZeroCostTestAPI,
-					tpkg.WithUTXOInputCount(iotago.MaxInputsCount+1),
+					tpkg.WithUTXOInputCount(axongo.MaxInputsCount+1),
 				)),
-			Target:    &iotago.SignedTransaction{},
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   serializer.ErrArrayValidationMaxElementsExceeded,
 			DeSeriErr: serializer.ErrArrayValidationMaxElementsExceeded,
 		},
@@ -105,15 +105,15 @@ func TestTransactionDeSerialize_MaxInputsCount(t *testing.T) {
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
 				tpkg.RandTransactionWithOptions(
 					tpkg.ZeroCostTestAPI,
-					tpkg.WithBlockIssuanceCreditInputCount(iotago.MaxContextInputsCount-1),
+					tpkg.WithBlockIssuanceCreditInputCount(axongo.MaxContextInputsCount-1),
 					tpkg.WithCommitmentInput(),
-					func(tx *iotago.Transaction) {
-						tx.TransactionEssence.ContextInputs = append(tx.TransactionEssence.ContextInputs, &iotago.RewardInput{
+					func(tx *axongo.Transaction) {
+						tx.TransactionEssence.ContextInputs = append(tx.TransactionEssence.ContextInputs, &axongo.RewardInput{
 							Index: 0,
 						})
 					},
 				)),
-			Target:    &iotago.SignedTransaction{},
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   serializer.ErrArrayValidationMaxElementsExceeded,
 			DeSeriErr: serializer.ErrArrayValidationMaxElementsExceeded,
 		},
@@ -127,15 +127,15 @@ func TestTransactionDeSerialize_MaxOutputsCount(t *testing.T) {
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name:      "ok",
-			Source:    tpkg.RandSignedTransactionWithOutputCount(tpkg.ZeroCostTestAPI, iotago.MaxOutputsCount),
-			Target:    &iotago.SignedTransaction{},
+			Source:    tpkg.RandSignedTransactionWithOutputCount(tpkg.ZeroCostTestAPI, axongo.MaxOutputsCount),
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},
 		{
 			Name:      "too many outputs",
-			Source:    tpkg.RandSignedTransactionWithOutputCount(tpkg.ZeroCostTestAPI, iotago.MaxOutputsCount+1),
-			Target:    &iotago.SignedTransaction{},
+			Source:    tpkg.RandSignedTransactionWithOutputCount(tpkg.ZeroCostTestAPI, axongo.MaxOutputsCount+1),
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   serializer.ErrArrayValidationMaxElementsExceeded,
 			DeSeriErr: serializer.ErrArrayValidationMaxElementsExceeded,
 		},
@@ -149,15 +149,15 @@ func TestTransactionDeSerialize_MaxAllotmentsCount(t *testing.T) {
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name:      "ok",
-			Source:    tpkg.RandSignedTransactionWithAllotmentCount(tpkg.ZeroCostTestAPI, iotago.MaxAllotmentCount),
-			Target:    &iotago.SignedTransaction{},
+			Source:    tpkg.RandSignedTransactionWithAllotmentCount(tpkg.ZeroCostTestAPI, axongo.MaxAllotmentCount),
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},
 		{
 			Name:      "too many allotments",
-			Source:    tpkg.RandSignedTransactionWithAllotmentCount(tpkg.ZeroCostTestAPI, iotago.MaxAllotmentCount+1),
-			Target:    &iotago.SignedTransaction{},
+			Source:    tpkg.RandSignedTransactionWithAllotmentCount(tpkg.ZeroCostTestAPI, axongo.MaxAllotmentCount+1),
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   serializer.ErrArrayValidationMaxElementsExceeded,
 			DeSeriErr: serializer.ErrArrayValidationMaxElementsExceeded,
 		},
@@ -172,28 +172,28 @@ func TestTransactionDeSerialize_RefUTXOIndexMax(t *testing.T) {
 		{
 			Name: "ok",
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
-				tpkg.RandTransactionWithOptions(tpkg.ZeroCostTestAPI, tpkg.WithInputs(iotago.TxEssenceInputs{
-					&iotago.UTXOInput{
+				tpkg.RandTransactionWithOptions(tpkg.ZeroCostTestAPI, tpkg.WithInputs(axongo.TxEssenceInputs{
+					&axongo.UTXOInput{
 						TransactionID:          tpkg.RandTransactionID(),
-						TransactionOutputIndex: iotago.RefUTXOIndexMax,
+						TransactionOutputIndex: axongo.RefUTXOIndexMax,
 					},
 				}))),
-			Target:    &iotago.SignedTransaction{},
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},
 		{
 			Name: "wrong ref index",
 			Source: tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
-				tpkg.RandTransactionWithOptions(tpkg.ZeroCostTestAPI, tpkg.WithInputs(iotago.TxEssenceInputs{
-					&iotago.UTXOInput{
+				tpkg.RandTransactionWithOptions(tpkg.ZeroCostTestAPI, tpkg.WithInputs(axongo.TxEssenceInputs{
+					&axongo.UTXOInput{
 						TransactionID:          tpkg.RandTransactionID(),
-						TransactionOutputIndex: iotago.RefUTXOIndexMax + 1,
+						TransactionOutputIndex: axongo.RefUTXOIndexMax + 1,
 					},
 				}))),
-			Target:    &iotago.SignedTransaction{},
-			SeriErr:   iotago.ErrRefUTXOIndexInvalid,
-			DeSeriErr: iotago.ErrRefUTXOIndexInvalid,
+			Target:    &axongo.SignedTransaction{},
+			SeriErr:   axongo.ErrRefUTXOIndexInvalid,
+			DeSeriErr: axongo.ErrRefUTXOIndexInvalid,
 		},
 	}
 	for _, tt := range tests {
@@ -202,42 +202,42 @@ func TestTransactionDeSerialize_RefUTXOIndexMax(t *testing.T) {
 }
 
 func TestTransaction_InputTypes(t *testing.T) {
-	utxoInput1 := &iotago.UTXOInput{
+	utxoInput1 := &axongo.UTXOInput{
 		TransactionID:          tpkg.RandTransactionID(),
 		TransactionOutputIndex: 13,
 	}
 
-	utxoInput2 := &iotago.UTXOInput{
+	utxoInput2 := &axongo.UTXOInput{
 		TransactionID:          tpkg.RandTransactionID(),
 		TransactionOutputIndex: 11,
 	}
 
-	commitmentInput1 := &iotago.CommitmentInput{
-		CommitmentID: iotago.CommitmentIDRepresentingData(10, tpkg.RandBytes(32)),
+	commitmentInput1 := &axongo.CommitmentInput{
+		CommitmentID: axongo.CommitmentIDRepresentingData(10, tpkg.RandBytes(32)),
 	}
 
-	bicInput1 := &iotago.BlockIssuanceCreditInput{
+	bicInput1 := &axongo.BlockIssuanceCreditInput{
 		AccountID: tpkg.RandAccountID(),
 	}
-	bicInput2 := &iotago.BlockIssuanceCreditInput{
+	bicInput2 := &axongo.BlockIssuanceCreditInput{
 		AccountID: tpkg.RandAccountID(),
 	}
 
-	rewardInput1 := &iotago.RewardInput{
+	rewardInput1 := &axongo.RewardInput{
 		Index: 3,
 	}
-	rewardInput2 := &iotago.RewardInput{
+	rewardInput2 := &axongo.RewardInput{
 		Index: 2,
 	}
 
 	signedTransaction := tpkg.RandSignedTransactionWithTransaction(tpkg.ZeroCostTestAPI,
 		tpkg.RandTransactionWithOptions(
 			tpkg.ZeroCostTestAPI,
-			tpkg.WithInputs(iotago.TxEssenceInputs{
+			tpkg.WithInputs(axongo.TxEssenceInputs{
 				utxoInput1,
 				utxoInput2,
 			}),
-			tpkg.WithContextInputs(iotago.TxEssenceContextInputs{
+			tpkg.WithContextInputs(axongo.TxEssenceContextInputs{
 				commitmentInput1,
 				bicInput1,
 				bicInput2,
@@ -277,7 +277,7 @@ func TestTransaction_Clone(t *testing.T) {
 	require.NoError(t, err)
 
 	//nolint:forcetypeassert
-	cpy := transaction.Clone().(*iotago.SignedTransaction)
+	cpy := transaction.Clone().(*axongo.SignedTransaction)
 
 	cpyTxID, err := cpy.ID()
 	require.NoError(t, err)

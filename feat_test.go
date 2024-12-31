@@ -1,4 +1,4 @@
-package iotago_test
+package axongo_test
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/axonfibre/fibre.go/lo"
 	"github.com/axonfibre/fibre.go/serializer/v2"
 	"github.com/axonfibre/fibre.go/serializer/v2/serix"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/hexutil"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
@@ -20,62 +20,62 @@ func TestFeaturesDeSerialize(t *testing.T) {
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name: "ok - StakingFeature",
-			Source: &iotago.StakingFeature{
+			Source: &axongo.StakingFeature{
 				StakedAmount: 100,
 				FixedCost:    12,
 				StartEpoch:   100,
 				EndEpoch:     1236,
 			},
-			Target: &iotago.StakingFeature{},
+			Target: &axongo.StakingFeature{},
 		},
 		{
 			Name: "ok - BlockIssuerFeature",
-			Source: &iotago.BlockIssuerFeature{
-				BlockIssuerKeys: iotago.NewBlockIssuerKeys(
-					iotago.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(tpkg.Rand32ByteArray()),
+			Source: &axongo.BlockIssuerFeature{
+				BlockIssuerKeys: axongo.NewBlockIssuerKeys(
+					axongo.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(tpkg.Rand32ByteArray()),
 				),
 				ExpirySlot: 10,
 			},
-			Target: &iotago.BlockIssuerFeature{},
+			Target: &axongo.BlockIssuerFeature{},
 		},
 		{
 			Name:   "ok - SenderFeature",
-			Source: &iotago.SenderFeature{Address: tpkg.RandEd25519Address()},
-			Target: &iotago.SenderFeature{},
+			Source: &axongo.SenderFeature{Address: tpkg.RandEd25519Address()},
+			Target: &axongo.SenderFeature{},
 		},
 		{
 			Name:   "ok - Issuer",
-			Source: &iotago.IssuerFeature{Address: tpkg.RandEd25519Address()},
-			Target: &iotago.IssuerFeature{},
+			Source: &axongo.IssuerFeature{Address: tpkg.RandEd25519Address()},
+			Target: &axongo.IssuerFeature{},
 		},
 		{
 			Name: "ok - MetadataFeature",
-			Source: &iotago.MetadataFeature{
-				Entries: iotago.MetadataFeatureEntries{
+			Source: &axongo.MetadataFeature{
+				Entries: axongo.MetadataFeatureEntries{
 					"hello":    []byte("world"),
 					"did:iota": []byte("hello digital autonomy"),
 					"":         []byte(""),
 				},
 			},
-			Target: &iotago.MetadataFeature{},
+			Target: &axongo.MetadataFeature{},
 		},
 		{
 			Name: "ok - StateMetadataFeature",
-			Source: &iotago.StateMetadataFeature{
-				Entries: iotago.StateMetadataFeatureEntries{
+			Source: &axongo.StateMetadataFeature{
+				Entries: axongo.StateMetadataFeatureEntries{
 					"hello":    []byte("world"),
 					"did:iota": []byte("hello digital autonomy"),
 					"":         []byte(""),
 				},
 			},
-			Target: &iotago.StateMetadataFeature{},
+			Target: &axongo.StateMetadataFeature{},
 		},
 		{
 			Name: "ok - TagFeature",
-			Source: &iotago.TagFeature{
+			Source: &axongo.TagFeature{
 				Tag: []byte("hello world"),
 			},
-			Target: &iotago.TagFeature{},
+			Target: &axongo.TagFeature{},
 		},
 	}
 
@@ -88,69 +88,69 @@ func TestFeaturesMetadata(t *testing.T) {
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name: "ok - MetadataFeature",
-			Source: &iotago.MetadataFeature{
-				Entries: iotago.MetadataFeatureEntries{
+			Source: &axongo.MetadataFeature{
+				Entries: axongo.MetadataFeatureEntries{
 					"hello":    []byte("world"),
 					"did:iota": []byte("hello digital autonomy"),
 					"empty":    []byte(""),
 				},
 			},
-			Target: &iotago.MetadataFeature{},
+			Target: &axongo.MetadataFeature{},
 		},
 		{
 			Name: "fail - MetadataFeature - non ASCII char in key",
-			Source: &iotago.MetadataFeature{
-				Entries: iotago.MetadataFeatureEntries{
+			Source: &axongo.MetadataFeature{
+				Entries: axongo.MetadataFeatureEntries{
 					"hellö": []byte("world"),
 				},
 			},
-			SeriErr:   iotago.ErrInvalidMetadataKey,
-			DeSeriErr: iotago.ErrInvalidMetadataKey,
-			Target:    &iotago.MetadataFeature{},
+			SeriErr:   axongo.ErrInvalidMetadataKey,
+			DeSeriErr: axongo.ErrInvalidMetadataKey,
+			Target:    &axongo.MetadataFeature{},
 		},
 		{
 			Name: "ok - StateMetadataFeature",
-			Source: &iotago.StateMetadataFeature{
-				Entries: iotago.StateMetadataFeatureEntries{
+			Source: &axongo.StateMetadataFeature{
+				Entries: axongo.StateMetadataFeatureEntries{
 					"hello":    []byte("world"),
 					"did:iota": []byte("hello digital autonomy"),
 					"empty":    []byte(""),
 				},
 			},
-			Target: &iotago.StateMetadataFeature{},
+			Target: &axongo.StateMetadataFeature{},
 		},
 		{
 			Name: "fail - StateMetadataFeature - non ASCII char in key",
-			Source: &iotago.StateMetadataFeature{
-				Entries: iotago.StateMetadataFeatureEntries{
+			Source: &axongo.StateMetadataFeature{
+				Entries: axongo.StateMetadataFeatureEntries{
 					"hellö": []byte("world"),
 				},
 			},
-			SeriErr:   iotago.ErrInvalidStateMetadataKey,
-			DeSeriErr: iotago.ErrInvalidStateMetadataKey,
-			Target:    &iotago.StateMetadataFeature{},
+			SeriErr:   axongo.ErrInvalidStateMetadataKey,
+			DeSeriErr: axongo.ErrInvalidStateMetadataKey,
+			Target:    &axongo.StateMetadataFeature{},
 		},
 		{
 			Name: "fail - StateMetadataFeature - space char in key",
-			Source: &iotago.StateMetadataFeature{
-				Entries: iotago.StateMetadataFeatureEntries{
+			Source: &axongo.StateMetadataFeature{
+				Entries: axongo.StateMetadataFeatureEntries{
 					"space-> ": []byte("world"),
 				},
 			},
-			SeriErr:   iotago.ErrInvalidStateMetadataKey,
-			DeSeriErr: iotago.ErrInvalidStateMetadataKey,
-			Target:    &iotago.StateMetadataFeature{},
+			SeriErr:   axongo.ErrInvalidStateMetadataKey,
+			DeSeriErr: axongo.ErrInvalidStateMetadataKey,
+			Target:    &axongo.StateMetadataFeature{},
 		},
 		{
 			Name: "fail - StateMetadataFeature - ASCII control-character in key",
-			Source: &iotago.StateMetadataFeature{
-				Entries: iotago.StateMetadataFeatureEntries{
+			Source: &axongo.StateMetadataFeature{
+				Entries: axongo.StateMetadataFeatureEntries{
 					"\x07": []byte("world"),
 				},
 			},
-			SeriErr:   iotago.ErrInvalidStateMetadataKey,
-			DeSeriErr: iotago.ErrInvalidStateMetadataKey,
-			Target:    &iotago.StateMetadataFeature{},
+			SeriErr:   axongo.ErrInvalidStateMetadataKey,
+			DeSeriErr: axongo.ErrInvalidStateMetadataKey,
+			Target:    &axongo.StateMetadataFeature{},
 		},
 	}
 
@@ -164,32 +164,32 @@ func TestFeaturesMetadata(t *testing.T) {
 func TestFeaturesMetadataLexicalOrdering(t *testing.T) {
 	type metadataDeserializeTest struct {
 		name   string
-		source iotago.Feature
-		target iotago.Feature
+		source axongo.Feature
+		target axongo.Feature
 	}
 
 	tests := []metadataDeserializeTest{
 		{
 			name: "ok - MetadataFeature",
-			source: &iotago.MetadataFeature{
-				Entries: iotago.MetadataFeatureEntries{
+			source: &axongo.MetadataFeature{
+				Entries: axongo.MetadataFeatureEntries{
 					"b": []byte("y"),
 					"c": []byte("z"),
 					"a": []byte("x"),
 				},
 			},
-			target: &iotago.MetadataFeature{},
+			target: &axongo.MetadataFeature{},
 		},
 		{
 			name: "ok - StateMetadataFeature",
-			source: &iotago.StateMetadataFeature{
-				Entries: iotago.StateMetadataFeatureEntries{
+			source: &axongo.StateMetadataFeature{
+				Entries: axongo.StateMetadataFeatureEntries{
 					"b": []byte("y"),
 					"c": []byte("z"),
 					"a": []byte("x"),
 				},
 			},
-			target: &iotago.StateMetadataFeature{},
+			target: &axongo.StateMetadataFeature{},
 		},
 	}
 
@@ -282,19 +282,19 @@ func TestMetadataMaxSize(t *testing.T) {
 	tests := []transactionSerializeTest{
 		{
 			name: "ok - MetadataFeature size matches max allowed size",
-			output: func() iotago.Output {
-				output := &iotago.BasicOutput{
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{
+			output: func() axongo.Output {
+				output := &axongo.BasicOutput{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{
 							Address: tpkg.RandEd25519Address(),
 						},
 					},
 				}
 				output.Amount = 100_000_000
-				output.Features = append(output.Features, &iotago.MetadataFeature{
-					Entries: iotago.MetadataFeatureEntries{
-						iotago.MetadataFeatureEntriesKey(myKey): tpkg.RandBytes(
-							iotago.MaxMetadataMapSize - mapLenPrefixSize - myKeyLen - keyLenPrefixSize - valueLenPrefixSize,
+				output.Features = append(output.Features, &axongo.MetadataFeature{
+					Entries: axongo.MetadataFeatureEntries{
+						axongo.MetadataFeatureEntriesKey(myKey): tpkg.RandBytes(
+							axongo.MaxMetadataMapSize - mapLenPrefixSize - myKeyLen - keyLenPrefixSize - valueLenPrefixSize,
 						),
 					},
 				})
@@ -304,41 +304,41 @@ func TestMetadataMaxSize(t *testing.T) {
 		},
 		{
 			name: "fail - MetadataFeature size exceeds max allowed size by one",
-			output: func() iotago.Output {
+			output: func() axongo.Output {
 				output := tpkg.RandBasicOutput()
 				output.Amount = 100_000_000
-				output.Features = append(output.Features, &iotago.MetadataFeature{
-					Entries: iotago.MetadataFeatureEntries{
-						iotago.MetadataFeatureEntriesKey(myKey): tpkg.RandBytes(
-							iotago.MaxMetadataMapSize - mapLenPrefixSize - myKeyLen - keyLenPrefixSize - valueLenPrefixSize + 1,
+				output.Features = append(output.Features, &axongo.MetadataFeature{
+					Entries: axongo.MetadataFeatureEntries{
+						axongo.MetadataFeatureEntriesKey(myKey): tpkg.RandBytes(
+							axongo.MaxMetadataMapSize - mapLenPrefixSize - myKeyLen - keyLenPrefixSize - valueLenPrefixSize + 1,
 						),
 					},
 				})
 
 				return output
 			}(),
-			seriErr:   iotago.ErrMetadataExceedsMaxSize,
-			deseriErr: iotago.ErrMetadataExceedsMaxSize,
+			seriErr:   axongo.ErrMetadataExceedsMaxSize,
+			deseriErr: axongo.ErrMetadataExceedsMaxSize,
 		},
 		{
 			name: "ok - StateMetadataFeature size matches max allowed size",
-			output: func() iotago.Output {
-				return &iotago.AnchorOutput{
+			output: func() axongo.Output {
+				return &axongo.AnchorOutput{
 					Amount: 100_000_000,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{
 							Address: tpkg.RandEd25519Address(),
 						},
-						&iotago.GovernorAddressUnlockCondition{
+						&axongo.GovernorAddressUnlockCondition{
 							Address: tpkg.RandEd25519Address(),
 						},
 					},
-					ImmutableFeatures: iotago.AnchorOutputImmFeatures{},
-					Features: iotago.AnchorOutputFeatures{
-						&iotago.StateMetadataFeature{
-							Entries: iotago.StateMetadataFeatureEntries{
-								iotago.StateMetadataFeatureEntriesKey(myKey): tpkg.RandBytes(
-									iotago.MaxMetadataMapSize - mapLenPrefixSize - myKeyLen - keyLenPrefixSize - valueLenPrefixSize,
+					ImmutableFeatures: axongo.AnchorOutputImmFeatures{},
+					Features: axongo.AnchorOutputFeatures{
+						&axongo.StateMetadataFeature{
+							Entries: axongo.StateMetadataFeatureEntries{
+								axongo.StateMetadataFeatureEntriesKey(myKey): tpkg.RandBytes(
+									axongo.MaxMetadataMapSize - mapLenPrefixSize - myKeyLen - keyLenPrefixSize - valueLenPrefixSize,
 								),
 							},
 						},
@@ -348,36 +348,36 @@ func TestMetadataMaxSize(t *testing.T) {
 		},
 		{
 			name: "fail - StateMetadataFeature size exceeds max allowed size by one",
-			output: func() iotago.Output {
-				return &iotago.AnchorOutput{
+			output: func() axongo.Output {
+				return &axongo.AnchorOutput{
 					Amount: 100_000_000,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{
 							Address: tpkg.RandEd25519Address(),
 						},
-						&iotago.GovernorAddressUnlockCondition{
+						&axongo.GovernorAddressUnlockCondition{
 							Address: tpkg.RandEd25519Address(),
 						},
 					},
-					ImmutableFeatures: iotago.AnchorOutputImmFeatures{},
-					Features: iotago.AnchorOutputFeatures{
-						&iotago.MetadataFeature{
-							Entries: iotago.MetadataFeatureEntries{
+					ImmutableFeatures: axongo.AnchorOutputImmFeatures{},
+					Features: axongo.AnchorOutputFeatures{
+						&axongo.MetadataFeature{
+							Entries: axongo.MetadataFeatureEntries{
 								"test": []byte("value_unrelated_to_test"),
 							},
 						},
-						&iotago.StateMetadataFeature{
-							Entries: iotago.StateMetadataFeatureEntries{
-								iotago.StateMetadataFeatureEntriesKey(myKey): tpkg.RandBytes(
-									iotago.MaxMetadataMapSize - mapLenPrefixSize - myKeyLen - keyLenPrefixSize - valueLenPrefixSize + 1,
+						&axongo.StateMetadataFeature{
+							Entries: axongo.StateMetadataFeatureEntries{
+								axongo.StateMetadataFeatureEntriesKey(myKey): tpkg.RandBytes(
+									axongo.MaxMetadataMapSize - mapLenPrefixSize - myKeyLen - keyLenPrefixSize - valueLenPrefixSize + 1,
 								),
 							},
 						},
 					},
 				}
 			}(),
-			seriErr:   iotago.ErrMetadataExceedsMaxSize,
-			deseriErr: iotago.ErrMetadataExceedsMaxSize,
+			seriErr:   axongo.ErrMetadataExceedsMaxSize,
+			deseriErr: axongo.ErrMetadataExceedsMaxSize,
 		},
 	}
 
@@ -389,26 +389,26 @@ func TestMetadataMaxSize(t *testing.T) {
 
 func TestBlockIssuerFeatureSyntacticValidation(t *testing.T) {
 	bik1 := lo.PanicOnErr(lo.DropCount(
-		iotago.Ed25519PublicKeyHashBlockIssuerKeyFromBytes(
+		axongo.Ed25519PublicKeyHashBlockIssuerKeyFromBytes(
 			lo.PanicOnErr(hexutil.DecodeHex("0x00145d52e861cfe407e6f0c278f09ebd35ed7bcd766b7da2654e475ed4b05e0ddc")))))
 	bik2 := lo.PanicOnErr(lo.DropCount(
-		iotago.Ed25519PublicKeyHashBlockIssuerKeyFromBytes(
+		axongo.Ed25519PublicKeyHashBlockIssuerKeyFromBytes(
 			lo.PanicOnErr(hexutil.DecodeHex("0x006f49dd17390fda4ec3b7c959496b4b9ac50428c47f0ffe445a94130547fbe519")))))
 	bik3 := lo.PanicOnErr(lo.DropCount(
-		iotago.Ed25519PublicKeyHashBlockIssuerKeyFromBytes(
+		axongo.Ed25519PublicKeyHashBlockIssuerKeyFromBytes(
 			lo.PanicOnErr(hexutil.DecodeHex("0x009a224f3c94a5c281d984930216c20e1f4a79c3bad325cf92237f1dac1ff22b10")))))
 
-	accountWithKeys := func(biks iotago.BlockIssuerKeys) *iotago.AccountOutput {
-		return &iotago.AccountOutput{
+	accountWithKeys := func(biks axongo.BlockIssuerKeys) *axongo.AccountOutput {
+		return &axongo.AccountOutput{
 			Amount: 100_000_000,
-			UnlockConditions: iotago.AccountOutputUnlockConditions{
-				&iotago.AddressUnlockCondition{
+			UnlockConditions: axongo.AccountOutputUnlockConditions{
+				&axongo.AddressUnlockCondition{
 					Address: tpkg.RandAccountAddress(),
 				},
 			},
-			ImmutableFeatures: iotago.AccountOutputImmFeatures{},
-			Features: iotago.AccountOutputFeatures{
-				&iotago.BlockIssuerFeature{
+			ImmutableFeatures: axongo.AccountOutputImmFeatures{},
+			Features: axongo.AccountOutputFeatures{
+				&axongo.BlockIssuerFeature{
 					ExpirySlot:      100,
 					BlockIssuerKeys: biks,
 				},
@@ -419,9 +419,9 @@ func TestBlockIssuerFeatureSyntacticValidation(t *testing.T) {
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name: "ok - BlockIssuerFeature keys lexically ordered and unique",
-			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *iotago.Transaction) {
-				t.Outputs = iotago.TxEssenceOutputs{
-					accountWithKeys(iotago.BlockIssuerKeys{
+			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *axongo.Transaction) {
+				t.Outputs = axongo.TxEssenceOutputs{
+					accountWithKeys(axongo.BlockIssuerKeys{
 						bik1,
 						bik2,
 						bik3,
@@ -430,13 +430,13 @@ func TestBlockIssuerFeatureSyntacticValidation(t *testing.T) {
 				t.TransactionEssence.ContextInputs = append(t.TransactionEssence.ContextInputs, tpkg.RandCommitmentInput())
 			},
 			),
-			Target: &iotago.SignedTransaction{},
+			Target: &axongo.SignedTransaction{},
 		},
 		{
 			Name: "fail - BlockIssuerFeature keys lexically unordered",
-			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *iotago.Transaction) {
-				t.Outputs = iotago.TxEssenceOutputs{
-					accountWithKeys(iotago.BlockIssuerKeys{
+			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *axongo.Transaction) {
+				t.Outputs = axongo.TxEssenceOutputs{
+					accountWithKeys(axongo.BlockIssuerKeys{
 						bik2,
 						bik1,
 						bik3,
@@ -444,15 +444,15 @@ func TestBlockIssuerFeatureSyntacticValidation(t *testing.T) {
 				}
 				t.TransactionEssence.ContextInputs = append(t.TransactionEssence.ContextInputs, tpkg.RandCommitmentInput())
 			}),
-			Target:    &iotago.SignedTransaction{},
-			SeriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			DeSeriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			Target:    &axongo.SignedTransaction{},
+			SeriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			DeSeriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			Name: "fail - BlockIssuerFeature keys contains duplicates",
-			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *iotago.Transaction) {
-				t.Outputs = iotago.TxEssenceOutputs{
-					accountWithKeys(iotago.BlockIssuerKeys{
+			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *axongo.Transaction) {
+				t.Outputs = axongo.TxEssenceOutputs{
+					accountWithKeys(axongo.BlockIssuerKeys{
 						bik1,
 						bik1,
 						bik1,
@@ -461,31 +461,31 @@ func TestBlockIssuerFeatureSyntacticValidation(t *testing.T) {
 				}
 				t.TransactionEssence.ContextInputs = append(t.TransactionEssence.ContextInputs, tpkg.RandCommitmentInput())
 			}),
-			Target:    &iotago.SignedTransaction{},
-			SeriErr:   iotago.ErrArrayValidationViolatesUniqueness,
-			DeSeriErr: iotago.ErrArrayValidationViolatesUniqueness,
+			Target:    &axongo.SignedTransaction{},
+			SeriErr:   axongo.ErrArrayValidationViolatesUniqueness,
+			DeSeriErr: axongo.ErrArrayValidationViolatesUniqueness,
 		},
 		{
 			Name: "fail - BlockIssuerFeature keys below minimum",
-			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *iotago.Transaction) {
-				t.Outputs = iotago.TxEssenceOutputs{
-					accountWithKeys(iotago.BlockIssuerKeys{}),
+			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *axongo.Transaction) {
+				t.Outputs = axongo.TxEssenceOutputs{
+					accountWithKeys(axongo.BlockIssuerKeys{}),
 				}
 				t.TransactionEssence.ContextInputs = append(t.TransactionEssence.ContextInputs, tpkg.RandCommitmentInput())
 			}),
-			Target:    &iotago.SignedTransaction{},
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   serializer.ErrArrayValidationMinElementsNotReached,
 			DeSeriErr: serializer.ErrArrayValidationMinElementsNotReached,
 		},
 		{
 			Name: "fail - BlockIssuerFeature keys exceeds maximum",
-			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *iotago.Transaction) {
-				t.Outputs = iotago.TxEssenceOutputs{
-					accountWithKeys(tpkg.RandBlockIssuerKeys(iotago.MaxBlockIssuerKeysCount + 1)),
+			Source: tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *axongo.Transaction) {
+				t.Outputs = axongo.TxEssenceOutputs{
+					accountWithKeys(tpkg.RandBlockIssuerKeys(axongo.MaxBlockIssuerKeysCount + 1)),
 				}
 				t.TransactionEssence.ContextInputs = append(t.TransactionEssence.ContextInputs, tpkg.RandCommitmentInput())
 			}),
-			Target:    &iotago.SignedTransaction{},
+			Target:    &axongo.SignedTransaction{},
 			SeriErr:   serializer.ErrArrayValidationMaxElementsExceeded,
 			DeSeriErr: serializer.ErrArrayValidationMaxElementsExceeded,
 		},

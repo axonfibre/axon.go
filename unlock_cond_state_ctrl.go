@@ -1,5 +1,5 @@
 //nolint:dupl
-package iotago
+package axongo
 
 import (
 	"cmp"

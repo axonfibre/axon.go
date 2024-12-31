@@ -1,4 +1,4 @@
-package iotago_test
+package axongo_test
 
 import (
 	"crypto/ed25519"
@@ -13,7 +13,7 @@ import (
 	"github.com/axonfibre/fibre.go/lo"
 	"github.com/axonfibre/fibre.go/serializer/v2"
 	"github.com/axonfibre/fibre.go/serializer/v2/serix"
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/builder"
 	"github.com/axonfibre/axon.go/v4/hexutil"
 	"github.com/axonfibre/axon.go/v4/tpkg"
@@ -21,80 +21,80 @@ import (
 )
 
 func TestBlock_DeSerialize(t *testing.T) {
-	blockID1 := iotago.MustBlockIDFromHexString("0x960192696d2c99fe338a212f223f96e72c11147ca23490806c1bb18e4d76995ccbfb91ae")
-	blockID2 := iotago.MustBlockIDFromHexString("0xc9e20c8bf3b1655b6fc385aebde8e25a668bd4109f5c698eb1b30b31fbbcfb5e6b9dd933")
-	blockID3 := iotago.MustBlockIDFromHexString("0xf2520bde652b46d7119a6d2a3b83947ce2d8a79867d37262e91f129215e5098f3f011d8e")
+	blockID1 := axongo.MustBlockIDFromHexString("0x960192696d2c99fe338a212f223f96e72c11147ca23490806c1bb18e4d76995ccbfb91ae")
+	blockID2 := axongo.MustBlockIDFromHexString("0xc9e20c8bf3b1655b6fc385aebde8e25a668bd4109f5c698eb1b30b31fbbcfb5e6b9dd933")
+	blockID3 := axongo.MustBlockIDFromHexString("0xf2520bde652b46d7119a6d2a3b83947ce2d8a79867d37262e91f129215e5098f3f011d8e")
 
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name:   "ok - no payload",
 			Source: tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, 255), tpkg.ZeroCostTestAPI, 0),
-			Target: &iotago.Block{},
+			Target: &axongo.Block{},
 		},
 		{
 			Name:   "ok - transaction",
-			Source: tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, iotago.PayloadSignedTransaction), tpkg.ZeroCostTestAPI, 0),
-			Target: &iotago.Block{},
+			Source: tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, axongo.PayloadSignedTransaction), tpkg.ZeroCostTestAPI, 0),
+			Target: &axongo.Block{},
 		},
 		{
 			Name:   "ok - tagged data",
-			Source: tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, iotago.PayloadTaggedData), tpkg.ZeroCostTestAPI, 0),
-			Target: &iotago.Block{},
+			Source: tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, axongo.PayloadTaggedData), tpkg.ZeroCostTestAPI, 0),
+			Target: &axongo.Block{},
 		},
 		{
 			Name:   "ok - validation block",
 			Source: tpkg.RandBlock(tpkg.RandValidationBlockBody(tpkg.ZeroCostTestAPI), tpkg.ZeroCostTestAPI, 0),
-			Target: &iotago.Block{},
+			Target: &axongo.Block{},
 		},
 		{
 			Name: "ok - basic block parent ids sorted",
-			Source: func() *iotago.Block {
-				block := tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, iotago.PayloadTaggedData), tpkg.ZeroCostTestAPI, 1)
+			Source: func() *axongo.Block {
+				block := tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, axongo.PayloadTaggedData), tpkg.ZeroCostTestAPI, 1)
 				//nolint:forcetypeassert
-				basicBlockBody := block.Body.(*iotago.BasicBlockBody)
-				basicBlockBody.ShallowLikeParents = iotago.BlockIDs{}
-				basicBlockBody.StrongParents = iotago.BlockIDs{
+				basicBlockBody := block.Body.(*axongo.BasicBlockBody)
+				basicBlockBody.ShallowLikeParents = axongo.BlockIDs{}
+				basicBlockBody.StrongParents = axongo.BlockIDs{
 					blockID1,
 					blockID2,
 					blockID3,
 				}
-				basicBlockBody.WeakParents = iotago.BlockIDs{}
+				basicBlockBody.WeakParents = axongo.BlockIDs{}
 
 				return block
 			}(),
-			Target: &iotago.Block{},
+			Target: &axongo.Block{},
 		},
 		{
 			Name: "fail - basic block strong parent ids unsorted",
-			Source: func() *iotago.Block {
-				block := tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, iotago.PayloadTaggedData), tpkg.ZeroCostTestAPI, 1)
+			Source: func() *axongo.Block {
+				block := tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, axongo.PayloadTaggedData), tpkg.ZeroCostTestAPI, 1)
 				//nolint:forcetypeassert
-				basicBlockBody := block.Body.(*iotago.BasicBlockBody)
-				basicBlockBody.ShallowLikeParents = iotago.BlockIDs{}
-				basicBlockBody.StrongParents = iotago.BlockIDs{
+				basicBlockBody := block.Body.(*axongo.BasicBlockBody)
+				basicBlockBody.ShallowLikeParents = axongo.BlockIDs{}
+				basicBlockBody.StrongParents = axongo.BlockIDs{
 					blockID1,
 					blockID3,
 					blockID2,
 				}
-				basicBlockBody.WeakParents = iotago.BlockIDs{}
+				basicBlockBody.WeakParents = axongo.BlockIDs{}
 
 				return block
 			}(),
-			Target:    &iotago.Block{},
-			SeriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			DeSeriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			Target:    &axongo.Block{},
+			SeriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			DeSeriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			Name: "fail - validation block weak parent ids unsorted",
-			Source: func() *iotago.Block {
-				block := tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, iotago.PayloadTaggedData), tpkg.ZeroCostTestAPI, 1)
+			Source: func() *axongo.Block {
+				block := tpkg.RandBlock(tpkg.RandBasicBlockBody(tpkg.ZeroCostTestAPI, axongo.PayloadTaggedData), tpkg.ZeroCostTestAPI, 1)
 				//nolint:forcetypeassert
-				basicBlockBody := block.Body.(*iotago.BasicBlockBody)
-				basicBlockBody.ShallowLikeParents = iotago.BlockIDs{}
-				basicBlockBody.StrongParents = iotago.BlockIDs{
+				basicBlockBody := block.Body.(*axongo.BasicBlockBody)
+				basicBlockBody.ShallowLikeParents = axongo.BlockIDs{}
+				basicBlockBody.StrongParents = axongo.BlockIDs{
 					tpkg.RandBlockID(),
 				}
-				basicBlockBody.WeakParents = iotago.BlockIDs{
+				basicBlockBody.WeakParents = axongo.BlockIDs{
 					blockID1,
 					blockID3,
 					blockID2,
@@ -102,24 +102,24 @@ func TestBlock_DeSerialize(t *testing.T) {
 
 				return block
 			}(),
-			Target:    &iotago.Block{},
-			SeriErr:   iotago.ErrArrayValidationOrderViolatesLexicalOrder,
-			DeSeriErr: iotago.ErrArrayValidationOrderViolatesLexicalOrder,
+			Target:    &axongo.Block{},
+			SeriErr:   axongo.ErrArrayValidationOrderViolatesLexicalOrder,
+			DeSeriErr: axongo.ErrArrayValidationOrderViolatesLexicalOrder,
 		},
 		{
 			Name: "fail - max block size exceeded",
-			Source: func() *iotago.Block {
-				bigBasicOutput := func() *iotago.BasicOutput {
-					return &iotago.BasicOutput{
+			Source: func() *axongo.Block {
+				bigBasicOutput := func() *axongo.BasicOutput {
+					return &axongo.BasicOutput{
 						Amount: 10_000_000,
-						UnlockConditions: iotago.BasicOutputUnlockConditions{
-							&iotago.AddressUnlockCondition{
+						UnlockConditions: axongo.BasicOutputUnlockConditions{
+							&axongo.AddressUnlockCondition{
 								Address: tpkg.RandEd25519Address(),
 							},
 						},
-						Features: iotago.BasicOutputFeatures{
-							&iotago.MetadataFeature{
-								Entries: iotago.MetadataFeatureEntries{
+						Features: axongo.BasicOutputFeatures{
+							&axongo.MetadataFeature{
+								Entries: axongo.MetadataFeatureEntries{
 									"x": tpkg.RandBytes(8150),
 								},
 							},
@@ -127,8 +127,8 @@ func TestBlock_DeSerialize(t *testing.T) {
 					}
 				}
 
-				tx := tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *iotago.Transaction) {
-					t.Outputs = iotago.TxEssenceOutputs{
+				tx := tpkg.RandSignedTransaction(tpkg.ZeroCostTestAPI, func(t *axongo.Transaction) {
+					t.Outputs = axongo.TxEssenceOutputs{
 						bigBasicOutput(),
 						bigBasicOutput(),
 						bigBasicOutput(),
@@ -139,9 +139,9 @@ func TestBlock_DeSerialize(t *testing.T) {
 
 				return block
 			}(),
-			Target:    &iotago.Block{},
-			SeriErr:   iotago.ErrBlockMaxSizeExceeded,
-			DeSeriErr: iotago.ErrBlockMaxSizeExceeded,
+			Target:    &axongo.Block{},
+			SeriErr:   axongo.ErrBlockMaxSizeExceeded,
+			DeSeriErr: axongo.ErrBlockMaxSizeExceeded,
 		},
 	}
 
@@ -150,7 +150,7 @@ func TestBlock_DeSerialize(t *testing.T) {
 	}
 }
 
-func createBlockWithParents(t *testing.T, strongParents, weakParents, shallowLikeParent iotago.BlockIDs, apiProvider *iotago.EpochBasedProvider) error {
+func createBlockWithParents(t *testing.T, strongParents, weakParents, shallowLikeParent axongo.BlockIDs, apiProvider *axongo.EpochBasedProvider) error {
 	t.Helper()
 
 	apiForSlot := apiProvider.LatestAPI()
@@ -160,37 +160,37 @@ func createBlockWithParents(t *testing.T, strongParents, weakParents, shallowLik
 		WeakParents(weakParents).
 		ShallowLikeParents(shallowLikeParent).
 		IssuingTime(time.Now()).
-		SlotCommitmentID(iotago.NewCommitment(apiForSlot.Version(), apiForSlot.TimeProvider().CurrentSlot()-apiForSlot.ProtocolParameters().MinCommittableAge(), iotago.CommitmentID{}, iotago.Identifier{}, 0, 0).MustID()).
+		SlotCommitmentID(axongo.NewCommitment(apiForSlot.Version(), apiForSlot.TimeProvider().CurrentSlot()-apiForSlot.ProtocolParameters().MinCommittableAge(), axongo.CommitmentID{}, axongo.Identifier{}, 0, 0).MustID()).
 		Build()
 	require.NoError(t, err)
 
 	return lo.Return2(apiForSlot.Encode(block, serix.WithValidation()))
 }
 
-func createBlockAtSlot(t *testing.T, blockIndex, commitmentIndex iotago.SlotIndex, apiProvider *iotago.EpochBasedProvider) error {
+func createBlockAtSlot(t *testing.T, blockIndex, commitmentIndex axongo.SlotIndex, apiProvider *axongo.EpochBasedProvider) error {
 	t.Helper()
 
 	apiForSlot := apiProvider.APIForSlot(blockIndex)
 
 	block, err := builder.NewBasicBlockBuilder(apiForSlot).
-		StrongParents(iotago.BlockIDs{tpkg.RandBlockID()}).
+		StrongParents(axongo.BlockIDs{tpkg.RandBlockID()}).
 		IssuingTime(apiForSlot.TimeProvider().SlotStartTime(blockIndex)).
-		SlotCommitmentID(iotago.NewCommitment(apiForSlot.Version(), commitmentIndex, iotago.CommitmentID{}, iotago.Identifier{}, 0, 0).MustID()).
+		SlotCommitmentID(axongo.NewCommitment(apiForSlot.Version(), commitmentIndex, axongo.CommitmentID{}, axongo.Identifier{}, 0, 0).MustID()).
 		Build()
 	require.NoError(t, err)
 
 	return lo.Return2(apiForSlot.Encode(block, serix.WithValidation()))
 }
 
-func createBlockAtSlotWithVersion(t *testing.T, blockIndex iotago.SlotIndex, version iotago.Version, apiProvider *iotago.EpochBasedProvider) error {
+func createBlockAtSlotWithVersion(t *testing.T, blockIndex axongo.SlotIndex, version axongo.Version, apiProvider *axongo.EpochBasedProvider) error {
 	t.Helper()
 
 	apiForSlot := apiProvider.APIForSlot(blockIndex)
 	block, err := builder.NewBasicBlockBuilder(apiForSlot).
 		ProtocolVersion(version).
-		StrongParents(iotago.BlockIDs{iotago.BlockID{}}).
+		StrongParents(axongo.BlockIDs{axongo.BlockID{}}).
 		IssuingTime(apiForSlot.TimeProvider().SlotStartTime(blockIndex)).
-		SlotCommitmentID(iotago.NewCommitment(apiForSlot.Version(), blockIndex-apiForSlot.ProtocolParameters().MinCommittableAge(), iotago.CommitmentID{}, iotago.Identifier{}, 0, 0).MustID()).
+		SlotCommitmentID(axongo.NewCommitment(apiForSlot.Version(), blockIndex-apiForSlot.ProtocolParameters().MinCommittableAge(), axongo.CommitmentID{}, axongo.Identifier{}, 0, 0).MustID()).
 		Build()
 	require.NoError(t, err)
 
@@ -198,15 +198,15 @@ func createBlockAtSlotWithVersion(t *testing.T, blockIndex iotago.SlotIndex, ver
 }
 
 //nolint:unparam // in the test we always issue at blockIndex=100, but let's keep this flexibility.
-func createBlockAtSlotWithPayload(t *testing.T, blockIndex, commitmentIndex iotago.SlotIndex, payload iotago.ApplicationPayload, apiProvider *iotago.EpochBasedProvider) error {
+func createBlockAtSlotWithPayload(t *testing.T, blockIndex, commitmentIndex axongo.SlotIndex, payload axongo.ApplicationPayload, apiProvider *axongo.EpochBasedProvider) error {
 	t.Helper()
 
 	apiForSlot := apiProvider.APIForSlot(blockIndex)
 
 	block, err := builder.NewBasicBlockBuilder(apiForSlot).
-		StrongParents(iotago.BlockIDs{tpkg.RandBlockID()}).
+		StrongParents(axongo.BlockIDs{tpkg.RandBlockID()}).
 		IssuingTime(apiForSlot.TimeProvider().SlotStartTime(blockIndex)).
-		SlotCommitmentID(iotago.NewCommitment(apiForSlot.Version(), commitmentIndex, iotago.CommitmentID{}, iotago.Identifier{}, 0, 0).MustID()).
+		SlotCommitmentID(axongo.NewCommitment(apiForSlot.Version(), commitmentIndex, axongo.CommitmentID{}, axongo.Identifier{}, 0, 0).MustID()).
 		Payload(payload).
 		Build()
 	require.NoError(t, err)
@@ -215,25 +215,25 @@ func createBlockAtSlotWithPayload(t *testing.T, blockIndex, commitmentIndex iota
 }
 
 func TestBlock_ProtocolVersionSyntactical(t *testing.T) {
-	apiProvider := iotago.NewEpochBasedProvider(
-		iotago.WithAPIForMissingVersionCallback(
-			func(parameters iotago.ProtocolParameters) (iotago.API, error) {
-				return iotago.V3API(iotago.NewV3SnapshotProtocolParameters(iotago.WithVersion(parameters.Version()))), nil
+	apiProvider := axongo.NewEpochBasedProvider(
+		axongo.WithAPIForMissingVersionCallback(
+			func(parameters axongo.ProtocolParameters) (axongo.API, error) {
+				return axongo.V3API(axongo.NewV3SnapshotProtocolParameters(axongo.WithVersion(parameters.Version()))), nil
 			},
 		),
 	)
-	apiProvider.AddProtocolParametersAtEpoch(iotago.NewV3SnapshotProtocolParameters(), 0)
-	apiProvider.AddProtocolParametersAtEpoch(iotago.NewV3SnapshotProtocolParameters(iotago.WithVersion(4)), 3)
+	apiProvider.AddProtocolParametersAtEpoch(axongo.NewV3SnapshotProtocolParameters(), 0)
+	apiProvider.AddProtocolParametersAtEpoch(axongo.NewV3SnapshotProtocolParameters(axongo.WithVersion(4)), 3)
 
 	timeProvider := apiProvider.CommittedAPI().TimeProvider()
 
-	require.ErrorIs(t, createBlockAtSlotWithVersion(t, timeProvider.EpochStart(1), 2, apiProvider), iotago.ErrInvalidBlockVersion)
+	require.ErrorIs(t, createBlockAtSlotWithVersion(t, timeProvider.EpochStart(1), 2, apiProvider), axongo.ErrInvalidBlockVersion)
 
 	require.NoError(t, createBlockAtSlotWithVersion(t, timeProvider.EpochEnd(1), 3, apiProvider))
 
 	require.NoError(t, createBlockAtSlotWithVersion(t, timeProvider.EpochEnd(2), 3, apiProvider))
 
-	require.ErrorIs(t, createBlockAtSlotWithVersion(t, timeProvider.EpochStart(3), 3, apiProvider), iotago.ErrInvalidBlockVersion)
+	require.ErrorIs(t, createBlockAtSlotWithVersion(t, timeProvider.EpochStart(3), 3, apiProvider), axongo.ErrInvalidBlockVersion)
 
 	require.NoError(t, createBlockAtSlotWithVersion(t, timeProvider.EpochStart(3), 4, apiProvider))
 
@@ -241,27 +241,27 @@ func TestBlock_ProtocolVersionSyntactical(t *testing.T) {
 
 	require.NoError(t, createBlockAtSlotWithVersion(t, timeProvider.EpochStart(5), 4, apiProvider))
 
-	apiProvider.AddProtocolParametersAtEpoch(iotago.NewV3SnapshotProtocolParameters(iotago.WithVersion(5)), 10)
+	apiProvider.AddProtocolParametersAtEpoch(axongo.NewV3SnapshotProtocolParameters(axongo.WithVersion(5)), 10)
 
 	require.NoError(t, createBlockAtSlotWithVersion(t, timeProvider.EpochEnd(9), 4, apiProvider))
 
-	require.ErrorIs(t, createBlockAtSlotWithVersion(t, timeProvider.EpochStart(10), 4, apiProvider), iotago.ErrInvalidBlockVersion)
+	require.ErrorIs(t, createBlockAtSlotWithVersion(t, timeProvider.EpochStart(10), 4, apiProvider), axongo.ErrInvalidBlockVersion)
 
 	require.NoError(t, createBlockAtSlotWithVersion(t, timeProvider.EpochStart(10), 5, apiProvider))
 }
 
 func TestBlock_Commitments(t *testing.T) {
 	// with the following parameters, a block issued in slot 100 can commit between slot 80 and 90
-	apiProvider := iotago.NewEpochBasedProvider()
+	apiProvider := axongo.NewEpochBasedProvider()
 	apiProvider.AddProtocolParametersAtEpoch(
-		iotago.NewV3SnapshotProtocolParameters(
-			iotago.WithTimeProviderOptions(0, time.Now().Add(-20*time.Minute).Unix(), 10, 13),
-			iotago.WithLivenessOptions(15, 30, 11, 21, 60),
+		axongo.NewV3SnapshotProtocolParameters(
+			axongo.WithTimeProviderOptions(0, time.Now().Add(-20*time.Minute).Unix(), 10, 13),
+			axongo.WithLivenessOptions(15, 30, 11, 21, 60),
 		), 0)
 
-	require.ErrorIs(t, createBlockAtSlot(t, 100, 78, apiProvider), iotago.ErrCommitmentTooOld)
+	require.ErrorIs(t, createBlockAtSlot(t, 100, 78, apiProvider), axongo.ErrCommitmentTooOld)
 
-	require.ErrorIs(t, createBlockAtSlot(t, 100, 90, apiProvider), iotago.ErrCommitmentTooRecent)
+	require.ErrorIs(t, createBlockAtSlot(t, 100, 90, apiProvider), axongo.ErrCommitmentTooRecent)
 
 	require.NoError(t, createBlockAtSlot(t, 100, 89, apiProvider))
 
@@ -272,39 +272,39 @@ func TestBlock_Commitments(t *testing.T) {
 
 func TestBlock_Commitments1(t *testing.T) {
 	// with the following parameters, a block issued in slot 100 can commit between slot 80 and 90
-	apiProvider := iotago.NewEpochBasedProvider()
+	apiProvider := axongo.NewEpochBasedProvider()
 	apiProvider.AddProtocolParametersAtEpoch(
-		iotago.NewV3SnapshotProtocolParameters(
-			iotago.WithTimeProviderOptions(0, time.Now().Add(-20*time.Minute).Unix(), 10, 13),
-			iotago.WithLivenessOptions(15, 30, 7, 21, 60),
+		axongo.NewV3SnapshotProtocolParameters(
+			axongo.WithTimeProviderOptions(0, time.Now().Add(-20*time.Minute).Unix(), 10, 13),
+			axongo.WithLivenessOptions(15, 30, 7, 21, 60),
 		), 0)
 
-	require.ErrorIs(t, createBlockAtSlot(t, 10, 4, apiProvider), iotago.ErrCommitmentTooRecent)
+	require.ErrorIs(t, createBlockAtSlot(t, 10, 4, apiProvider), axongo.ErrCommitmentTooRecent)
 
 }
 
 func TestBlock_TransactionCreationTime(t *testing.T) {
 	keyPair := hiveEd25519.GenerateKeyPair()
 	// We derive a dummy account from addr.
-	addr := iotago.Ed25519AddressFromPubKey(keyPair.PublicKey[:])
-	output := &iotago.BasicOutput{
+	addr := axongo.Ed25519AddressFromPubKey(keyPair.PublicKey[:])
+	output := &axongo.BasicOutput{
 		Amount: 100000,
-		UnlockConditions: iotago.BasicOutputUnlockConditions{
-			&iotago.AddressUnlockCondition{
+		UnlockConditions: axongo.BasicOutputUnlockConditions{
+			&axongo.AddressUnlockCondition{
 				Address: addr,
 			},
 		},
 	}
 	// with the following parameters, block issued in slot 110 can contain a transaction with commitment input referencing
 	// commitments between 90 and slot that the block commits to (100 at most)
-	apiProvider := iotago.NewEpochBasedProvider()
+	apiProvider := axongo.NewEpochBasedProvider()
 	apiProvider.AddProtocolParametersAtEpoch(
-		iotago.NewV3SnapshotProtocolParameters(
-			iotago.WithTimeProviderOptions(0, time.Now().Add(-20*time.Minute).Unix(), 10, 13),
-			iotago.WithLivenessOptions(15, 30, 7, 21, 60),
+		axongo.NewV3SnapshotProtocolParameters(
+			axongo.WithTimeProviderOptions(0, time.Now().Add(-20*time.Minute).Unix(), 10, 13),
+			axongo.WithLivenessOptions(15, 30, 7, 21, 60),
 		), 0)
 
-	creationSlotTooRecent, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	creationSlotTooRecent, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
@@ -312,14 +312,14 @@ func TestBlock_TransactionCreationTime(t *testing.T) {
 		}).
 		AddOutput(output).
 		SetCreationSlot(101).
-		AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: iotago.NewCommitmentID(78, tpkg.Rand32ByteArray())}).
+		AddCommitmentInput(&axongo.CommitmentInput{CommitmentID: axongo.NewCommitmentID(78, tpkg.Rand32ByteArray())}).
 		Build()
 
 	require.NoError(t, err)
 
-	require.ErrorIs(t, createBlockAtSlotWithPayload(t, 100, 79, creationSlotTooRecent, apiProvider), iotago.ErrTransactionCreationSlotTooRecent)
+	require.ErrorIs(t, createBlockAtSlotWithPayload(t, 100, 79, creationSlotTooRecent, apiProvider), axongo.ErrTransactionCreationSlotTooRecent)
 
-	creationSlotCorrectEqual, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	creationSlotCorrectEqual, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
@@ -333,7 +333,7 @@ func TestBlock_TransactionCreationTime(t *testing.T) {
 
 	require.NoError(t, createBlockAtSlotWithPayload(t, 100, 89, creationSlotCorrectEqual, apiProvider))
 
-	creationSlotCorrectSmallerThanCommitment, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	creationSlotCorrectSmallerThanCommitment, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
@@ -347,7 +347,7 @@ func TestBlock_TransactionCreationTime(t *testing.T) {
 
 	require.NoError(t, createBlockAtSlotWithPayload(t, 100, 89, creationSlotCorrectSmallerThanCommitment, apiProvider))
 
-	creationSlotCorrectLargerThanCommitment, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	creationSlotCorrectLargerThanCommitment, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
@@ -364,11 +364,11 @@ func TestBlock_TransactionCreationTime(t *testing.T) {
 
 func TestBlock_WeakParents(t *testing.T) {
 	// with the following parameters, a block issued in slot 100 can commit between slot 80 and 90
-	apiProvider := iotago.NewEpochBasedProvider()
+	apiProvider := axongo.NewEpochBasedProvider()
 	apiProvider.AddProtocolParametersAtEpoch(
-		iotago.NewV3SnapshotProtocolParameters(
-			iotago.WithTimeProviderOptions(0, time.Now().Add(-20*time.Minute).Unix(), 10, 13),
-			iotago.WithLivenessOptions(15, 30, 10, 20, 60),
+		axongo.NewV3SnapshotProtocolParameters(
+			axongo.WithTimeProviderOptions(0, time.Now().Add(-20*time.Minute).Unix(), 10, 13),
+			axongo.WithLivenessOptions(15, 30, 10, 20, 60),
 		), 0)
 	strongParent1 := tpkg.RandBlockID()
 	strongParent2 := tpkg.RandBlockID()
@@ -378,33 +378,33 @@ func TestBlock_WeakParents(t *testing.T) {
 	shallowLikeParent2 := tpkg.RandBlockID()
 	require.ErrorIs(t, createBlockWithParents(
 		t,
-		iotago.BlockIDs{strongParent1, strongParent2},
-		iotago.BlockIDs{weakParent1, weakParent2, shallowLikeParent2},
-		iotago.BlockIDs{shallowLikeParent1, shallowLikeParent2},
+		axongo.BlockIDs{strongParent1, strongParent2},
+		axongo.BlockIDs{weakParent1, weakParent2, shallowLikeParent2},
+		axongo.BlockIDs{shallowLikeParent1, shallowLikeParent2},
 		apiProvider,
-	), iotago.ErrWeakParentsInvalid)
+	), axongo.ErrWeakParentsInvalid)
 
 	require.ErrorIs(t, createBlockWithParents(
 		t,
-		iotago.BlockIDs{strongParent1, strongParent2},
-		iotago.BlockIDs{weakParent1, weakParent2, strongParent2},
-		iotago.BlockIDs{shallowLikeParent1, shallowLikeParent2},
+		axongo.BlockIDs{strongParent1, strongParent2},
+		axongo.BlockIDs{weakParent1, weakParent2, strongParent2},
+		axongo.BlockIDs{shallowLikeParent1, shallowLikeParent2},
 		apiProvider,
-	), iotago.ErrWeakParentsInvalid)
+	), axongo.ErrWeakParentsInvalid)
 
 	require.NoError(t, createBlockWithParents(
 		t,
-		iotago.BlockIDs{strongParent1, strongParent2},
-		iotago.BlockIDs{weakParent1, weakParent2},
-		iotago.BlockIDs{shallowLikeParent1, shallowLikeParent2},
+		axongo.BlockIDs{strongParent1, strongParent2},
+		axongo.BlockIDs{weakParent1, weakParent2},
+		axongo.BlockIDs{shallowLikeParent1, shallowLikeParent2},
 		apiProvider,
 	))
 
 	require.NoError(t, createBlockWithParents(
 		t,
-		iotago.BlockIDs{strongParent1, strongParent2},
-		iotago.BlockIDs{weakParent1, weakParent2},
-		iotago.BlockIDs{shallowLikeParent1, shallowLikeParent2, strongParent2},
+		axongo.BlockIDs{strongParent1, strongParent2},
+		axongo.BlockIDs{weakParent1, weakParent2},
+		axongo.BlockIDs{shallowLikeParent1, shallowLikeParent2, strongParent2},
 		apiProvider,
 	))
 }
@@ -412,116 +412,116 @@ func TestBlock_WeakParents(t *testing.T) {
 func TestBlock_TransactionCommitmentInput(t *testing.T) {
 	keyPair := hiveEd25519.GenerateKeyPair()
 	// We derive a dummy account from addr.
-	addr := iotago.Ed25519AddressFromPubKey(keyPair.PublicKey[:])
-	output := &iotago.BasicOutput{
+	addr := axongo.Ed25519AddressFromPubKey(keyPair.PublicKey[:])
+	output := &axongo.BasicOutput{
 		Amount: 100000,
-		UnlockConditions: iotago.BasicOutputUnlockConditions{
-			&iotago.AddressUnlockCondition{
+		UnlockConditions: axongo.BasicOutputUnlockConditions{
+			&axongo.AddressUnlockCondition{
 				Address: addr,
 			},
 		},
 	}
 	// with the following parameters, block issued in slot 110 can contain a transaction with commitment input referencing
 	// commitments between 90 and slot that the block commits to (100 at most)
-	apiProvider := iotago.NewEpochBasedProvider()
+	apiProvider := axongo.NewEpochBasedProvider()
 	apiProvider.AddProtocolParametersAtEpoch(
-		iotago.NewV3SnapshotProtocolParameters(
-			iotago.WithTimeProviderOptions(0, time.Now().Add(-20*time.Minute).Unix(), 10, 13),
-			iotago.WithLivenessOptions(15, 30, 11, 21, 60),
+		axongo.NewV3SnapshotProtocolParameters(
+			axongo.WithTimeProviderOptions(0, time.Now().Add(-20*time.Minute).Unix(), 10, 13),
+			axongo.WithLivenessOptions(15, 30, 11, 21, 60),
 		), 0)
 
-	commitmentInputTooOld, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	commitmentInputTooOld, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
 			Input:        output,
 		}).
 		AddOutput(output).
-		AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: iotago.NewCommitmentID(78, tpkg.Rand32ByteArray())}).
+		AddCommitmentInput(&axongo.CommitmentInput{CommitmentID: axongo.NewCommitmentID(78, tpkg.Rand32ByteArray())}).
 		Build()
 
 	require.NoError(t, err)
 
-	require.ErrorIs(t, createBlockAtSlotWithPayload(t, 100, 79, commitmentInputTooOld, apiProvider), iotago.ErrCommitmentInputTooOld)
+	require.ErrorIs(t, createBlockAtSlotWithPayload(t, 100, 79, commitmentInputTooOld, apiProvider), axongo.ErrCommitmentInputTooOld)
 
-	commitmentInputTooRecent, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	commitmentInputTooRecent, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
 			Input:        output,
 		}).
 		AddOutput(output).
-		AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: iotago.NewCommitmentID(90, tpkg.Rand32ByteArray())}).
+		AddCommitmentInput(&axongo.CommitmentInput{CommitmentID: axongo.NewCommitmentID(90, tpkg.Rand32ByteArray())}).
 		Build()
 
 	require.NoError(t, err)
 
-	require.ErrorIs(t, createBlockAtSlotWithPayload(t, 100, 89, commitmentInputTooRecent, apiProvider), iotago.ErrCommitmentInputTooRecent)
+	require.ErrorIs(t, createBlockAtSlotWithPayload(t, 100, 89, commitmentInputTooRecent, apiProvider), axongo.ErrCommitmentInputTooRecent)
 
-	commitmentInputNewerThanBlockCommitment, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	commitmentInputNewerThanBlockCommitment, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
 			Input:        output,
 		}).
 		AddOutput(output).
-		AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: iotago.NewCommitmentID(85, tpkg.Rand32ByteArray())}).
+		AddCommitmentInput(&axongo.CommitmentInput{CommitmentID: axongo.NewCommitmentID(85, tpkg.Rand32ByteArray())}).
 		Build()
 
 	require.NoError(t, err)
 
-	require.ErrorIs(t, createBlockAtSlotWithPayload(t, 100, 79, commitmentInputNewerThanBlockCommitment, apiProvider), iotago.ErrCommitmentInputNewerThanCommitment)
+	require.ErrorIs(t, createBlockAtSlotWithPayload(t, 100, 79, commitmentInputNewerThanBlockCommitment, apiProvider), axongo.ErrCommitmentInputNewerThanCommitment)
 
-	commitmentCorrect, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	commitmentCorrect, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
 			Input:        output,
 		}).
 		AddOutput(output).
-		AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: iotago.NewCommitmentID(79, tpkg.Rand32ByteArray())}).
+		AddCommitmentInput(&axongo.CommitmentInput{CommitmentID: axongo.NewCommitmentID(79, tpkg.Rand32ByteArray())}).
 		Build()
 
 	require.NoError(t, err)
 
 	require.NoError(t, createBlockAtSlotWithPayload(t, 100, 89, commitmentCorrect, apiProvider))
 
-	commitmentCorrectOldest, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	commitmentCorrectOldest, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
 			Input:        output,
 		}).
 		AddOutput(output).
-		AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: iotago.NewCommitmentID(79, tpkg.Rand32ByteArray())}).
+		AddCommitmentInput(&axongo.CommitmentInput{CommitmentID: axongo.NewCommitmentID(79, tpkg.Rand32ByteArray())}).
 		Build()
 
 	require.NoError(t, err)
 
 	require.NoError(t, createBlockAtSlotWithPayload(t, 100, 79, commitmentCorrectOldest, apiProvider))
 
-	commitmentCorrectNewest, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	commitmentCorrectNewest, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
 			Input:        output,
 		}).
 		AddOutput(output).
-		AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: iotago.NewCommitmentID(89, tpkg.Rand32ByteArray())}).
+		AddCommitmentInput(&axongo.CommitmentInput{CommitmentID: axongo.NewCommitmentID(89, tpkg.Rand32ByteArray())}).
 		Build()
 
 	require.NoError(t, err)
 
 	require.NoError(t, createBlockAtSlotWithPayload(t, 100, 89, commitmentCorrectNewest, apiProvider))
 
-	commitmentCorrectMiddle, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	commitmentCorrectMiddle, err := builder.NewTransactionBuilder(apiProvider.LatestAPI(), axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
 			Input:        output,
 		}).
 		AddOutput(output).
-		AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: iotago.NewCommitmentID(85, tpkg.Rand32ByteArray())}).
+		AddCommitmentInput(&axongo.CommitmentInput{CommitmentID: axongo.NewCommitmentID(85, tpkg.Rand32ByteArray())}).
 		Build()
 
 	require.NoError(t, err)
@@ -532,26 +532,26 @@ func TestBlock_TransactionCommitmentInput(t *testing.T) {
 func TestBlock_DeserializationNotEnoughData(t *testing.T) {
 	blockBytes := []byte{byte(tpkg.ZeroCostTestAPI.Version()), 1}
 
-	block := &iotago.Block{}
+	block := &axongo.Block{}
 	_, err := tpkg.ZeroCostTestAPI.Decode(blockBytes, block)
 	require.ErrorIs(t, err, serializer.ErrDeserializationNotEnoughData)
 }
 
 func TestBasicBlock_MinSize(t *testing.T) {
-	minBlock := &iotago.Block{
+	minBlock := &axongo.Block{
 		API: tpkg.ZeroCostTestAPI,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion:  tpkg.ZeroCostTestAPI.Version(),
 			NetworkID:        tpkg.ZeroCostTestAPI.ProtocolParameters().NetworkID(),
 			IssuingTime:      tpkg.RandUTCTime(),
-			SlotCommitmentID: iotago.NewEmptyCommitment(tpkg.ZeroCostTestAPI).MustID(),
+			SlotCommitmentID: axongo.NewEmptyCommitment(tpkg.ZeroCostTestAPI).MustID(),
 		},
 		Signature: tpkg.RandEd25519Signature(),
-		Body: &iotago.BasicBlockBody{
+		Body: &axongo.BasicBlockBody{
 			API:                tpkg.ZeroCostTestAPI,
 			StrongParents:      tpkg.SortedRandBlockIDs(1),
-			WeakParents:        iotago.BlockIDs{},
-			ShallowLikeParents: iotago.BlockIDs{},
+			WeakParents:        axongo.BlockIDs{},
+			ShallowLikeParents: axongo.BlockIDs{},
 			Payload:            nil,
 		},
 	}
@@ -559,7 +559,7 @@ func TestBasicBlock_MinSize(t *testing.T) {
 	blockBytes, err := tpkg.ZeroCostTestAPI.Encode(minBlock)
 	require.NoError(t, err)
 
-	block2 := &iotago.Block{}
+	block2 := &axongo.Block{}
 	consumedBytes, err := tpkg.ZeroCostTestAPI.Decode(blockBytes, block2, serix.WithValidation())
 	require.NoError(t, err)
 	require.Equal(t, minBlock, block2)
@@ -567,20 +567,20 @@ func TestBasicBlock_MinSize(t *testing.T) {
 }
 
 func TestValidationBlock_MinSize(t *testing.T) {
-	minBlock := &iotago.Block{
+	minBlock := &axongo.Block{
 		API: tpkg.ZeroCostTestAPI,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion:  tpkg.ZeroCostTestAPI.Version(),
 			NetworkID:        tpkg.ZeroCostTestAPI.ProtocolParameters().NetworkID(),
 			IssuingTime:      tpkg.RandUTCTime(),
-			SlotCommitmentID: iotago.NewEmptyCommitment(tpkg.ZeroCostTestAPI).MustID(),
+			SlotCommitmentID: axongo.NewEmptyCommitment(tpkg.ZeroCostTestAPI).MustID(),
 		},
 		Signature: tpkg.RandEd25519Signature(),
-		Body: &iotago.ValidationBlockBody{
+		Body: &axongo.ValidationBlockBody{
 			API:                     tpkg.ZeroCostTestAPI,
 			StrongParents:           tpkg.SortedRandBlockIDs(1),
-			WeakParents:             iotago.BlockIDs{},
-			ShallowLikeParents:      iotago.BlockIDs{},
+			WeakParents:             axongo.BlockIDs{},
+			ShallowLikeParents:      axongo.BlockIDs{},
 			HighestSupportedVersion: tpkg.ZeroCostTestAPI.Version(),
 		},
 	}
@@ -588,7 +588,7 @@ func TestValidationBlock_MinSize(t *testing.T) {
 	blockBytes, err := tpkg.ZeroCostTestAPI.Encode(minBlock)
 	require.NoError(t, err)
 
-	block2 := &iotago.Block{}
+	block2 := &axongo.Block{}
 	consumedBytes, err := tpkg.ZeroCostTestAPI.Decode(blockBytes, block2, serix.WithValidation())
 	require.NoError(t, err)
 	require.Equal(t, minBlock, block2)
@@ -596,47 +596,47 @@ func TestValidationBlock_MinSize(t *testing.T) {
 }
 
 func TestValidationBlock_HighestSupportedVersion(t *testing.T) {
-	block := &iotago.Block{
+	block := &axongo.Block{
 		API: tpkg.ZeroCostTestAPI,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion:  tpkg.ZeroCostTestAPI.Version(),
 			NetworkID:        tpkg.ZeroCostTestAPI.ProtocolParameters().NetworkID(),
 			IssuingTime:      tpkg.RandUTCTime(),
-			SlotCommitmentID: iotago.NewEmptyCommitment(tpkg.ZeroCostTestAPI).MustID(),
+			SlotCommitmentID: axongo.NewEmptyCommitment(tpkg.ZeroCostTestAPI).MustID(),
 		},
 		Signature: tpkg.RandEd25519Signature(),
 	}
 
 	// Invalid HighestSupportedVersion.
 	{
-		block.Body = &iotago.ValidationBlockBody{
+		block.Body = &axongo.ValidationBlockBody{
 			API:                     tpkg.ZeroCostTestAPI,
 			StrongParents:           tpkg.SortedRandBlockIDs(1),
-			WeakParents:             iotago.BlockIDs{},
-			ShallowLikeParents:      iotago.BlockIDs{},
+			WeakParents:             axongo.BlockIDs{},
+			ShallowLikeParents:      axongo.BlockIDs{},
 			HighestSupportedVersion: tpkg.ZeroCostTestAPI.Version() - 1,
 		}
 		blockBytes, err := tpkg.ZeroCostTestAPI.Encode(block)
 		require.NoError(t, err)
 
-		block2 := &iotago.Block{}
+		block2 := &axongo.Block{}
 		_, err = tpkg.ZeroCostTestAPI.Decode(blockBytes, block2, serix.WithValidation())
-		require.ErrorIs(t, err, iotago.ErrHighestSupportedVersionTooSmall)
+		require.ErrorIs(t, err, axongo.ErrHighestSupportedVersionTooSmall)
 	}
 
 	// Valid HighestSupportedVersion.
 	{
-		block.Body = &iotago.ValidationBlockBody{
+		block.Body = &axongo.ValidationBlockBody{
 			API:                     tpkg.ZeroCostTestAPI,
 			StrongParents:           tpkg.SortedRandBlockIDs(1),
-			WeakParents:             iotago.BlockIDs{},
-			ShallowLikeParents:      iotago.BlockIDs{},
+			WeakParents:             axongo.BlockIDs{},
+			ShallowLikeParents:      axongo.BlockIDs{},
 			HighestSupportedVersion: tpkg.ZeroCostTestAPI.Version(),
 		}
 		blockBytes, err := tpkg.ZeroCostTestAPI.Encode(block)
 		require.NoError(t, err)
 
-		block2 := &iotago.Block{}
+		block2 := &axongo.Block{}
 		consumedBytes, err := tpkg.ZeroCostTestAPI.Decode(blockBytes, block2, serix.WithValidation())
 		require.NoError(t, err)
 		require.Equal(t, block, block2)
@@ -645,22 +645,22 @@ func TestValidationBlock_HighestSupportedVersion(t *testing.T) {
 }
 
 func TestBlockJSONMarshalling(t *testing.T) {
-	networkID := iotago.NetworkIDFromString("xxxNetwork")
+	networkID := axongo.NetworkIDFromString("xxxNetwork")
 	issuingTime := tpkg.RandUTCTime()
-	commitmentID := iotago.NewEmptyCommitment(tpkg.ZeroCostTestAPI).MustID()
+	commitmentID := axongo.NewEmptyCommitment(tpkg.ZeroCostTestAPI).MustID()
 	issuerID := tpkg.RandAccountID()
 	signature := tpkg.RandEd25519Signature()
 	strongParents := tpkg.SortedRandBlockIDs(1)
-	validationBlock := &iotago.Block{
+	validationBlock := &axongo.Block{
 		API: tpkg.ZeroCostTestAPI,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion:  tpkg.ZeroCostTestAPI.Version(),
 			IssuingTime:      issuingTime,
 			IssuerID:         issuerID,
 			NetworkID:        networkID,
 			SlotCommitmentID: commitmentID,
 		},
-		Body: &iotago.ValidationBlockBody{
+		Body: &axongo.ValidationBlockBody{
 			API:                     tpkg.ZeroCostTestAPI,
 			StrongParents:           strongParents,
 			HighestSupportedVersion: tpkg.ZeroCostTestAPI.Version(),
@@ -674,10 +674,10 @@ func TestBlockJSONMarshalling(t *testing.T) {
 		strconv.FormatUint(serializer.TimeToUint64(issuingTime), 10),
 		commitmentID.ToHex(),
 		issuerID.ToHex(),
-		iotago.BlockBodyTypeValidation,
+		axongo.BlockBodyTypeValidation,
 		strongParents[0].ToHex(),
 		tpkg.ZeroCostTestAPI.Version(),
-		iotago.SignatureEd25519,
+		axongo.SignatureEd25519,
 		hexutil.EncodeHex(signature.PublicKey[:]),
 		hexutil.EncodeHex(signature.Signature[:]),
 	)

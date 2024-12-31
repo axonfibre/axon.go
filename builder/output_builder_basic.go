@@ -1,104 +1,104 @@
 package builder
 
 import (
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 // NewBasicOutputBuilder creates a new BasicOutputBuilder with the required target address and base token amount.
-func NewBasicOutputBuilder(targetAddr iotago.Address, amount iotago.BaseToken) *BasicOutputBuilder {
-	return &BasicOutputBuilder{output: &iotago.BasicOutput{
+func NewBasicOutputBuilder(targetAddr axongo.Address, amount axongo.BaseToken) *BasicOutputBuilder {
+	return &BasicOutputBuilder{output: &axongo.BasicOutput{
 		Amount: amount,
 		Mana:   0,
-		UnlockConditions: iotago.BasicOutputUnlockConditions{
-			&iotago.AddressUnlockCondition{Address: targetAddr},
+		UnlockConditions: axongo.BasicOutputUnlockConditions{
+			&axongo.AddressUnlockCondition{Address: targetAddr},
 		},
-		Features: iotago.BasicOutputFeatures{},
+		Features: axongo.BasicOutputFeatures{},
 	}}
 }
 
-// NewBasicOutputBuilderFromPrevious creates a new BasicOutputBuilder starting from a copy of the previous iotago.BasicOutput.
-func NewBasicOutputBuilderFromPrevious(previous *iotago.BasicOutput) *BasicOutputBuilder {
+// NewBasicOutputBuilderFromPrevious creates a new BasicOutputBuilder starting from a copy of the previous axongo.BasicOutput.
+func NewBasicOutputBuilderFromPrevious(previous *axongo.BasicOutput) *BasicOutputBuilder {
 	//nolint:forcetypeassert // we can safely assume that this is a BasicOutput
-	return &BasicOutputBuilder{output: previous.Clone().(*iotago.BasicOutput)}
+	return &BasicOutputBuilder{output: previous.Clone().(*axongo.BasicOutput)}
 }
 
-// BasicOutputBuilder builds an iotago.BasicOutput.
+// BasicOutputBuilder builds an axongo.BasicOutput.
 type BasicOutputBuilder struct {
-	output *iotago.BasicOutput
+	output *axongo.BasicOutput
 }
 
 // Amount sets the base token amount of the output.
-func (builder *BasicOutputBuilder) Amount(amount iotago.BaseToken) *BasicOutputBuilder {
+func (builder *BasicOutputBuilder) Amount(amount axongo.BaseToken) *BasicOutputBuilder {
 	builder.output.Amount = amount
 
 	return builder
 }
 
 // Mana sets the mana of the output.
-func (builder *BasicOutputBuilder) Mana(mana iotago.Mana) *BasicOutputBuilder {
+func (builder *BasicOutputBuilder) Mana(mana axongo.Mana) *BasicOutputBuilder {
 	builder.output.Mana = mana
 
 	return builder
 }
 
-// Address sets/modifies an iotago.AddressUnlockCondition on the output.
-func (builder *BasicOutputBuilder) Address(addr iotago.Address) *BasicOutputBuilder {
-	builder.output.UnlockConditions.Upsert(&iotago.AddressUnlockCondition{Address: addr})
+// Address sets/modifies an axongo.AddressUnlockCondition on the output.
+func (builder *BasicOutputBuilder) Address(addr axongo.Address) *BasicOutputBuilder {
+	builder.output.UnlockConditions.Upsert(&axongo.AddressUnlockCondition{Address: addr})
 
 	return builder
 }
 
-// StorageDepositReturn sets/modifies an iotago.StorageDepositReturnUnlockCondition on the output.
-func (builder *BasicOutputBuilder) StorageDepositReturn(returnAddr iotago.Address, amount iotago.BaseToken) *BasicOutputBuilder {
-	builder.output.UnlockConditions.Upsert(&iotago.StorageDepositReturnUnlockCondition{ReturnAddress: returnAddr, Amount: amount})
+// StorageDepositReturn sets/modifies an axongo.StorageDepositReturnUnlockCondition on the output.
+func (builder *BasicOutputBuilder) StorageDepositReturn(returnAddr axongo.Address, amount axongo.BaseToken) *BasicOutputBuilder {
+	builder.output.UnlockConditions.Upsert(&axongo.StorageDepositReturnUnlockCondition{ReturnAddress: returnAddr, Amount: amount})
 
 	return builder
 }
 
-// Timelock sets/modifies an iotago.TimelockUnlockCondition on the output.
-func (builder *BasicOutputBuilder) Timelock(untilSlot iotago.SlotIndex) *BasicOutputBuilder {
-	builder.output.UnlockConditions.Upsert(&iotago.TimelockUnlockCondition{Slot: untilSlot})
+// Timelock sets/modifies an axongo.TimelockUnlockCondition on the output.
+func (builder *BasicOutputBuilder) Timelock(untilSlot axongo.SlotIndex) *BasicOutputBuilder {
+	builder.output.UnlockConditions.Upsert(&axongo.TimelockUnlockCondition{Slot: untilSlot})
 
 	return builder
 }
 
-// Expiration sets/modifies an iotago.ExpirationUnlockCondition on the output.
-func (builder *BasicOutputBuilder) Expiration(returnAddr iotago.Address, expiredAfterSlot iotago.SlotIndex) *BasicOutputBuilder {
-	builder.output.UnlockConditions.Upsert(&iotago.ExpirationUnlockCondition{ReturnAddress: returnAddr, Slot: expiredAfterSlot})
+// Expiration sets/modifies an axongo.ExpirationUnlockCondition on the output.
+func (builder *BasicOutputBuilder) Expiration(returnAddr axongo.Address, expiredAfterSlot axongo.SlotIndex) *BasicOutputBuilder {
+	builder.output.UnlockConditions.Upsert(&axongo.ExpirationUnlockCondition{ReturnAddress: returnAddr, Slot: expiredAfterSlot})
 
 	return builder
 }
 
-// Sender sets/modifies an iotago.SenderFeature on the output.
-func (builder *BasicOutputBuilder) Sender(senderAddr iotago.Address) *BasicOutputBuilder {
-	builder.output.Features.Upsert(&iotago.SenderFeature{Address: senderAddr})
+// Sender sets/modifies an axongo.SenderFeature on the output.
+func (builder *BasicOutputBuilder) Sender(senderAddr axongo.Address) *BasicOutputBuilder {
+	builder.output.Features.Upsert(&axongo.SenderFeature{Address: senderAddr})
 
 	return builder
 }
 
-// Metadata sets/modifies an iotago.MetadataFeature on the output.
-func (builder *BasicOutputBuilder) Metadata(entries iotago.MetadataFeatureEntries) *BasicOutputBuilder {
-	builder.output.Features.Upsert(&iotago.MetadataFeature{Entries: entries})
+// Metadata sets/modifies an axongo.MetadataFeature on the output.
+func (builder *BasicOutputBuilder) Metadata(entries axongo.MetadataFeatureEntries) *BasicOutputBuilder {
+	builder.output.Features.Upsert(&axongo.MetadataFeature{Entries: entries})
 
 	return builder
 }
 
-// Tag sets/modifies an iotago.TagFeature on the output.
+// Tag sets/modifies an axongo.TagFeature on the output.
 func (builder *BasicOutputBuilder) Tag(tag []byte) *BasicOutputBuilder {
-	builder.output.Features.Upsert(&iotago.TagFeature{Tag: tag})
+	builder.output.Features.Upsert(&axongo.TagFeature{Tag: tag})
 
 	return builder
 }
 
 // NativeToken adds/modifies a native token to/on the output.
-func (builder *BasicOutputBuilder) NativeToken(nt *iotago.NativeTokenFeature) *BasicOutputBuilder {
+func (builder *BasicOutputBuilder) NativeToken(nt *axongo.NativeTokenFeature) *BasicOutputBuilder {
 	builder.output.Features.Upsert(nt)
 
 	return builder
 }
 
-// Build builds the iotago.BasicOutput.
-func (builder *BasicOutputBuilder) Build() (*iotago.BasicOutput, error) {
+// Build builds the axongo.BasicOutput.
+func (builder *BasicOutputBuilder) Build() (*axongo.BasicOutput, error) {
 	builder.output.UnlockConditions.Sort()
 	builder.output.Features.Sort()
 
@@ -106,7 +106,7 @@ func (builder *BasicOutputBuilder) Build() (*iotago.BasicOutput, error) {
 }
 
 // MustBuild works like Build() but panics if an error is encountered.
-func (builder *BasicOutputBuilder) MustBuild() *iotago.BasicOutput {
+func (builder *BasicOutputBuilder) MustBuild() *axongo.BasicOutput {
 	output, err := builder.Build()
 	if err != nil {
 		panic(err)

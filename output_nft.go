@@ -1,4 +1,4 @@
-package iotago
+package axongo
 
 import (
 	"golang.org/x/crypto/blake2b"

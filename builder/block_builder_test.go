@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/axonfibre/axon.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 	"github.com/axonfibre/axon.go/v4/builder"
 	"github.com/axonfibre/axon.go/v4/tpkg"
 )
@@ -14,20 +14,20 @@ import (
 func TestBasicBlockBuilder(t *testing.T) {
 	parents := tpkg.SortedRandBlockIDs(4)
 
-	taggedDataPayload := &iotago.TaggedData{
+	taggedDataPayload := &axongo.TaggedData{
 		Tag:  []byte("hello world"),
 		Data: []byte{1, 2, 3, 4},
 	}
-	block, err := builder.NewBasicBlockBuilder(iotago.V3API(tpkg.IOTAMainnetV3TestProtocolParameters)).
+	block, err := builder.NewBasicBlockBuilder(axongo.V3API(tpkg.IOTAMainnetV3TestProtocolParameters)).
 		Payload(taggedDataPayload).
 		StrongParents(parents).
 		CalculateAndSetMaxBurnedMana(100).
 		Build()
 	require.NoError(t, err)
 
-	require.Equal(t, iotago.BlockBodyTypeBasic, block.Body.Type())
+	require.Equal(t, axongo.BlockBodyTypeBasic, block.Body.Type())
 
-	basicBlock := block.Body.(*iotago.BasicBlockBody)
+	basicBlock := block.Body.(*axongo.BasicBlockBody)
 	expectedBurnedMana, err := block.ManaCost(100)
 	require.NoError(t, err)
 	require.EqualValues(t, expectedBurnedMana, basicBlock.MaxBurnedMana)
@@ -42,8 +42,8 @@ func TestValidationBlockBuilder(t *testing.T) {
 		Build()
 	require.NoError(t, err)
 
-	require.Equal(t, iotago.BlockBodyTypeValidation, block.Body.Type())
+	require.Equal(t, axongo.BlockBodyTypeValidation, block.Body.Type())
 
-	basicBlock := block.Body.(*iotago.ValidationBlockBody)
+	basicBlock := block.Body.(*axongo.ValidationBlockBody)
 	require.EqualValues(t, 100, basicBlock.HighestSupportedVersion)
 }
