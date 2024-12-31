@@ -4,8 +4,8 @@ package bech32
 import (
 	"strings"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/iota.go/v4/bech32/internal/base32"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/axon.go/v4/bech32/internal/base32"
 )
 
 const (

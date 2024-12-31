@@ -1,4 +1,4 @@
-package iotago_test
+package axongo_test
 
 import (
 	"crypto/ed25519"
@@ -6,57 +6,57 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/builder"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	hiveEd25519 "github.com/axonfibre/fibre.go/crypto/ed25519"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/builder"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 func TestTransactionEssenceWorkScore(t *testing.T) {
 	keyPair := hiveEd25519.GenerateKeyPair()
 	keyPair2 := hiveEd25519.GenerateKeyPair()
 	// Derive a dummy account from addr.
-	addr := iotago.Ed25519AddressFromPubKey(keyPair.PublicKey[:])
+	addr := axongo.Ed25519AddressFromPubKey(keyPair.PublicKey[:])
 
-	output1 := &iotago.BasicOutput{
+	output1 := &axongo.BasicOutput{
 		Amount: 100000,
-		UnlockConditions: iotago.BasicOutputUnlockConditions{
-			&iotago.AddressUnlockCondition{
+		UnlockConditions: axongo.BasicOutputUnlockConditions{
+			&axongo.AddressUnlockCondition{
 				Address: addr,
 			},
 		},
-		Features: iotago.BasicOutputFeatures{
+		Features: axongo.BasicOutputFeatures{
 			tpkg.RandNativeTokenFeature(),
 		},
 	}
-	output2 := &iotago.AccountOutput{
+	output2 := &axongo.AccountOutput{
 		Amount: 1_000_000,
-		UnlockConditions: iotago.AccountOutputUnlockConditions{
-			&iotago.AddressUnlockCondition{addr},
+		UnlockConditions: axongo.AccountOutputUnlockConditions{
+			&axongo.AddressUnlockCondition{addr},
 		},
-		Features: iotago.AccountOutputFeatures{
-			&iotago.BlockIssuerFeature{
+		Features: axongo.AccountOutputFeatures{
+			&axongo.BlockIssuerFeature{
 				ExpirySlot: 300,
-				BlockIssuerKeys: iotago.BlockIssuerKeys{
-					iotago.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(keyPair.PublicKey),
-					iotago.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(keyPair2.PublicKey),
+				BlockIssuerKeys: axongo.BlockIssuerKeys{
+					axongo.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(keyPair.PublicKey),
+					axongo.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(keyPair2.PublicKey),
 				},
 			},
-			&iotago.StakingFeature{
+			&axongo.StakingFeature{
 				StakedAmount: 500_00,
 				FixedCost:    500,
 			},
 		},
 	}
 
-	api := iotago.V3API(
-		iotago.NewV3SnapshotProtocolParameters(
-			iotago.WithStorageOptions(0, 0, 0, 0, 0, 0),
-			iotago.WithWorkScoreOptions(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+	api := axongo.V3API(
+		axongo.NewV3SnapshotProtocolParameters(
+			axongo.WithStorageOptions(0, 0, 0, 0, 0, 0),
+			axongo.WithWorkScoreOptions(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
 		),
 	)
 
-	tx, err := builder.NewTransactionBuilder(api, iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
+	tx, err := builder.NewTransactionBuilder(api, axongo.NewInMemoryAddressSigner(axongo.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      tpkg.RandOutputID(0),
@@ -69,9 +69,9 @@ func TestTransactionEssenceWorkScore(t *testing.T) {
 		}).
 		AddOutput(output1).
 		AddOutput(output2).
-		AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: iotago.NewCommitmentID(85, tpkg.Rand32ByteArray())}).
-		AddBlockIssuanceCreditInput(&iotago.BlockIssuanceCreditInput{AccountID: tpkg.RandAccountID()}).
-		AddRewardInput(&iotago.RewardInput{Index: 0}, 0).
+		AddCommitmentInput(&axongo.CommitmentInput{CommitmentID: axongo.NewCommitmentID(85, tpkg.Rand32ByteArray())}).
+		AddBlockIssuanceCreditInput(&axongo.BlockIssuanceCreditInput{AccountID: tpkg.RandAccountID()}).
+		AddRewardInput(&axongo.RewardInput{Index: 0}, 0).
 		IncreaseAllotment(tpkg.RandAccountID(), tpkg.RandMana(10000)+1).
 		IncreaseAllotment(tpkg.RandAccountID(), tpkg.RandMana(10000)+1).
 		Build()
@@ -86,7 +86,7 @@ func TestTransactionEssenceWorkScore(t *testing.T) {
 	workScoreParameters := api.ProtocolParameters().WorkScoreParameters()
 
 	// Calculate work score as defined in TIP-45 for verification.
-	expectedWorkScore := workScoreParameters.DataByte*iotago.WorkScore(tx.Size()) +
+	expectedWorkScore := workScoreParameters.DataByte*axongo.WorkScore(tx.Size()) +
 		workScoreParameters.Block*1 +
 		workScoreParameters.Input*2 +
 		workScoreParameters.ContextInput*3 +

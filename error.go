@@ -1,7 +1,7 @@
-package iotago
+package axongo
 
 import (
-	"github.com/iotaledger/hive.go/ierrors"
+	"github.com/axonfibre/fibre.go/ierrors"
 )
 
 // Errors used by failure codes

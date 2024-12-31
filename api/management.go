@@ -1,7 +1,7 @@
 package api
 
 import (
-	iotago "github.com/iotaledger/iota.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 type (
@@ -18,7 +18,7 @@ type (
 		// The libp2p identifier of the peer.
 		ID string `serix:",lenPrefix=uint8"`
 		// The libp2p multi addresses of the peer.
-		MultiAddresses []iotago.PrefixedStringUint8 `serix:",lenPrefix=uint8"`
+		MultiAddresses []axongo.PrefixedStringUint8 `serix:",lenPrefix=uint8"`
 		// The alias to identify the peer.
 		Alias string `serix:",lenPrefix=uint8,omitempty"`
 		// The relation (manual, autopeered) of the peer.
@@ -44,9 +44,9 @@ type (
 	// PruneDatabaseRequest defines the request of a prune database REST API call.
 	PruneDatabaseRequest struct {
 		// The pruning target epoch.
-		Epoch iotago.EpochIndex `serix:",omitempty"`
+		Epoch axongo.EpochIndex `serix:",omitempty"`
 		// The pruning depth.
-		Depth iotago.EpochIndex `serix:",omitempty"`
+		Depth axongo.EpochIndex `serix:",omitempty"`
 		// The target size of the database.
 		TargetDatabaseSize string `serix:",lenPrefix=uint8,omitempty"`
 	}
@@ -54,13 +54,13 @@ type (
 	// PruneDatabaseResponse defines the response of a prune database REST API call.
 	PruneDatabaseResponse struct {
 		// The current oldest epoch in the database.
-		Epoch iotago.EpochIndex `serix:""`
+		Epoch axongo.EpochIndex `serix:""`
 	}
 
 	// CreateSnapshotResponse defines the response of a create snapshot REST API call.
 	CreateSnapshotResponse struct {
 		// The slot of the snapshot.
-		Slot iotago.SlotIndex `serix:""`
+		Slot axongo.SlotIndex `serix:""`
 		// The file path of the snapshot file.
 		FilePath string `serix:",lenPrefix=uint8"`
 	}

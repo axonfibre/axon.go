@@ -1,21 +1,21 @@
 package tpkg
 
 import (
-	iotago "github.com/iotaledger/iota.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
-func RandIdentifier() iotago.Identifier {
+func RandIdentifier() axongo.Identifier {
 	return Rand32ByteArray()
 }
 
 // RandBlockID produces a random block ID.
-func RandBlockID() iotago.BlockID {
+func RandBlockID() axongo.BlockID {
 	return Rand36ByteArray()
 }
 
 // SortedRandBlockIDs returned random block IDs.
-func SortedRandBlockIDs(count int) iotago.BlockIDs {
-	slice := make([]iotago.BlockID, count)
+func SortedRandBlockIDs(count int) axongo.BlockIDs {
+	slice := make([]axongo.BlockID, count)
 	for i, ele := range SortedRand36ByteArray(count) {
 		slice[i] = ele
 	}
@@ -23,43 +23,43 @@ func SortedRandBlockIDs(count int) iotago.BlockIDs {
 	return slice
 }
 
-func RandAccountID() iotago.AccountID {
-	alias := iotago.AccountID{}
-	copy(alias[:], RandBytes(iotago.AccountIDLength))
+func RandAccountID() axongo.AccountID {
+	alias := axongo.AccountID{}
+	copy(alias[:], RandBytes(axongo.AccountIDLength))
 
 	return alias
 }
 
-func RandAnchorID() iotago.AnchorID {
-	anchorID := iotago.AnchorID{}
-	copy(anchorID[:], RandBytes(iotago.AnchorIDLength))
+func RandAnchorID() axongo.AnchorID {
+	anchorID := axongo.AnchorID{}
+	copy(anchorID[:], RandBytes(axongo.AnchorIDLength))
 
 	return anchorID
 }
 
-func RandNFTID() iotago.NFTID {
-	nft := iotago.NFTID{}
-	copy(nft[:], RandBytes(iotago.NFTIDLength))
+func RandNFTID() axongo.NFTID {
+	nft := axongo.NFTID{}
+	copy(nft[:], RandBytes(axongo.NFTIDLength))
 
 	return nft
 }
 
-func RandDelegationID() iotago.DelegationID {
-	delegation := iotago.DelegationID{}
-	copy(delegation[:], RandBytes(iotago.DelegationIDLength))
+func RandDelegationID() axongo.DelegationID {
+	delegation := axongo.DelegationID{}
+	copy(delegation[:], RandBytes(axongo.DelegationIDLength))
 
 	return delegation
 }
 
-func RandNativeTokenID() iotago.NativeTokenID {
-	var nativeTokenID iotago.NativeTokenID
-	copy(nativeTokenID[:], RandBytes(iotago.NativeTokenIDLength))
+func RandNativeTokenID() axongo.NativeTokenID {
+	var nativeTokenID axongo.NativeTokenID
+	copy(nativeTokenID[:], RandBytes(axongo.NativeTokenIDLength))
 
 	// the underlying address needs to be an account address
-	nativeTokenID[0] = byte(iotago.AddressAccount)
+	nativeTokenID[0] = byte(axongo.AddressAccount)
 
 	// set the simple token scheme type
-	nativeTokenID[iotago.FoundryIDLength-iotago.FoundryTokenSchemeLength] = byte(iotago.TokenSchemeSimple)
+	nativeTokenID[axongo.FoundryIDLength-axongo.FoundryTokenSchemeLength] = byte(axongo.TokenSchemeSimple)
 
 	return nativeTokenID
 }

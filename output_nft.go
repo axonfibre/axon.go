@@ -1,10 +1,10 @@
-package iotago
+package axongo
 
 import (
 	"golang.org/x/crypto/blake2b"
 
-	"github.com/iotaledger/hive.go/serializer/v2"
-	"github.com/iotaledger/iota.go/v4/hexutil"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	"github.com/axonfibre/axon.go/v4/hexutil"
 )
 
 const (

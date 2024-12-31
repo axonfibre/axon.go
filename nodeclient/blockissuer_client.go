@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
-	"github.com/iotaledger/iota.go/v4/blockissuer/pow"
-	"github.com/iotaledger/iota.go/v4/builder"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
+	"github.com/axonfibre/axon.go/v4/blockissuer/pow"
+	"github.com/axonfibre/axon.go/v4/builder"
 )
 
 type (
@@ -19,9 +19,9 @@ type (
 		// Info returns the info of the block issuer.
 		Info(ctx context.Context) (*api.BlockIssuerInfo, error)
 		// SendPayload sends an ApplicationPayload to the block issuer.
-		SendPayload(ctx context.Context, payload iotago.ApplicationPayload, commitmentID iotago.CommitmentID, numPoWWorkers ...int) (*api.BlockCreatedResponse, error)
+		SendPayload(ctx context.Context, payload axongo.ApplicationPayload, commitmentID axongo.CommitmentID, numPoWWorkers ...int) (*api.BlockCreatedResponse, error)
 		// SendPayloadWithTransactionBuilder automatically allots the needed mana and sends an ApplicationPayload to the block issuer.
-		SendPayloadWithTransactionBuilder(ctx context.Context, builder *builder.TransactionBuilder, storedManaOutputIndex int, numPoWWorkers ...int) (iotago.ApplicationPayload, *api.BlockCreatedResponse, error)
+		SendPayloadWithTransactionBuilder(ctx context.Context, builder *builder.TransactionBuilder, storedManaOutputIndex int, numPoWWorkers ...int) (axongo.ApplicationPayload, *api.BlockCreatedResponse, error)
 	}
 
 	blockIssuerClient struct {
@@ -52,7 +52,7 @@ func (client *blockIssuerClient) Info(ctx context.Context) (*api.BlockIssuerInfo
 	return res, nil
 }
 
-func (client *blockIssuerClient) mineNonceAndSendPayload(ctx context.Context, payload iotago.ApplicationPayload, commitmentID iotago.CommitmentID, powTargetTrailingZeros uint8, numPoWWorkers ...int) (*api.BlockCreatedResponse, error) {
+func (client *blockIssuerClient) mineNonceAndSendPayload(ctx context.Context, payload axongo.ApplicationPayload, commitmentID axongo.CommitmentID, powTargetTrailingZeros uint8, numPoWWorkers ...int) (*api.BlockCreatedResponse, error) {
 	payloadBytes, err := client.core.CommittedAPI().Encode(payload, serix.WithValidation())
 	if err != nil {
 		return nil, ierrors.Wrap(err, "failed to encode the payload")
@@ -82,7 +82,7 @@ func (client *blockIssuerClient) mineNonceAndSendPayload(ctx context.Context, pa
 	return res, nil
 }
 
-func (client *blockIssuerClient) SendPayload(ctx context.Context, payload iotago.ApplicationPayload, commitmentID iotago.CommitmentID, numPoWWorkers ...int) (*api.BlockCreatedResponse, error) {
+func (client *blockIssuerClient) SendPayload(ctx context.Context, payload axongo.ApplicationPayload, commitmentID axongo.CommitmentID, numPoWWorkers ...int) (*api.BlockCreatedResponse, error) {
 	// get the info from the block issuer
 	blockIssuerInfo, err := client.Info(ctx)
 	if err != nil {
@@ -92,7 +92,7 @@ func (client *blockIssuerClient) SendPayload(ctx context.Context, payload iotago
 	return client.mineNonceAndSendPayload(ctx, payload, commitmentID, blockIssuerInfo.PowTargetTrailingZeros, numPoWWorkers...)
 }
 
-func (client *blockIssuerClient) SendPayloadWithTransactionBuilder(ctx context.Context, builder *builder.TransactionBuilder, storedManaOutputIndex int, numPoWWorkers ...int) (iotago.ApplicationPayload, *api.BlockCreatedResponse, error) {
+func (client *blockIssuerClient) SendPayloadWithTransactionBuilder(ctx context.Context, builder *builder.TransactionBuilder, storedManaOutputIndex int, numPoWWorkers ...int) (axongo.ApplicationPayload, *api.BlockCreatedResponse, error) {
 	// get the info from the block issuer
 	blockIssuerInfo, err := client.Info(ctx)
 	if err != nil {
@@ -101,13 +101,13 @@ func (client *blockIssuerClient) SendPayloadWithTransactionBuilder(ctx context.C
 
 	// parse the block issuer address
 	//nolint:contextcheck // false positive
-	_, blockIssuerAddress, err := iotago.ParseBech32(blockIssuerInfo.BlockIssuerAddress)
+	_, blockIssuerAddress, err := axongo.ParseBech32(blockIssuerInfo.BlockIssuerAddress)
 	if err != nil {
 		return nil, nil, ierrors.Wrap(err, "failed to parse the block issuer address")
 	}
 
 	// check if the block issuer address is an account address
-	blockIssuerAccountAddress, isAccount := blockIssuerAddress.(*iotago.AccountAddress)
+	blockIssuerAccountAddress, isAccount := blockIssuerAddress.(*axongo.AccountAddress)
 	if !isAccount {
 		return nil, nil, ierrors.New("failed to parse the block issuer address")
 	}

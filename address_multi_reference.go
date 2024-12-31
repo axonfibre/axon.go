@@ -1,11 +1,11 @@
-package iotago
+package axongo
 
 import (
 	"bytes"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/lo"
-	"github.com/iotaledger/iota.go/v4/hexutil"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/lo"
+	"github.com/axonfibre/axon.go/v4/hexutil"
 )
 
 // MultiAddressReference is a reference to a MultiAddress.

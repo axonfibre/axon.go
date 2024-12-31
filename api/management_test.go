@@ -3,9 +3,9 @@ package api_test
 import (
 	"testing"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func Test_ManagementAPIDeSerialize(t *testing.T) {
@@ -22,7 +22,7 @@ func Test_ManagementAPIDeSerialize(t *testing.T) {
 			Name: "ok - PeerInfo",
 			Source: &api.PeerInfo{
 				ID:             "id",
-				MultiAddresses: []iotago.PrefixedStringUint8{"multiAddress"},
+				MultiAddresses: []axongo.PrefixedStringUint8{"multiAddress"},
 				Alias:          "alias",
 				Relation:       "relation",
 				Connected:      true,
@@ -39,7 +39,7 @@ func Test_ManagementAPIDeSerialize(t *testing.T) {
 				Peers: []*api.PeerInfo{
 					{
 						ID:             "id",
-						MultiAddresses: []iotago.PrefixedStringUint8{"multiAddress"},
+						MultiAddresses: []axongo.PrefixedStringUint8{"multiAddress"},
 						Alias:          "alias",
 						Relation:       "relation",
 						Connected:      true,
@@ -100,7 +100,7 @@ func Test_ManagementAPIJSONSerialization(t *testing.T) {
 			Name: "ok - PeerInfo",
 			Source: &api.PeerInfo{
 				ID:             "id",
-				MultiAddresses: []iotago.PrefixedStringUint8{"multiAddress"},
+				MultiAddresses: []axongo.PrefixedStringUint8{"multiAddress"},
 				Alias:          "alias",
 				Relation:       "relation",
 				Connected:      true,
@@ -129,7 +129,7 @@ func Test_ManagementAPIJSONSerialization(t *testing.T) {
 				Peers: []*api.PeerInfo{
 					{
 						ID:             "id",
-						MultiAddresses: []iotago.PrefixedStringUint8{"multiAddress"},
+						MultiAddresses: []axongo.PrefixedStringUint8{"multiAddress"},
 						Alias:          "alias",
 						Relation:       "relation",
 						Connected:      true,

@@ -1,18 +1,18 @@
-package iotago_test
+package axongo_test
 
 import (
 	"testing"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestCandidacyAnnouncmentDeSerialize(t *testing.T) {
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name:   "ok",
-			Source: &iotago.CandidacyAnnouncement{},
-			Target: &iotago.CandidacyAnnouncement{},
+			Source: &axongo.CandidacyAnnouncement{},
+			Target: &axongo.CandidacyAnnouncement{},
 		},
 	}
 

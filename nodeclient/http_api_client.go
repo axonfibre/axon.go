@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
 )
 
 var (
@@ -91,7 +91,7 @@ const initInfoEndpointCallTimeout = 5 * time.Second
 
 // New returns a new Client using the given base URL.
 // This constructor will automatically call Client.Info() in order to initialize the Client
-// with the appropriate protocol parameters and latest iotago.API version (use WithIOTAGoAPI() to override this behavior).
+// with the appropriate protocol parameters and latest axongo.API version (use WithAxongoAPI() to override this behavior).
 func New(baseURL string, opts ...ClientOption) (*Client, error) {
 	options := &ClientOptions{}
 	options.apply(defaultNodeAPIOptions...)
@@ -99,7 +99,7 @@ func New(baseURL string, opts ...ClientOption) (*Client, error) {
 
 	client := &Client{
 		BaseURL:     baseURL,
-		apiProvider: iotago.NewEpochBasedProvider(),
+		apiProvider: axongo.NewEpochBasedProvider(),
 		opts:        options,
 	}
 
@@ -121,7 +121,7 @@ type Client struct {
 	// The base URL for all API calls.
 	BaseURL string
 
-	apiProvider *iotago.EpochBasedProvider
+	apiProvider *axongo.EpochBasedProvider
 
 	// holds the Client options.
 	opts *ClientOptions
@@ -244,7 +244,7 @@ func (client *Client) Info(ctx context.Context) (*api.InfoResponse, error) {
 	res := new(api.InfoResponse)
 
 	//nolint:bodyclose
-	if _, err := do(ctx, iotago.CommonSerixAPI(), client.opts.httpClient, client.BaseURL, client.opts.userInfo, http.MethodGet, api.CoreRouteInfo, client.opts.requestURLHook, nil, nil, res); err != nil {
+	if _, err := do(ctx, axongo.CommonSerixAPI(), client.opts.httpClient, client.BaseURL, client.opts.userInfo, http.MethodGet, api.CoreRouteInfo, client.opts.requestURLHook, nil, nil, res); err != nil {
 		return nil, err
 	}
 
@@ -272,7 +272,7 @@ func (client *Client) NetworkMetrics(ctx context.Context) (*api.NetworkMetricsRe
 	res := new(api.NetworkMetricsResponse)
 
 	//nolint:bodyclose
-	if _, err := do(ctx, iotago.CommonSerixAPI(), client.opts.httpClient, client.BaseURL, client.opts.userInfo, http.MethodGet, api.CoreRouteNetworkMetrics, client.opts.requestURLHook, nil, nil, res); err != nil {
+	if _, err := do(ctx, axongo.CommonSerixAPI(), client.opts.httpClient, client.BaseURL, client.opts.userInfo, http.MethodGet, api.CoreRouteNetworkMetrics, client.opts.requestURLHook, nil, nil, res); err != nil {
 		return nil, err
 	}
 
@@ -283,38 +283,38 @@ func (client *Client) NetworkMetrics(ctx context.Context) (*api.NetworkMetricsRe
 // The node will take care of filling missing information.
 // This function returns the blockID of the finalized block.
 // To get the finalized block you need to call "BlockByBlockID".
-func (client *Client) SubmitBlock(ctx context.Context, m *iotago.Block) (iotago.BlockID, error) {
+func (client *Client) SubmitBlock(ctx context.Context, m *axongo.Block) (axongo.BlockID, error) {
 	// do not check the block because the validation would fail if
 	// no parents were given. The node will first add this missing information and
 	// validate the block afterward.
 
 	apiForVersion, err := client.APIForVersion(m.Header.ProtocolVersion)
 	if err != nil {
-		return iotago.EmptyBlockID, err
+		return axongo.EmptyBlockID, err
 	}
 
 	data, err := apiForVersion.Encode(m)
 	if err != nil {
-		return iotago.EmptyBlockID, err
+		return axongo.EmptyBlockID, err
 	}
 
 	req := &RawDataEnvelope{Data: data}
 	//nolint:bodyclose
 	res, err := client.DoWithRequestHeaderHook(ctx, http.MethodPost, api.CoreRouteBlocks, RequestHeaderHookContentTypeIOTASerializerV2, req, nil)
 	if err != nil {
-		return iotago.EmptyBlockID, err
+		return axongo.EmptyBlockID, err
 	}
 
-	blockID, err := iotago.BlockIDFromHexString(res.Header.Get(locationHeader))
+	blockID, err := axongo.BlockIDFromHexString(res.Header.Get(locationHeader))
 	if err != nil {
-		return iotago.EmptyBlockID, err
+		return axongo.EmptyBlockID, err
 	}
 
 	return blockID, nil
 }
 
 // BlockByBlockID get a block by its block ID from the node.
-func (client *Client) BlockByBlockID(ctx context.Context, blockID iotago.BlockID) (*iotago.Block, error) {
+func (client *Client) BlockByBlockID(ctx context.Context, blockID axongo.BlockID) (*axongo.Block, error) {
 	query := client.endpointReplaceBlockIDParameter(api.CoreRouteBlock, blockID)
 
 	res := new(RawDataEnvelope)
@@ -323,7 +323,7 @@ func (client *Client) BlockByBlockID(ctx context.Context, blockID iotago.BlockID
 		return nil, err
 	}
 
-	block, _, err := iotago.BlockFromBytes(client)(res.Data)
+	block, _, err := axongo.BlockFromBytes(client)(res.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -332,7 +332,7 @@ func (client *Client) BlockByBlockID(ctx context.Context, blockID iotago.BlockID
 }
 
 // BlockMetadataByBlockID gets the metadata of a block by its ID from the node.
-func (client *Client) BlockMetadataByBlockID(ctx context.Context, blockID iotago.BlockID) (*api.BlockMetadataResponse, error) {
+func (client *Client) BlockMetadataByBlockID(ctx context.Context, blockID axongo.BlockID) (*api.BlockMetadataResponse, error) {
 	query := client.endpointReplaceBlockIDParameter(api.CoreRouteBlockMetadata, blockID)
 
 	res := new(api.BlockMetadataResponse)
@@ -345,7 +345,7 @@ func (client *Client) BlockMetadataByBlockID(ctx context.Context, blockID iotago
 }
 
 // BlockWithMetadataByBlockID gets a block by its ID, together with the metadata from the node.
-func (client *Client) BlockWithMetadataByBlockID(ctx context.Context, blockID iotago.BlockID) (*api.BlockWithMetadataResponse, error) {
+func (client *Client) BlockWithMetadataByBlockID(ctx context.Context, blockID axongo.BlockID) (*api.BlockWithMetadataResponse, error) {
 	query := client.endpointReplaceBlockIDParameter(api.CoreRouteBlockWithMetadata, blockID)
 
 	res := new(RawDataEnvelope)
@@ -354,7 +354,7 @@ func (client *Client) BlockWithMetadataByBlockID(ctx context.Context, blockID io
 		return nil, err
 	}
 
-	block, consumedBytes, err := iotago.BlockFromBytes(client)(res.Data)
+	block, consumedBytes, err := axongo.BlockFromBytes(client)(res.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -384,7 +384,7 @@ func (client *Client) BlockIssuance(ctx context.Context) (*api.IssuanceBlockHead
 }
 
 // OutputByID gets an output by its ID from the node.
-func (client *Client) OutputByID(ctx context.Context, outputID iotago.OutputID) (iotago.Output, error) {
+func (client *Client) OutputByID(ctx context.Context, outputID axongo.OutputID) (axongo.Output, error) {
 	query := client.endpointReplaceOutputIDParameter(api.CoreRouteOutput, outputID)
 
 	res := new(RawDataEnvelope)
@@ -411,7 +411,7 @@ func (client *Client) OutputByID(ctx context.Context, outputID iotago.OutputID) 
 }
 
 // OutputMetadataByID gets an output's metadata by its ID from the node without getting the output data again.
-func (client *Client) OutputMetadataByID(ctx context.Context, outputID iotago.OutputID) (*api.OutputMetadata, error) {
+func (client *Client) OutputMetadataByID(ctx context.Context, outputID axongo.OutputID) (*api.OutputMetadata, error) {
 	query := client.endpointReplaceOutputIDParameter(api.CoreRouteOutputMetadata, outputID)
 
 	res := new(api.OutputMetadata)
@@ -424,7 +424,7 @@ func (client *Client) OutputMetadataByID(ctx context.Context, outputID iotago.Ou
 }
 
 // OutputWithMetadataByID gets an output by its ID, together with the metadata from the node.
-func (client *Client) OutputWithMetadataByID(ctx context.Context, outputID iotago.OutputID) (iotago.Output, *api.OutputMetadata, error) {
+func (client *Client) OutputWithMetadataByID(ctx context.Context, outputID axongo.OutputID) (axongo.Output, *api.OutputMetadata, error) {
 	query := client.endpointReplaceOutputIDParameter(api.CoreRouteOutputWithMetadata, outputID)
 
 	res := new(RawDataEnvelope)
@@ -451,7 +451,7 @@ func (client *Client) OutputWithMetadataByID(ctx context.Context, outputID iotag
 }
 
 // TransactionByID gets a transaction by its ID from the node.
-func (client *Client) TransactionByID(ctx context.Context, txID iotago.TransactionID) (*iotago.Transaction, error) {
+func (client *Client) TransactionByID(ctx context.Context, txID axongo.TransactionID) (*axongo.Transaction, error) {
 	query := client.endpointReplaceTransactionIDParameter(api.CoreRouteTransaction, txID)
 
 	res := new(RawDataEnvelope)
@@ -460,7 +460,7 @@ func (client *Client) TransactionByID(ctx context.Context, txID iotago.Transacti
 		return nil, err
 	}
 
-	tx := new(iotago.Transaction)
+	tx := new(axongo.Transaction)
 	if _, err := client.CommittedAPI().Decode(res.Data, tx, serix.WithValidation()); err != nil {
 		return nil, err
 	}
@@ -469,7 +469,7 @@ func (client *Client) TransactionByID(ctx context.Context, txID iotago.Transacti
 }
 
 // TransactionIncludedBlock get a block that included the given transaction ID in the ledger.
-func (client *Client) TransactionIncludedBlock(ctx context.Context, txID iotago.TransactionID) (*iotago.Block, error) {
+func (client *Client) TransactionIncludedBlock(ctx context.Context, txID axongo.TransactionID) (*axongo.Block, error) {
 	query := client.endpointReplaceTransactionIDParameter(api.CoreRouteTransactionsIncludedBlock, txID)
 
 	res := new(RawDataEnvelope)
@@ -478,7 +478,7 @@ func (client *Client) TransactionIncludedBlock(ctx context.Context, txID iotago.
 		return nil, err
 	}
 
-	block, _, err := iotago.BlockFromBytes(client)(res.Data)
+	block, _, err := axongo.BlockFromBytes(client)(res.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -487,7 +487,7 @@ func (client *Client) TransactionIncludedBlock(ctx context.Context, txID iotago.
 }
 
 // TransactionIncludedBlockMetadata gets the metadata of a block by its ID from the node.
-func (client *Client) TransactionIncludedBlockMetadata(ctx context.Context, txID iotago.TransactionID) (*api.BlockMetadataResponse, error) {
+func (client *Client) TransactionIncludedBlockMetadata(ctx context.Context, txID axongo.TransactionID) (*api.BlockMetadataResponse, error) {
 	query := client.endpointReplaceTransactionIDParameter(api.CoreRouteTransactionsIncludedBlockMetadata, txID)
 
 	res := new(api.BlockMetadataResponse)
@@ -500,7 +500,7 @@ func (client *Client) TransactionIncludedBlockMetadata(ctx context.Context, txID
 }
 
 // TransactionMetadata gets the metadata of a transaction by its ID from the node.
-func (client *Client) TransactionMetadata(ctx context.Context, txID iotago.TransactionID) (*api.TransactionMetadataResponse, error) {
+func (client *Client) TransactionMetadata(ctx context.Context, txID axongo.TransactionID) (*api.TransactionMetadataResponse, error) {
 	query := client.endpointReplaceTransactionIDParameter(api.CoreRouteTransactionsMetadata, txID)
 
 	res := new(api.TransactionMetadataResponse)
@@ -513,10 +513,10 @@ func (client *Client) TransactionMetadata(ctx context.Context, txID iotago.Trans
 }
 
 // CommitmentByID gets a commitment details by its ID.
-func (client *Client) CommitmentByID(ctx context.Context, commitmentID iotago.CommitmentID) (*iotago.Commitment, error) {
+func (client *Client) CommitmentByID(ctx context.Context, commitmentID axongo.CommitmentID) (*axongo.Commitment, error) {
 	query := client.endpointReplaceCommitmentIDParameter(api.CoreRouteCommitmentByID, commitmentID)
 
-	res := new(iotago.Commitment)
+	res := new(axongo.Commitment)
 	//nolint:bodyclose
 	if _, err := client.DoWithRequestHeaderHook(ctx, http.MethodGet, query, RequestHeaderHookAcceptJSON, nil, res); err != nil {
 		return nil, err
@@ -526,7 +526,7 @@ func (client *Client) CommitmentByID(ctx context.Context, commitmentID iotago.Co
 }
 
 // CommitmentUTXOChangesByID returns all UTXO changes of a commitment by its ID.
-func (client *Client) CommitmentUTXOChangesByID(ctx context.Context, commitmentID iotago.CommitmentID) (*api.UTXOChangesResponse, error) {
+func (client *Client) CommitmentUTXOChangesByID(ctx context.Context, commitmentID axongo.CommitmentID) (*api.UTXOChangesResponse, error) {
 	query := client.endpointReplaceCommitmentIDParameter(api.CoreRouteCommitmentByIDUTXOChanges, commitmentID)
 
 	res := new(api.UTXOChangesResponse)
@@ -539,7 +539,7 @@ func (client *Client) CommitmentUTXOChangesByID(ctx context.Context, commitmentI
 }
 
 // CommitmentUTXOChangesFullByID returns all UTXO changes (including outputs) of a commitment by its ID.
-func (client *Client) CommitmentUTXOChangesFullByID(ctx context.Context, commitmentID iotago.CommitmentID) (*api.UTXOChangesFullResponse, error) {
+func (client *Client) CommitmentUTXOChangesFullByID(ctx context.Context, commitmentID axongo.CommitmentID) (*api.UTXOChangesFullResponse, error) {
 	query := client.endpointReplaceCommitmentIDParameter(api.CoreRouteCommitmentByIDUTXOChangesFull, commitmentID)
 
 	res := new(api.UTXOChangesFullResponse)
@@ -552,10 +552,10 @@ func (client *Client) CommitmentUTXOChangesFullByID(ctx context.Context, commitm
 }
 
 // CommitmentBySlot gets a commitment details by its slot.
-func (client *Client) CommitmentBySlot(ctx context.Context, slot iotago.SlotIndex) (*iotago.Commitment, error) {
+func (client *Client) CommitmentBySlot(ctx context.Context, slot axongo.SlotIndex) (*axongo.Commitment, error) {
 	query := client.endpointReplaceSlotParameter(api.CoreRouteCommitmentBySlot, slot)
 
-	res := new(iotago.Commitment)
+	res := new(axongo.Commitment)
 	//nolint:bodyclose
 	if _, err := client.DoWithRequestHeaderHook(ctx, http.MethodGet, query, RequestHeaderHookAcceptJSON, nil, res); err != nil {
 		return nil, err
@@ -565,7 +565,7 @@ func (client *Client) CommitmentBySlot(ctx context.Context, slot iotago.SlotInde
 }
 
 // CommitmentUTXOChangesBySlot returns all UTXO changes of a commitment by its slot.
-func (client *Client) CommitmentUTXOChangesBySlot(ctx context.Context, slot iotago.SlotIndex) (*api.UTXOChangesResponse, error) {
+func (client *Client) CommitmentUTXOChangesBySlot(ctx context.Context, slot axongo.SlotIndex) (*api.UTXOChangesResponse, error) {
 	query := client.endpointReplaceSlotParameter(api.CoreRouteCommitmentBySlotUTXOChanges, slot)
 
 	res := new(api.UTXOChangesResponse)
@@ -578,7 +578,7 @@ func (client *Client) CommitmentUTXOChangesBySlot(ctx context.Context, slot iota
 }
 
 // CommitmentUTXOChangesFullBySlot returns all UTXO changes (including outputs) of a commitment by its slot.
-func (client *Client) CommitmentUTXOChangesFullBySlot(ctx context.Context, slot iotago.SlotIndex) (*api.UTXOChangesFullResponse, error) {
+func (client *Client) CommitmentUTXOChangesFullBySlot(ctx context.Context, slot axongo.SlotIndex) (*api.UTXOChangesFullResponse, error) {
 	query := client.endpointReplaceSlotParameter(api.CoreRouteCommitmentBySlotUTXOChangesFull, slot)
 
 	res := new(api.UTXOChangesFullResponse)
@@ -591,7 +591,7 @@ func (client *Client) CommitmentUTXOChangesFullBySlot(ctx context.Context, slot 
 }
 
 // Congestion gets the congestion of the node.
-func (client *Client) Congestion(ctx context.Context, accountAddress *iotago.AccountAddress, workScore iotago.WorkScore, optCommitmentID ...iotago.CommitmentID) (*api.CongestionResponse, error) {
+func (client *Client) Congestion(ctx context.Context, accountAddress *axongo.AccountAddress, workScore axongo.WorkScore, optCommitmentID ...axongo.CommitmentID) (*api.CongestionResponse, error) {
 	//nolint:contextcheck
 	query := client.endpointReplaceAddressParameter(api.CoreRouteCongestion, accountAddress)
 	queryParams := url.Values{}
@@ -672,7 +672,7 @@ func (client *Client) ValidatorsAll(ctx context.Context, maxPages ...int) (valid
 }
 
 // Validator gets the validator response of the given account address.
-func (client *Client) Validator(ctx context.Context, accountAddress *iotago.AccountAddress) (*api.ValidatorResponse, error) {
+func (client *Client) Validator(ctx context.Context, accountAddress *axongo.AccountAddress) (*api.ValidatorResponse, error) {
 	res := new(api.ValidatorResponse)
 
 	//nolint:contextcheck
@@ -687,7 +687,7 @@ func (client *Client) Validator(ctx context.Context, accountAddress *iotago.Acco
 }
 
 // Rewards gets the mana rewards of the given output.
-func (client *Client) Rewards(ctx context.Context, outputID iotago.OutputID) (*api.ManaRewardsResponse, error) {
+func (client *Client) Rewards(ctx context.Context, outputID axongo.OutputID) (*api.ManaRewardsResponse, error) {
 	query := client.endpointReplaceOutputIDParameter(api.CoreRouteRewards, outputID)
 
 	res := new(api.ManaRewardsResponse)
@@ -700,7 +700,7 @@ func (client *Client) Rewards(ctx context.Context, outputID iotago.OutputID) (*a
 }
 
 // Committee gets the committee of the given epoch index.
-func (client *Client) Committee(ctx context.Context, optEpochIndex ...iotago.EpochIndex) (*api.CommitteeResponse, error) {
+func (client *Client) Committee(ctx context.Context, optEpochIndex ...axongo.EpochIndex) (*api.CommitteeResponse, error) {
 	query := api.CoreRouteCommittee
 	queryParams := url.Values{}
 
@@ -738,52 +738,52 @@ func (client *Client) NodeSupportsRoute(ctx context.Context, route string) (bool
 	return false, nil
 }
 
-func (client *Client) endpointReplaceAddressParameter(endpoint string, address iotago.Address) string {
+func (client *Client) endpointReplaceAddressParameter(endpoint string, address axongo.Address) string {
 	return api.EndpointWithNamedParameterValue(endpoint, api.ParameterBech32Address, address.Bech32(client.CommittedAPI().ProtocolParameters().Bech32HRP()))
 }
 
-func (client *Client) endpointReplaceBlockIDParameter(endpoint string, blockID iotago.BlockID) string {
+func (client *Client) endpointReplaceBlockIDParameter(endpoint string, blockID axongo.BlockID) string {
 	return api.EndpointWithNamedParameterValue(endpoint, api.ParameterBlockID, blockID.ToHex())
 }
 
-func (client *Client) endpointReplaceTransactionIDParameter(endpoint string, txID iotago.TransactionID) string {
+func (client *Client) endpointReplaceTransactionIDParameter(endpoint string, txID axongo.TransactionID) string {
 	return api.EndpointWithNamedParameterValue(endpoint, api.ParameterTransactionID, txID.ToHex())
 }
 
-func (client *Client) endpointReplaceOutputIDParameter(endpoint string, outputID iotago.OutputID) string {
+func (client *Client) endpointReplaceOutputIDParameter(endpoint string, outputID axongo.OutputID) string {
 	return api.EndpointWithNamedParameterValue(endpoint, api.ParameterOutputID, outputID.ToHex())
 }
 
-func (client *Client) endpointReplaceSlotParameter(endpoint string, slot iotago.SlotIndex) string {
+func (client *Client) endpointReplaceSlotParameter(endpoint string, slot axongo.SlotIndex) string {
 	return api.EndpointWithNamedParameterValue(endpoint, api.ParameterSlot, strconv.Itoa(int(slot)))
 }
 
-func (client *Client) endpointReplaceCommitmentIDParameter(endpoint string, commitmentID iotago.CommitmentID) string {
+func (client *Client) endpointReplaceCommitmentIDParameter(endpoint string, commitmentID axongo.CommitmentID) string {
 	return api.EndpointWithNamedParameterValue(endpoint, api.ParameterCommitmentID, commitmentID.ToHex())
 }
 
-func (client *Client) APIForVersion(version iotago.Version) (iotago.API, error) {
+func (client *Client) APIForVersion(version axongo.Version) (axongo.API, error) {
 	return client.apiProvider.APIForVersion(version)
 }
 
-func (client *Client) APIForEpoch(epoch iotago.EpochIndex) iotago.API {
+func (client *Client) APIForEpoch(epoch axongo.EpochIndex) axongo.API {
 	return client.apiProvider.APIForEpoch(epoch)
 }
 
-func (client *Client) APIForTime(t time.Time) iotago.API {
+func (client *Client) APIForTime(t time.Time) axongo.API {
 	return client.apiProvider.APIForTime(t)
 }
 
-func (client *Client) APIForSlot(slot iotago.SlotIndex) iotago.API {
+func (client *Client) APIForSlot(slot axongo.SlotIndex) axongo.API {
 	return client.apiProvider.APIForSlot(slot)
 }
 
-func (client *Client) CommittedAPI() iotago.API {
+func (client *Client) CommittedAPI() axongo.API {
 	return client.apiProvider.CommittedAPI()
 }
 
-func (client *Client) LatestAPI() iotago.API {
+func (client *Client) LatestAPI() axongo.API {
 	return client.apiProvider.LatestAPI()
 }
 
-var _ iotago.APIProvider = new(Client)
+var _ axongo.APIProvider = new(Client)

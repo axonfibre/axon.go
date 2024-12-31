@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
 )
 
 type (
@@ -22,9 +22,9 @@ type (
 		// PruneDatabaseBySize prunes the database by target size.
 		PruneDatabaseBySize(ctx context.Context, targetDatabaseSize string) (*api.PruneDatabaseResponse, error)
 		// PruneDatabaseByEpoch prunes the database by epoch.
-		PruneDatabaseByEpoch(ctx context.Context, epoch iotago.EpochIndex) (*api.PruneDatabaseResponse, error)
+		PruneDatabaseByEpoch(ctx context.Context, epoch axongo.EpochIndex) (*api.PruneDatabaseResponse, error)
 		// PruneDatabaseByDepth prunes the database by depth.
-		PruneDatabaseByDepth(ctx context.Context, depth iotago.EpochIndex) (*api.PruneDatabaseResponse, error)
+		PruneDatabaseByDepth(ctx context.Context, depth axongo.EpochIndex) (*api.PruneDatabaseResponse, error)
 		// CreateSnapshot creates a snapshot.
 		CreateSnapshot(ctx context.Context) (*api.CreateSnapshotResponse, error)
 	}
@@ -117,7 +117,7 @@ func (client *managementClient) PruneDatabaseBySize(ctx context.Context, targetD
 }
 
 // PruneDatabaseByEpoch prunes the database by epoch.
-func (client *managementClient) PruneDatabaseByEpoch(ctx context.Context, epoch iotago.EpochIndex) (*api.PruneDatabaseResponse, error) {
+func (client *managementClient) PruneDatabaseByEpoch(ctx context.Context, epoch axongo.EpochIndex) (*api.PruneDatabaseResponse, error) {
 	req := &api.PruneDatabaseRequest{
 		Epoch: epoch,
 	}
@@ -132,7 +132,7 @@ func (client *managementClient) PruneDatabaseByEpoch(ctx context.Context, epoch 
 }
 
 // PruneDatabaseByDepth prunes the database by depth.
-func (client *managementClient) PruneDatabaseByDepth(ctx context.Context, depth iotago.EpochIndex) (*api.PruneDatabaseResponse, error) {
+func (client *managementClient) PruneDatabaseByDepth(ctx context.Context, depth axongo.EpochIndex) (*api.PruneDatabaseResponse, error) {
 	req := &api.PruneDatabaseRequest{
 		Depth: depth,
 	}

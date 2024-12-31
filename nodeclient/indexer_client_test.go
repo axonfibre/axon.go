@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
-	"github.com/iotaledger/iota.go/v4/nodeclient"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
+	"github.com/axonfibre/axon.go/v4/nodeclient"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 func TestOutputsQuery_Build(t *testing.T) {
@@ -54,7 +54,7 @@ func Test_IndexerEnabled(t *testing.T) {
 	defer gock.Off()
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.IndexerPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.IndexerPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -69,7 +69,7 @@ func Test_IndexerDisabled(t *testing.T) {
 	defer gock.Off()
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{"someplugin/v1"},
+		Routes: []axongo.PrefixedStringUint8{"someplugin/v1"},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -83,15 +83,15 @@ func Test_IndexerDisabled(t *testing.T) {
 func TestIndexerClient_BasicOutputs(t *testing.T) {
 	defer gock.Off()
 
-	originOutput := tpkg.RandBasicOutput(iotago.AddressEd25519)
-	originOutputProof, err := iotago.NewOutputIDProof(tpkg.ZeroCostTestAPI, tpkg.Rand32ByteArray(), tpkg.RandSlot(), iotago.TxEssenceOutputs{originOutput}, 0)
+	originOutput := tpkg.RandBasicOutput(axongo.AddressEd25519)
+	originOutputProof, err := axongo.NewOutputIDProof(tpkg.ZeroCostTestAPI, tpkg.Rand32ByteArray(), tpkg.RandSlot(), axongo.TxEssenceOutputs{originOutput}, 0)
 	require.NoError(t, err)
 
 	fakeOutputID, err := originOutputProof.OutputID(originOutput)
 	require.NoError(t, err)
 
 	originRoutes := &api.RoutesResponse{
-		Routes: []iotago.PrefixedStringUint8{api.IndexerPluginName},
+		Routes: []axongo.PrefixedStringUint8{api.IndexerPluginName},
 	}
 
 	mockGetJSON(api.RouteRoutes, 200, originRoutes)
@@ -99,7 +99,7 @@ func TestIndexerClient_BasicOutputs(t *testing.T) {
 	mockGetJSONWithParams(api.IndexerRouteOutputsBasic, 200, &api.IndexerResponse{
 		CommittedSlot: 1337,
 		PageSize:      1,
-		Items:         iotago.HexOutputIDsFromOutputIDs(fakeOutputID),
+		Items:         axongo.HexOutputIDsFromOutputIDs(fakeOutputID),
 		Cursor:        "some-offset-key",
 	}, map[string]string{
 		"tag": "some-tag",
@@ -108,7 +108,7 @@ func TestIndexerClient_BasicOutputs(t *testing.T) {
 	mockGetJSONWithParams(api.IndexerRouteOutputsBasic, 200, &api.IndexerResponse{
 		CommittedSlot: 1338,
 		PageSize:      1,
-		Items:         iotago.HexOutputIDsFromOutputIDs(fakeOutputID),
+		Items:         axongo.HexOutputIDsFromOutputIDs(fakeOutputID),
 	}, map[string]string{
 		"cursor": "some-offset-key",
 		"tag":    "some-tag",

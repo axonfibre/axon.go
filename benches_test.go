@@ -1,28 +1,28 @@
 //nolint:forcetypeassert
-package iotago_test
+package axongo_test
 
 import (
 	"crypto/ed25519"
 	"testing"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	hiveEd25519 "github.com/axonfibre/fibre.go/crypto/ed25519"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 var (
-	benchLargeTx = &iotago.SignedTransaction{
+	benchLargeTx = &axongo.SignedTransaction{
 		API: tpkg.ZeroCostTestAPI,
-		Transaction: &iotago.Transaction{
+		Transaction: &axongo.Transaction{
 			API: tpkg.ZeroCostTestAPI,
-			TransactionEssence: &iotago.TransactionEssence{
+			TransactionEssence: &axongo.TransactionEssence{
 				NetworkID:     tpkg.TestNetworkID,
-				ContextInputs: iotago.TxEssenceContextInputs{},
-				Inputs: func() iotago.TxEssenceInputs {
-					var inputs iotago.TxEssenceInputs
-					for i := 0; i < iotago.MaxInputsCount; i++ {
-						inputs = append(inputs, &iotago.UTXOInput{
+				ContextInputs: axongo.TxEssenceContextInputs{},
+				Inputs: func() axongo.TxEssenceInputs {
+					var inputs axongo.TxEssenceInputs
+					for i := 0; i < axongo.MaxInputsCount; i++ {
+						inputs = append(inputs, &axongo.UTXOInput{
 							TransactionID:          tpkg.Rand36ByteArray(),
 							TransactionOutputIndex: 0,
 						})
@@ -30,17 +30,17 @@ var (
 
 					return inputs
 				}(),
-				Allotments:   iotago.Allotments{},
-				Capabilities: iotago.TransactionCapabilitiesBitMask{},
+				Allotments:   axongo.Allotments{},
+				Capabilities: axongo.TransactionCapabilitiesBitMask{},
 				Payload:      nil,
 			},
-			Outputs: func() iotago.TxEssenceOutputs {
-				var outputs iotago.TxEssenceOutputs
-				for i := 0; i < iotago.MaxOutputsCount; i++ {
-					outputs = append(outputs, &iotago.BasicOutput{
+			Outputs: func() axongo.TxEssenceOutputs {
+				var outputs axongo.TxEssenceOutputs
+				for i := 0; i < axongo.MaxOutputsCount; i++ {
+					outputs = append(outputs, &axongo.BasicOutput{
 						Amount: 100,
-						UnlockConditions: iotago.BasicOutputUnlockConditions{
-							&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+						UnlockConditions: axongo.BasicOutputUnlockConditions{
+							&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 						},
 					})
 				}
@@ -48,10 +48,10 @@ var (
 				return outputs
 			}(),
 		},
-		Unlocks: func() iotago.Unlocks {
-			var unlocks iotago.Unlocks
-			for i := 0; i < iotago.MaxInputsCount; i++ {
-				unlocks = append(unlocks, &iotago.SignatureUnlock{
+		Unlocks: func() axongo.Unlocks {
+			var unlocks axongo.Unlocks
+			for i := 0; i < axongo.MaxInputsCount; i++ {
+				unlocks = append(unlocks, &axongo.SignatureUnlock{
 					Signature: tpkg.RandEd25519Signature(),
 				})
 			}
@@ -68,7 +68,7 @@ func BenchmarkDeserializationLargeTxPayload(b *testing.B) {
 	}
 
 	b.Run("reflection with validation", func(b *testing.B) {
-		target := &iotago.SignedTransaction{}
+		target := &axongo.SignedTransaction{}
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
 			_, _ = tpkg.ZeroCostTestAPI.Decode(data, target, serix.WithValidation())
@@ -76,7 +76,7 @@ func BenchmarkDeserializationLargeTxPayload(b *testing.B) {
 	})
 
 	b.Run("reflection without validation", func(b *testing.B) {
-		target := &iotago.SignedTransaction{}
+		target := &axongo.SignedTransaction{}
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
 			_, _ = tpkg.ZeroCostTestAPI.Decode(data, target)
@@ -91,7 +91,7 @@ func BenchmarkDeserializationOneIOTxPayload(b *testing.B) {
 	}
 
 	b.Run("reflection with validation", func(b *testing.B) {
-		target := &iotago.SignedTransaction{}
+		target := &axongo.SignedTransaction{}
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
 			_, _ = tpkg.ZeroCostTestAPI.Decode(data, target, serix.WithValidation())
@@ -99,7 +99,7 @@ func BenchmarkDeserializationOneIOTxPayload(b *testing.B) {
 	})
 
 	b.Run("reflection without validation", func(b *testing.B) {
-		target := &iotago.SignedTransaction{}
+		target := &axongo.SignedTransaction{}
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
 			_, _ = tpkg.ZeroCostTestAPI.Decode(data, target)
@@ -164,16 +164,16 @@ func BenchmarkVerifyEd25519OneIOTxEssence(b *testing.B) {
 func BenchmarkSerializeAndHashBlockWithTransactionPayload(b *testing.B) {
 	txPayload := tpkg.OneInputOutputTransaction()
 
-	m := &iotago.Block{
+	m := &axongo.Block{
 		API: tpkg.ZeroCostTestAPI,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion: tpkg.ZeroCostTestAPI.Version(),
 		},
-		Body: &iotago.BasicBlockBody{
+		Body: &axongo.BasicBlockBody{
 			API:                tpkg.ZeroCostTestAPI,
 			StrongParents:      tpkg.SortedRandBlockIDs(2),
-			WeakParents:        iotago.BlockIDs{},
-			ShallowLikeParents: iotago.BlockIDs{},
+			WeakParents:        axongo.BlockIDs{},
+			ShallowLikeParents: axongo.BlockIDs{},
 			Payload:            txPayload,
 		},
 	}

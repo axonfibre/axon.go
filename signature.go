@@ -1,10 +1,10 @@
-package iotago
+package axongo
 
 import (
 	"fmt"
 
-	"github.com/iotaledger/hive.go/constraints"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
+	"github.com/axonfibre/fibre.go/constraints"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
 )
 
 // Signature is a signature.

@@ -1,13 +1,13 @@
-package iotago
+package axongo
 
 import (
 	"encoding/binary"
 	"fmt"
 	"math"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/lo"
-	"github.com/iotaledger/hive.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/lo"
+	"github.com/axonfibre/fibre.go/serializer/v2"
 )
 
 const (

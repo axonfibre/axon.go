@@ -1,25 +1,25 @@
 package tpkg
 
 import (
-	iotago "github.com/iotaledger/iota.go/v4"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 // RandBlock returns a random block with the given inner payload.
-func RandBlock(blockBody iotago.BlockBody, api iotago.API, rmc iotago.Mana) *iotago.Block {
-	block := &iotago.Block{
+func RandBlock(blockBody axongo.BlockBody, api axongo.API, rmc axongo.Mana) *axongo.Block {
+	block := &axongo.Block{
 		API: api,
-		Header: iotago.BlockHeader{
+		Header: axongo.BlockHeader{
 			ProtocolVersion:  ZeroCostTestAPI.Version(),
 			NetworkID:        api.ProtocolParameters().NetworkID(),
 			IssuingTime:      RandUTCTime(),
-			SlotCommitmentID: iotago.NewEmptyCommitment(api).MustID(),
+			SlotCommitmentID: axongo.NewEmptyCommitment(api).MustID(),
 			IssuerID:         RandAccountID(),
 		},
 		Body:      blockBody,
 		Signature: RandEd25519Signature(),
 	}
 
-	if basicBlock, isBasic := blockBody.(*iotago.BasicBlockBody); isBasic {
+	if basicBlock, isBasic := blockBody.(*axongo.BasicBlockBody); isBasic {
 		burnedMana, err := block.ManaCost(rmc)
 		if err != nil {
 			panic(err)
@@ -30,8 +30,8 @@ func RandBlock(blockBody iotago.BlockBody, api iotago.API, rmc iotago.Mana) *iot
 	return block
 }
 
-func RandBasicBlockWithIssuerAndRMC(api iotago.API, issuerID iotago.AccountID, rmc iotago.Mana) *iotago.Block {
-	basicBlock := RandBasicBlockBody(api, iotago.PayloadSignedTransaction)
+func RandBasicBlockWithIssuerAndRMC(api axongo.API, issuerID axongo.AccountID, rmc axongo.Mana) *axongo.Block {
+	basicBlock := RandBasicBlockBody(api, axongo.PayloadSignedTransaction)
 
 	block := RandBlock(basicBlock, ZeroCostTestAPI, rmc)
 	block.Header.IssuerID = issuerID
@@ -39,39 +39,39 @@ func RandBasicBlockWithIssuerAndRMC(api iotago.API, issuerID iotago.AccountID, r
 	return block
 }
 
-func RandBasicBlockBodyWithPayload(api iotago.API, payload iotago.ApplicationPayload) *iotago.BasicBlockBody {
-	return &iotago.BasicBlockBody{
+func RandBasicBlockBodyWithPayload(api axongo.API, payload axongo.ApplicationPayload) *axongo.BasicBlockBody {
+	return &axongo.BasicBlockBody{
 		API:                api,
-		StrongParents:      SortedRandBlockIDs(1 + RandInt(iotago.BasicBlockMaxParents)),
-		WeakParents:        iotago.BlockIDs{},
-		ShallowLikeParents: iotago.BlockIDs{},
+		StrongParents:      SortedRandBlockIDs(1 + RandInt(axongo.BasicBlockMaxParents)),
+		WeakParents:        axongo.BlockIDs{},
+		ShallowLikeParents: axongo.BlockIDs{},
 		Payload:            payload,
 		MaxBurnedMana:      RandMana(1000),
 	}
 }
 
-func RandBasicBlockBody(api iotago.API, withPayloadType iotago.PayloadType) *iotago.BasicBlockBody {
-	var payload iotago.ApplicationPayload
+func RandBasicBlockBody(api axongo.API, withPayloadType axongo.PayloadType) *axongo.BasicBlockBody {
+	var payload axongo.ApplicationPayload
 
 	//nolint:exhaustive
 	switch withPayloadType {
-	case iotago.PayloadSignedTransaction:
+	case axongo.PayloadSignedTransaction:
 		payload = RandSignedTransaction(api)
-	case iotago.PayloadTaggedData:
+	case axongo.PayloadTaggedData:
 		payload = RandTaggedData([]byte("tag"))
-	case iotago.PayloadCandidacyAnnouncement:
-		payload = &iotago.CandidacyAnnouncement{}
+	case axongo.PayloadCandidacyAnnouncement:
+		payload = &axongo.CandidacyAnnouncement{}
 	}
 
 	return RandBasicBlockBodyWithPayload(api, payload)
 }
 
-func RandValidationBlockBody(api iotago.API) *iotago.ValidationBlockBody {
-	return &iotago.ValidationBlockBody{
+func RandValidationBlockBody(api axongo.API) *axongo.ValidationBlockBody {
+	return &axongo.ValidationBlockBody{
 		API:                     api,
-		StrongParents:           SortedRandBlockIDs(1 + RandInt(iotago.ValidationBlockMaxParents)),
-		WeakParents:             iotago.BlockIDs{},
-		ShallowLikeParents:      iotago.BlockIDs{},
+		StrongParents:           SortedRandBlockIDs(1 + RandInt(axongo.ValidationBlockMaxParents)),
+		WeakParents:             axongo.BlockIDs{},
+		ShallowLikeParents:      axongo.BlockIDs{},
 		HighestSupportedVersion: ZeroCostTestAPI.Version() + 1,
 	}
 }

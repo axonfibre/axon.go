@@ -1,8 +1,8 @@
-package iotago
+package axongo
 
 import (
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/iota.go/v4/hexutil"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/axon.go/v4/hexutil"
 )
 
 var (

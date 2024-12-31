@@ -1,5 +1,5 @@
 //nolint:dupl,revive
-package iotago_test
+package axongo_test
 
 import (
 	"testing"
@@ -7,13 +7,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
-	"github.com/iotaledger/hive.go/serializer/v2"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	"github.com/iotaledger/hive.go/serializer/v2/stream"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	hiveEd25519 "github.com/axonfibre/fibre.go/crypto/ed25519"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	"github.com/axonfibre/fibre.go/serializer/v2/stream"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestAddressDeSerialize(t *testing.T) {
@@ -21,62 +21,62 @@ func TestAddressDeSerialize(t *testing.T) {
 		{
 			Name:   "ok - Ed25519Address",
 			Source: tpkg.RandEd25519Address(),
-			Target: &iotago.Ed25519Address{},
+			Target: &axongo.Ed25519Address{},
 		},
 		{
 			Name:   "ok - AccountAddress",
 			Source: tpkg.RandAccountAddress(),
-			Target: &iotago.AccountAddress{},
+			Target: &axongo.AccountAddress{},
 		},
 		{
 			Name:   "ok - NFTAddress",
 			Source: tpkg.RandNFTAddress(),
-			Target: &iotago.NFTAddress{},
+			Target: &axongo.NFTAddress{},
 		},
 		{
 			Name:   "ok - AnchorAddress",
 			Source: tpkg.RandAnchorAddress(),
-			Target: &iotago.AnchorAddress{},
+			Target: &axongo.AnchorAddress{},
 		},
 		{
 			Name:   "ok - ImplicitAccountCreationAddress",
 			Source: tpkg.RandImplicitAccountCreationAddress(),
-			Target: &iotago.ImplicitAccountCreationAddress{},
+			Target: &axongo.ImplicitAccountCreationAddress{},
 		},
 		{
 			Name:   "ok - MultiAddress",
 			Source: tpkg.RandMultiAddress(),
-			Target: &iotago.MultiAddress{},
+			Target: &axongo.MultiAddress{},
 		},
 		{
 			Name:   "ok - RestrictedEd25519Address without capabilities",
-			Source: tpkg.RandRestrictedEd25519Address(iotago.AddressCapabilitiesBitMask{}),
-			Target: &iotago.RestrictedAddress{},
+			Source: tpkg.RandRestrictedEd25519Address(axongo.AddressCapabilitiesBitMask{}),
+			Target: &axongo.RestrictedAddress{},
 		},
 		{
 			Name:   "ok - RestrictedEd25519Address with capabilities",
-			Source: tpkg.RandRestrictedEd25519Address(iotago.AddressCapabilitiesBitMask{0xff}),
-			Target: &iotago.RestrictedAddress{},
+			Source: tpkg.RandRestrictedEd25519Address(axongo.AddressCapabilitiesBitMask{0xff}),
+			Target: &axongo.RestrictedAddress{},
 		},
 		{
 			Name:   "ok - RestrictedAccountAddress with capabilities",
-			Source: tpkg.RandRestrictedAccountAddress(iotago.AddressCapabilitiesBitMask{0xff}),
-			Target: &iotago.RestrictedAddress{},
+			Source: tpkg.RandRestrictedAccountAddress(axongo.AddressCapabilitiesBitMask{0xff}),
+			Target: &axongo.RestrictedAddress{},
 		},
 		{
 			Name:   "ok - RestrictedNFTAddress with capabilities",
-			Source: tpkg.RandRestrictedNFTAddress(iotago.AddressCapabilitiesBitMask{0xff}),
-			Target: &iotago.RestrictedAddress{},
+			Source: tpkg.RandRestrictedNFTAddress(axongo.AddressCapabilitiesBitMask{0xff}),
+			Target: &axongo.RestrictedAddress{},
 		},
 		{
 			Name:   "ok - RestrictedAnchorAddress with capabilities",
-			Source: tpkg.RandRestrictedAnchorAddress(iotago.AddressCapabilitiesBitMask{0xff}),
-			Target: &iotago.RestrictedAddress{},
+			Source: tpkg.RandRestrictedAnchorAddress(axongo.AddressCapabilitiesBitMask{0xff}),
+			Target: &axongo.RestrictedAddress{},
 		},
 		{
 			Name:   "ok - RestrictedMultiAddress with capabilities",
-			Source: tpkg.RandRestrictedMultiAddress(iotago.AddressCapabilitiesBitMask{0xff}),
-			Target: &iotago.RestrictedAddress{},
+			Source: tpkg.RandRestrictedMultiAddress(axongo.AddressCapabilitiesBitMask{0xff}),
+			Target: &axongo.RestrictedAddress{},
 		},
 	}
 
@@ -86,13 +86,13 @@ func TestAddressDeSerialize(t *testing.T) {
 
 			// test the AddressFromReader func
 			//nolint:forcetypeassert
-			address := tt.Source.(iotago.Address)
+			address := tt.Source.(axongo.Address)
 			addressBytes, err := tpkg.ZeroCostTestAPI.Encode(address, serix.WithValidation())
 			require.NoError(t, err)
 
 			reader := stream.NewByteReader(addressBytes)
 
-			addr, err := iotago.AddressFromReader(reader)
+			addr, err := axongo.AddressFromReader(reader)
 			require.NoError(t, err)
 
 			assert.Equal(t, address, addr)
@@ -102,58 +102,58 @@ func TestAddressDeSerialize(t *testing.T) {
 
 type bech32Test struct {
 	name       string
-	network    iotago.NetworkPrefix
-	addr       iotago.Address
-	targetAddr iotago.Address
+	network    axongo.NetworkPrefix
+	addr       axongo.Address
+	targetAddr axongo.Address
 	bech32     string
 }
 
 var bech32Tests = []*bech32Test{
 	func() *bech32Test {
-		addr := &iotago.Ed25519Address{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49}
+		addr := &axongo.Ed25519Address{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49}
 		return &bech32Test{
 			name:       "RFC example: Ed25519 mainnet",
-			network:    iotago.PrefixMainnet,
+			network:    axongo.PrefixMainnet,
 			addr:       addr,
 			targetAddr: addr,
 			bech32:     "iota1qpf0mlq8yxpx2nck8a0slxnzr4ef2ek8f5gqxlzd0wasgp73utryj430ldu",
 		}
 	}(),
 	func() *bech32Test {
-		addr := &iotago.Ed25519Address{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49}
+		addr := &axongo.Ed25519Address{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49}
 		return &bech32Test{
 			name:       "RFC example: Ed25519 testnet",
-			network:    iotago.PrefixTestnet,
+			network:    axongo.PrefixTestnet,
 			addr:       addr,
 			targetAddr: addr,
 			bech32:     "rms1qpf0mlq8yxpx2nck8a0slxnzr4ef2ek8f5gqxlzd0wasgp73utryjkxa9q5",
 		}
 	}(),
 	func() *bech32Test {
-		addr := &iotago.MultiAddress{
-			Addresses: []*iotago.AddressWithWeight{
+		addr := &axongo.MultiAddress{
+			Addresses: []*axongo.AddressWithWeight{
 				{
-					Address: &iotago.Ed25519Address{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.Ed25519Address{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  1,
 				},
 				{
-					Address: &iotago.Ed25519Address{0x53, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.Ed25519Address{0x53, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  1,
 				},
 				{
-					Address: &iotago.Ed25519Address{0x54, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.Ed25519Address{0x54, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  1,
 				},
 				{
-					Address: &iotago.AccountAddress{0x55, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.AccountAddress{0x55, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  2,
 				},
 				{
-					Address: &iotago.NFTAddress{0x56, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.NFTAddress{0x56, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  3,
 				},
 				{
-					Address: &iotago.AnchorAddress{0x57, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.AnchorAddress{0x57, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  4,
 				},
 			},
@@ -162,110 +162,110 @@ var bech32Tests = []*bech32Test{
 
 		return &bech32Test{
 			name:       "Multi Address",
-			network:    iotago.PrefixTestnet,
+			network:    axongo.PrefixTestnet,
 			addr:       addr,
-			targetAddr: iotago.NewMultiAddressReferenceFromMultiAddress(addr),
+			targetAddr: axongo.NewMultiAddressReferenceFromMultiAddress(addr),
 			bech32:     "rms19zt4pdt7fl3lqqgnxduzdyzx45c2pc95jq7xccfqzuncep4zjtxmj4skzzd",
 		}
 	}(),
 	func() *bech32Test {
-		addr := &iotago.RestrictedAddress{
-			Address:             &iotago.Ed25519Address{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
-			AllowedCapabilities: iotago.AddressCapabilitiesBitMask{0x55},
+		addr := &axongo.RestrictedAddress{
+			Address:             &axongo.Ed25519Address{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+			AllowedCapabilities: axongo.AddressCapabilitiesBitMask{0x55},
 		}
 
 		return &bech32Test{
 			name:       "Restricted Ed25519 Address",
-			network:    iotago.PrefixTestnet,
+			network:    axongo.PrefixTestnet,
 			addr:       addr,
 			targetAddr: addr,
 			bech32:     "rms1xqq99l0uquscye20zcl47ru6vgwh99txcax3qqmuf4amkpq8683vvjgp25npuutf",
 		}
 	}(),
 	func() *bech32Test {
-		addr := &iotago.RestrictedAddress{
-			Address:             &iotago.AccountAddress{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
-			AllowedCapabilities: iotago.AddressCapabilitiesBitMask{0x55},
+		addr := &axongo.RestrictedAddress{
+			Address:             &axongo.AccountAddress{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+			AllowedCapabilities: axongo.AddressCapabilitiesBitMask{0x55},
 		}
 
 		return &bech32Test{
 			name:       "Restricted Account Address",
-			network:    iotago.PrefixTestnet,
+			network:    axongo.PrefixTestnet,
 			addr:       addr,
 			targetAddr: addr,
 			bech32:     "rms1xqy99l0uquscye20zcl47ru6vgwh99txcax3qqmuf4amkpq8683vvjgp254k6s7n",
 		}
 	}(),
 	func() *bech32Test {
-		addr := &iotago.RestrictedAddress{
-			Address:             &iotago.NFTAddress{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
-			AllowedCapabilities: iotago.AddressCapabilitiesBitMask{0x55},
+		addr := &axongo.RestrictedAddress{
+			Address:             &axongo.NFTAddress{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+			AllowedCapabilities: axongo.AddressCapabilitiesBitMask{0x55},
 		}
 
 		return &bech32Test{
 			name:       "Restricted NFT Address",
-			network:    iotago.PrefixTestnet,
+			network:    axongo.PrefixTestnet,
 			addr:       addr,
 			targetAddr: addr,
 			bech32:     "rms1xqg99l0uquscye20zcl47ru6vgwh99txcax3qqmuf4amkpq8683vvjgp25lxsyg5",
 		}
 	}(),
 	func() *bech32Test {
-		addr := &iotago.RestrictedAddress{
-			Address:             &iotago.AnchorAddress{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
-			AllowedCapabilities: iotago.AddressCapabilitiesBitMask{0x55},
+		addr := &axongo.RestrictedAddress{
+			Address:             &axongo.AnchorAddress{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+			AllowedCapabilities: axongo.AddressCapabilitiesBitMask{0x55},
 		}
 
 		return &bech32Test{
 			name:       "Restricted Anchor Address",
-			network:    iotago.PrefixTestnet,
+			network:    axongo.PrefixTestnet,
 			addr:       addr,
 			targetAddr: addr,
 			bech32:     "rms1xqv99l0uquscye20zcl47ru6vgwh99txcax3qqmuf4amkpq8683vvjgp25e3kgaw",
 		}
 	}(),
 	func() *bech32Test {
-		multiAddr := &iotago.MultiAddress{
-			Addresses: []*iotago.AddressWithWeight{
+		multiAddr := &axongo.MultiAddress{
+			Addresses: []*axongo.AddressWithWeight{
 				{
-					Address: &iotago.Ed25519Address{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.Ed25519Address{0x52, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  1,
 				},
 				{
-					Address: &iotago.Ed25519Address{0x53, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.Ed25519Address{0x53, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  1,
 				},
 				{
-					Address: &iotago.Ed25519Address{0x54, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.Ed25519Address{0x54, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  1,
 				},
 				{
-					Address: &iotago.AccountAddress{0x55, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.AccountAddress{0x55, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  2,
 				},
 				{
-					Address: &iotago.NFTAddress{0x56, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.NFTAddress{0x56, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  3,
 				},
 				{
-					Address: &iotago.AnchorAddress{0x57, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
+					Address: &axongo.AnchorAddress{0x57, 0xfd, 0xfc, 0x07, 0x21, 0x82, 0x65, 0x4f, 0x16, 0x3f, 0x5f, 0x0f, 0x9a, 0x62, 0x1d, 0x72, 0x95, 0x66, 0xc7, 0x4d, 0x10, 0x03, 0x7c, 0x4d, 0x7b, 0xbb, 0x04, 0x07, 0xd1, 0xe2, 0xc6, 0x49},
 					Weight:  3,
 				},
 			},
 			Threshold: 2,
 		}
 
-		addr := &iotago.RestrictedAddress{
+		addr := &axongo.RestrictedAddress{
 			Address:             multiAddr,
-			AllowedCapabilities: iotago.AddressCapabilitiesBitMask{0x55},
+			AllowedCapabilities: axongo.AddressCapabilitiesBitMask{0x55},
 		}
 
 		return &bech32Test{
 			name:    "Restricted Multi Address",
-			network: iotago.PrefixTestnet,
+			network: axongo.PrefixTestnet,
 			addr:    addr,
-			targetAddr: &iotago.RestrictedAddress{
-				Address:             iotago.NewMultiAddressReferenceFromMultiAddress(multiAddr),
+			targetAddr: &axongo.RestrictedAddress{
+				Address:             axongo.NewMultiAddressReferenceFromMultiAddress(multiAddr),
 				AllowedCapabilities: addr.AllowedCapabilities,
 			},
 			bech32: "rms1xq5vf6xg2ysksnazu9zfuaq93erznxpqjsus79yhkaz9xarpskm2ckqp25kthwqv",
@@ -284,7 +284,7 @@ func TestBech32(t *testing.T) {
 func TestParseBech32(t *testing.T) {
 	for _, tt := range bech32Tests {
 		t.Run(tt.name, func(t *testing.T) {
-			network, addr, err := iotago.ParseBech32(tt.bech32)
+			network, addr, err := axongo.ParseBech32(tt.bech32)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.network, network)
 			assert.Equal(t, tt.targetAddr.ID(), addr.ID(), "parsed bech32 address does not match the given target address: %s != %s", tt.targetAddr.Bech32(tt.network), addr.Bech32(tt.network))
@@ -293,7 +293,7 @@ func TestParseBech32(t *testing.T) {
 }
 
 func TestImplicitAccountCreationAddressCapabilities(t *testing.T) {
-	address := iotago.ImplicitAccountCreationAddressFromPubKey(hiveEd25519.PublicKey(tpkg.Rand32ByteArray()).ToEd25519())
+	address := axongo.ImplicitAccountCreationAddressFromPubKey(hiveEd25519.PublicKey(tpkg.Rand32ByteArray()).ToEd25519())
 	require.False(t, address.CannotReceiveNativeTokens())
 	require.False(t, address.CannotReceiveMana())
 	require.True(t, address.CannotReceiveOutputsWithTimelockUnlockCondition())
@@ -305,11 +305,11 @@ func TestImplicitAccountCreationAddressCapabilities(t *testing.T) {
 	require.True(t, address.CannotReceiveDelegationOutputs())
 }
 
-func assertRestrictedAddresses(t *testing.T, addresses []*iotago.RestrictedAddress) {
+func assertRestrictedAddresses(t *testing.T, addresses []*axongo.RestrictedAddress) {
 	t.Helper()
 
 	for i, addr := range addresses {
-		// fmt.Println(addr.Bech32(iotago.PrefixMainnet))
+		// fmt.Println(addr.Bech32(axongo.PrefixMainnet))
 
 		j, err := tpkg.ZeroCostTestAPI.JSONEncode(addr)
 		_ = j
@@ -334,17 +334,17 @@ func assertRestrictedAddresses(t *testing.T, addresses []*iotago.RestrictedAddre
 
 		require.Equal(t, addr.Size(), len(b))
 
-		setBit := func(bit int) iotago.AddressCapabilitiesBitMask {
-			return iotago.AddressCapabilitiesBitMask(iotago.BitMaskSetBit([]byte{}, uint(bit)))
+		setBit := func(bit int) axongo.AddressCapabilitiesBitMask {
+			return axongo.AddressCapabilitiesBitMask(axongo.BitMaskSetBit([]byte{}, uint(bit)))
 		}
 
-		setAllBits := func(bit int) iotago.AddressCapabilitiesBitMask {
+		setAllBits := func(bit int) axongo.AddressCapabilitiesBitMask {
 			var bitMask []byte
 			for i := 0; i < bit; i++ {
-				bitMask = iotago.BitMaskSetBit(bitMask, uint(i))
+				bitMask = axongo.BitMaskSetBit(bitMask, uint(i))
 			}
 
-			return iotago.AddressCapabilitiesBitMask(bitMask)
+			return axongo.AddressCapabilitiesBitMask(bitMask)
 		}
 
 		capabilitiesCount := 9
@@ -371,7 +371,7 @@ func assertRestrictedAddresses(t *testing.T, addresses []*iotago.RestrictedAddre
 			for _, check := range addrChecks {
 				require.Truef(t, check(), "index: %d", i)
 			}
-			require.Equalf(t, iotago.AddressCapabilitiesBitMask{}, addr.AllowedCapabilitiesBitMask(), "index: %d", i)
+			require.Equalf(t, axongo.AddressCapabilitiesBitMask{}, addr.AllowedCapabilitiesBitMask(), "index: %d", i)
 			require.Equalf(t, 1, addr.AllowedCapabilitiesBitMask().Size(), "index: %d", i)
 		}
 	}
@@ -385,66 +385,66 @@ func TestRestrictedAddressCapabilities(t *testing.T) {
 	anchorAddr := tpkg.RandAnchorAddress()
 	multiAddress := tpkg.RandMultiAddress()
 
-	addresses := []*iotago.RestrictedAddress{
-		iotago.RestrictedAddressWithCapabilities(edAddr, iotago.WithAddressCanReceiveNativeTokens(true)),
-		iotago.RestrictedAddressWithCapabilities(edAddr, iotago.WithAddressCanReceiveMana(true)),
-		iotago.RestrictedAddressWithCapabilities(edAddr, iotago.WithAddressCanReceiveOutputsWithTimelockUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(edAddr, iotago.WithAddressCanReceiveOutputsWithExpirationUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(edAddr, iotago.WithAddressCanReceiveOutputsWithStorageDepositReturnUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(edAddr, iotago.WithAddressCanReceiveAccountOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(edAddr, iotago.WithAddressCanReceiveAnchorOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(edAddr, iotago.WithAddressCanReceiveNFTOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(edAddr, iotago.WithAddressCanReceiveDelegationOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(edAddr, iotago.WithAddressCanReceiveAnything()),
-		iotago.RestrictedAddressWithCapabilities(edAddr),
+	addresses := []*axongo.RestrictedAddress{
+		axongo.RestrictedAddressWithCapabilities(edAddr, axongo.WithAddressCanReceiveNativeTokens(true)),
+		axongo.RestrictedAddressWithCapabilities(edAddr, axongo.WithAddressCanReceiveMana(true)),
+		axongo.RestrictedAddressWithCapabilities(edAddr, axongo.WithAddressCanReceiveOutputsWithTimelockUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(edAddr, axongo.WithAddressCanReceiveOutputsWithExpirationUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(edAddr, axongo.WithAddressCanReceiveOutputsWithStorageDepositReturnUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(edAddr, axongo.WithAddressCanReceiveAccountOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(edAddr, axongo.WithAddressCanReceiveAnchorOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(edAddr, axongo.WithAddressCanReceiveNFTOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(edAddr, axongo.WithAddressCanReceiveDelegationOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(edAddr, axongo.WithAddressCanReceiveAnything()),
+		axongo.RestrictedAddressWithCapabilities(edAddr),
 
-		iotago.RestrictedAddressWithCapabilities(accountAddr, iotago.WithAddressCanReceiveNativeTokens(true)),
-		iotago.RestrictedAddressWithCapabilities(accountAddr, iotago.WithAddressCanReceiveMana(true)),
-		iotago.RestrictedAddressWithCapabilities(accountAddr, iotago.WithAddressCanReceiveOutputsWithTimelockUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(accountAddr, iotago.WithAddressCanReceiveOutputsWithExpirationUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(accountAddr, iotago.WithAddressCanReceiveOutputsWithStorageDepositReturnUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(accountAddr, iotago.WithAddressCanReceiveAccountOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(accountAddr, iotago.WithAddressCanReceiveAnchorOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(accountAddr, iotago.WithAddressCanReceiveNFTOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(accountAddr, iotago.WithAddressCanReceiveDelegationOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(accountAddr, iotago.WithAddressCanReceiveAnything()),
-		iotago.RestrictedAddressWithCapabilities(accountAddr),
+		axongo.RestrictedAddressWithCapabilities(accountAddr, axongo.WithAddressCanReceiveNativeTokens(true)),
+		axongo.RestrictedAddressWithCapabilities(accountAddr, axongo.WithAddressCanReceiveMana(true)),
+		axongo.RestrictedAddressWithCapabilities(accountAddr, axongo.WithAddressCanReceiveOutputsWithTimelockUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(accountAddr, axongo.WithAddressCanReceiveOutputsWithExpirationUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(accountAddr, axongo.WithAddressCanReceiveOutputsWithStorageDepositReturnUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(accountAddr, axongo.WithAddressCanReceiveAccountOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(accountAddr, axongo.WithAddressCanReceiveAnchorOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(accountAddr, axongo.WithAddressCanReceiveNFTOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(accountAddr, axongo.WithAddressCanReceiveDelegationOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(accountAddr, axongo.WithAddressCanReceiveAnything()),
+		axongo.RestrictedAddressWithCapabilities(accountAddr),
 
-		iotago.RestrictedAddressWithCapabilities(nftAddr, iotago.WithAddressCanReceiveNativeTokens(true)),
-		iotago.RestrictedAddressWithCapabilities(nftAddr, iotago.WithAddressCanReceiveMana(true)),
-		iotago.RestrictedAddressWithCapabilities(nftAddr, iotago.WithAddressCanReceiveOutputsWithTimelockUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(nftAddr, iotago.WithAddressCanReceiveOutputsWithExpirationUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(nftAddr, iotago.WithAddressCanReceiveOutputsWithStorageDepositReturnUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(nftAddr, iotago.WithAddressCanReceiveAccountOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(nftAddr, iotago.WithAddressCanReceiveAnchorOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(nftAddr, iotago.WithAddressCanReceiveNFTOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(nftAddr, iotago.WithAddressCanReceiveDelegationOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(nftAddr, iotago.WithAddressCanReceiveAnything()),
-		iotago.RestrictedAddressWithCapabilities(nftAddr),
+		axongo.RestrictedAddressWithCapabilities(nftAddr, axongo.WithAddressCanReceiveNativeTokens(true)),
+		axongo.RestrictedAddressWithCapabilities(nftAddr, axongo.WithAddressCanReceiveMana(true)),
+		axongo.RestrictedAddressWithCapabilities(nftAddr, axongo.WithAddressCanReceiveOutputsWithTimelockUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(nftAddr, axongo.WithAddressCanReceiveOutputsWithExpirationUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(nftAddr, axongo.WithAddressCanReceiveOutputsWithStorageDepositReturnUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(nftAddr, axongo.WithAddressCanReceiveAccountOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(nftAddr, axongo.WithAddressCanReceiveAnchorOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(nftAddr, axongo.WithAddressCanReceiveNFTOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(nftAddr, axongo.WithAddressCanReceiveDelegationOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(nftAddr, axongo.WithAddressCanReceiveAnything()),
+		axongo.RestrictedAddressWithCapabilities(nftAddr),
 
-		iotago.RestrictedAddressWithCapabilities(anchorAddr, iotago.WithAddressCanReceiveNativeTokens(true)),
-		iotago.RestrictedAddressWithCapabilities(anchorAddr, iotago.WithAddressCanReceiveMana(true)),
-		iotago.RestrictedAddressWithCapabilities(anchorAddr, iotago.WithAddressCanReceiveOutputsWithTimelockUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(anchorAddr, iotago.WithAddressCanReceiveOutputsWithExpirationUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(anchorAddr, iotago.WithAddressCanReceiveOutputsWithStorageDepositReturnUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(anchorAddr, iotago.WithAddressCanReceiveAccountOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(anchorAddr, iotago.WithAddressCanReceiveAnchorOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(anchorAddr, iotago.WithAddressCanReceiveNFTOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(anchorAddr, iotago.WithAddressCanReceiveDelegationOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(anchorAddr, iotago.WithAddressCanReceiveAnything()),
-		iotago.RestrictedAddressWithCapabilities(anchorAddr),
+		axongo.RestrictedAddressWithCapabilities(anchorAddr, axongo.WithAddressCanReceiveNativeTokens(true)),
+		axongo.RestrictedAddressWithCapabilities(anchorAddr, axongo.WithAddressCanReceiveMana(true)),
+		axongo.RestrictedAddressWithCapabilities(anchorAddr, axongo.WithAddressCanReceiveOutputsWithTimelockUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(anchorAddr, axongo.WithAddressCanReceiveOutputsWithExpirationUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(anchorAddr, axongo.WithAddressCanReceiveOutputsWithStorageDepositReturnUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(anchorAddr, axongo.WithAddressCanReceiveAccountOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(anchorAddr, axongo.WithAddressCanReceiveAnchorOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(anchorAddr, axongo.WithAddressCanReceiveNFTOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(anchorAddr, axongo.WithAddressCanReceiveDelegationOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(anchorAddr, axongo.WithAddressCanReceiveAnything()),
+		axongo.RestrictedAddressWithCapabilities(anchorAddr),
 
-		iotago.RestrictedAddressWithCapabilities(multiAddress, iotago.WithAddressCanReceiveNativeTokens(true)),
-		iotago.RestrictedAddressWithCapabilities(multiAddress, iotago.WithAddressCanReceiveMana(true)),
-		iotago.RestrictedAddressWithCapabilities(multiAddress, iotago.WithAddressCanReceiveOutputsWithTimelockUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(multiAddress, iotago.WithAddressCanReceiveOutputsWithExpirationUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(multiAddress, iotago.WithAddressCanReceiveOutputsWithStorageDepositReturnUnlockCondition(true)),
-		iotago.RestrictedAddressWithCapabilities(multiAddress, iotago.WithAddressCanReceiveAccountOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(multiAddress, iotago.WithAddressCanReceiveAnchorOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(multiAddress, iotago.WithAddressCanReceiveNFTOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(multiAddress, iotago.WithAddressCanReceiveDelegationOutputs(true)),
-		iotago.RestrictedAddressWithCapabilities(multiAddress, iotago.WithAddressCanReceiveAnything()),
-		iotago.RestrictedAddressWithCapabilities(multiAddress),
+		axongo.RestrictedAddressWithCapabilities(multiAddress, axongo.WithAddressCanReceiveNativeTokens(true)),
+		axongo.RestrictedAddressWithCapabilities(multiAddress, axongo.WithAddressCanReceiveMana(true)),
+		axongo.RestrictedAddressWithCapabilities(multiAddress, axongo.WithAddressCanReceiveOutputsWithTimelockUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(multiAddress, axongo.WithAddressCanReceiveOutputsWithExpirationUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(multiAddress, axongo.WithAddressCanReceiveOutputsWithStorageDepositReturnUnlockCondition(true)),
+		axongo.RestrictedAddressWithCapabilities(multiAddress, axongo.WithAddressCanReceiveAccountOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(multiAddress, axongo.WithAddressCanReceiveAnchorOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(multiAddress, axongo.WithAddressCanReceiveNFTOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(multiAddress, axongo.WithAddressCanReceiveDelegationOutputs(true)),
+		axongo.RestrictedAddressWithCapabilities(multiAddress, axongo.WithAddressCanReceiveAnything()),
+		axongo.RestrictedAddressWithCapabilities(multiAddress),
 	}
 
 	assertRestrictedAddresses(t, addresses)
@@ -455,42 +455,42 @@ func TestRestrictedAddressCapabilitiesBitMask(t *testing.T) {
 
 	type test struct {
 		name    string
-		addr    *iotago.RestrictedAddress
+		addr    *axongo.RestrictedAddress
 		wantErr error
 	}
 
 	tests := []*test{
 		{
 			name: "ok - no trailing zero bytes",
-			addr: &iotago.RestrictedAddress{
+			addr: &axongo.RestrictedAddress{
 				Address:             tpkg.RandEd25519Address(),
-				AllowedCapabilities: iotago.AddressCapabilitiesBitMask{0x01, 0x02},
+				AllowedCapabilities: axongo.AddressCapabilitiesBitMask{0x01, 0x02},
 			},
 			wantErr: nil,
 		},
 		{
 			name: "ok - empty capabilities",
-			addr: &iotago.RestrictedAddress{
+			addr: &axongo.RestrictedAddress{
 				Address:             tpkg.RandEd25519Address(),
-				AllowedCapabilities: iotago.AddressCapabilitiesBitMask{},
+				AllowedCapabilities: axongo.AddressCapabilitiesBitMask{},
 			},
 			wantErr: nil,
 		},
 		{
 			name: "fail - trailing zero bytes",
-			addr: &iotago.RestrictedAddress{
+			addr: &axongo.RestrictedAddress{
 				Address:             tpkg.RandEd25519Address(),
-				AllowedCapabilities: iotago.AddressCapabilitiesBitMask{0x01, 0x00},
+				AllowedCapabilities: axongo.AddressCapabilitiesBitMask{0x01, 0x00},
 			},
-			wantErr: iotago.ErrBitmaskTrailingZeroBytes,
+			wantErr: axongo.ErrBitmaskTrailingZeroBytes,
 		},
 		{
 			name: "fail - single zero bytes",
-			addr: &iotago.RestrictedAddress{
+			addr: &axongo.RestrictedAddress{
 				Address:             tpkg.RandEd25519Address(),
-				AllowedCapabilities: iotago.AddressCapabilitiesBitMask{0x00},
+				AllowedCapabilities: axongo.AddressCapabilitiesBitMask{0x00},
 			},
-			wantErr: iotago.ErrBitmaskTrailingZeroBytes,
+			wantErr: axongo.ErrBitmaskTrailingZeroBytes,
 		},
 	}
 
@@ -513,12 +513,12 @@ type outputsSyntacticalValidationTest struct {
 	// the amount of randomly created ed25519 addresses with private keys
 	ed25519AddrCnt int
 	// used to create outputs for the test
-	outputsFunc func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs
+	outputsFunc func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs
 	// expected error during serialization of the transaction
 	wantErr error
 }
 
-func runOutputsSyntacticalValidationTest(t *testing.T, testAPI iotago.API, test *outputsSyntacticalValidationTest) {
+func runOutputsSyntacticalValidationTest(t *testing.T, testAPI axongo.API, test *outputsSyntacticalValidationTest) {
 	t.Helper()
 
 	t.Run(test.name, func(t *testing.T) {
@@ -544,50 +544,50 @@ func TestRestrictedAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "ok - Valid address types nested inside of a RestrictedAddress",
 				ed25519AddrCnt: 2,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.RestrictedAddress{
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.RestrictedAddress{
 									Address:             ed25519Addresses[0],
-									AllowedCapabilities: iotago.AddressCapabilitiesBitMask{},
+									AllowedCapabilities: axongo.AddressCapabilitiesBitMask{},
 								}},
 							},
 						},
-						&iotago.BasicOutput{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.RestrictedAddress{
-									Address:             &iotago.AccountAddress{},
-									AllowedCapabilities: iotago.AddressCapabilitiesBitMask{},
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.RestrictedAddress{
+									Address:             &axongo.AccountAddress{},
+									AllowedCapabilities: axongo.AddressCapabilitiesBitMask{},
 								}},
 							},
 						},
-						&iotago.BasicOutput{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.RestrictedAddress{
-									Address:             &iotago.NFTAddress{},
-									AllowedCapabilities: iotago.AddressCapabilitiesBitMask{},
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.RestrictedAddress{
+									Address:             &axongo.NFTAddress{},
+									AllowedCapabilities: axongo.AddressCapabilitiesBitMask{},
 								}},
 							},
 						},
-						&iotago.BasicOutput{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.RestrictedAddress{
-									Address:             &iotago.AnchorAddress{},
-									AllowedCapabilities: iotago.AddressCapabilitiesBitMask{},
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.RestrictedAddress{
+									Address:             &axongo.AnchorAddress{},
+									AllowedCapabilities: axongo.AddressCapabilitiesBitMask{},
 								}},
 							},
 						},
-						&iotago.BasicOutput{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.RestrictedAddress{
-									Address: &iotago.MultiAddress{
-										Addresses: []*iotago.AddressWithWeight{
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.RestrictedAddress{
+									Address: &axongo.MultiAddress{
+										Addresses: []*axongo.AddressWithWeight{
 											{
 												Address: ed25519Addresses[0],
 												Weight:  1,
@@ -599,7 +599,7 @@ func TestRestrictedAddressSyntacticalValidation(t *testing.T) {
 										},
 										Threshold: 2,
 									},
-									AllowedCapabilities: iotago.AddressCapabilitiesBitMask{},
+									AllowedCapabilities: axongo.AddressCapabilitiesBitMask{},
 								}},
 							},
 						},
@@ -614,19 +614,19 @@ func TestRestrictedAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "fail - ImplicitAccountCreationAddress nested inside of a RestrictedAddress",
 				ed25519AddrCnt: 0,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.RestrictedAddress{
-									Address: &iotago.ImplicitAccountCreationAddress{},
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.RestrictedAddress{
+									Address: &axongo.ImplicitAccountCreationAddress{},
 								}},
 							},
 						},
 					}
 				},
-				wantErr: iotago.ErrInvalidNestedAddressType,
+				wantErr: axongo.ErrInvalidNestedAddressType,
 			}
 		}(),
 
@@ -635,22 +635,22 @@ func TestRestrictedAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "fail - RestrictedAddress nested inside of a RestrictedAddress",
 				ed25519AddrCnt: 1,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.RestrictedAddress{
-									Address: &iotago.RestrictedAddress{
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.RestrictedAddress{
+									Address: &axongo.RestrictedAddress{
 										Address:             ed25519Addresses[0],
-										AllowedCapabilities: iotago.AddressCapabilitiesBitMask{},
+										AllowedCapabilities: axongo.AddressCapabilitiesBitMask{},
 									},
 								}},
 							},
 						},
 					}
 				},
-				wantErr: iotago.ErrInvalidNestedAddressType,
+				wantErr: axongo.ErrInvalidNestedAddressType,
 			}
 		}(),
 	}
@@ -672,13 +672,13 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "fail - threshold > cumulativeWeight",
 				ed25519AddrCnt: 2,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.MultiAddress{
-									Addresses: []*iotago.AddressWithWeight{
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.MultiAddress{
+									Addresses: []*axongo.AddressWithWeight{
 										{
 											Address: ed25519Addresses[0],
 											Weight:  1,
@@ -694,7 +694,7 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 						},
 					}
 				},
-				wantErr: iotago.ErrMultiAddressThresholdInvalid,
+				wantErr: axongo.ErrMultiAddressThresholdInvalid,
 			}
 		}(),
 
@@ -703,13 +703,13 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "fail - threshold < 1",
 				ed25519AddrCnt: 1,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.MultiAddress{
-									Addresses: []*iotago.AddressWithWeight{
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.MultiAddress{
+									Addresses: []*axongo.AddressWithWeight{
 										{
 											Address: ed25519Addresses[0],
 											Weight:  1,
@@ -721,7 +721,7 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 						},
 					}
 				},
-				wantErr: iotago.ErrMultiAddressThresholdInvalid,
+				wantErr: axongo.ErrMultiAddressThresholdInvalid,
 			}
 		}(),
 
@@ -730,13 +730,13 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "fail - address weight == 0",
 				ed25519AddrCnt: 2,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.MultiAddress{
-									Addresses: []*iotago.AddressWithWeight{
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.MultiAddress{
+									Addresses: []*axongo.AddressWithWeight{
 										{
 											Address: ed25519Addresses[0],
 											Weight:  0,
@@ -752,7 +752,7 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 						},
 					}
 				},
-				wantErr: iotago.ErrMultiAddressWeightInvalid,
+				wantErr: axongo.ErrMultiAddressWeightInvalid,
 			}
 		}(),
 
@@ -761,20 +761,20 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "fail - empty MultiAddress",
 				ed25519AddrCnt: 2,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.MultiAddress{
-									Addresses: []*iotago.AddressWithWeight{},
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.MultiAddress{
+									Addresses: []*axongo.AddressWithWeight{},
 									Threshold: 1,
 								}},
 							},
 						},
 					}
 				},
-				wantErr: iotago.ErrMultiAddressThresholdInvalid,
+				wantErr: axongo.ErrMultiAddressThresholdInvalid,
 			}
 		}(),
 
@@ -783,13 +783,13 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "fail - MultiAddress limit exceeded",
 				ed25519AddrCnt: 13,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.MultiAddress{
-									Addresses: []*iotago.AddressWithWeight{
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.MultiAddress{
+									Addresses: []*axongo.AddressWithWeight{
 										{Address: ed25519Addresses[2], Weight: 1},
 										{Address: ed25519Addresses[3], Weight: 1},
 										{Address: ed25519Addresses[4], Weight: 1},
@@ -817,20 +817,20 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "fail - the binary encoding of all addresses inside a MultiAddress need to be unique",
 				ed25519AddrCnt: 1,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.MultiAddress{
-									Addresses: []*iotago.AddressWithWeight{
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.MultiAddress{
+									Addresses: []*axongo.AddressWithWeight{
 										// both have the same pubKeyHash
 										{
-											Address: &iotago.Ed25519Address{},
+											Address: &axongo.Ed25519Address{},
 											Weight:  1,
 										},
 										{
-											Address: &iotago.Ed25519Address{},
+											Address: &axongo.Ed25519Address{},
 											Weight:  1,
 										},
 									},
@@ -840,7 +840,7 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 						},
 					}
 				},
-				wantErr: iotago.ErrArrayValidationViolatesUniqueness,
+				wantErr: axongo.ErrArrayValidationViolatesUniqueness,
 			}
 		}(),
 
@@ -849,16 +849,16 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "fail - ImplicitAccountCreationAddress nested inside of a MultiAddress",
 				ed25519AddrCnt: 1,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.RestrictedAddress{
-									Address: &iotago.MultiAddress{
-										Addresses: []*iotago.AddressWithWeight{
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.RestrictedAddress{
+									Address: &axongo.MultiAddress{
+										Addresses: []*axongo.AddressWithWeight{
 											{
-												Address: &iotago.ImplicitAccountCreationAddress{},
+												Address: &axongo.ImplicitAccountCreationAddress{},
 												Weight:  1,
 											},
 										},
@@ -869,7 +869,7 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 						},
 					}
 				},
-				wantErr: iotago.ErrInvalidNestedAddressType,
+				wantErr: axongo.ErrInvalidNestedAddressType,
 			}
 		}(),
 
@@ -878,16 +878,16 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "fail - MultiAddress nested inside of a MultiAddress",
 				ed25519AddrCnt: 2,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.MultiAddress{
-									Addresses: []*iotago.AddressWithWeight{
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.MultiAddress{
+									Addresses: []*axongo.AddressWithWeight{
 										{
-											Address: &iotago.MultiAddress{
-												Addresses: iotago.AddressesWithWeight{
+											Address: &axongo.MultiAddress{
+												Addresses: axongo.AddressesWithWeight{
 													{
 														Address: ed25519Addresses[1],
 														Weight:  1,
@@ -904,7 +904,7 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 						},
 					}
 				},
-				wantErr: iotago.ErrInvalidNestedAddressType,
+				wantErr: axongo.ErrInvalidNestedAddressType,
 			}
 		}(),
 
@@ -913,17 +913,17 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 			return &outputsSyntacticalValidationTest{
 				name:           "fail - RestrictedAddress nested inside of a MultiAddress",
 				ed25519AddrCnt: 1,
-				outputsFunc: func(ed25519Addresses []iotago.Address) iotago.TxEssenceOutputs {
-					return iotago.TxEssenceOutputs{
-						&iotago.BasicOutput{
+				outputsFunc: func(ed25519Addresses []axongo.Address) axongo.TxEssenceOutputs {
+					return axongo.TxEssenceOutputs{
+						&axongo.BasicOutput{
 							Amount: defaultAmount,
-							UnlockConditions: iotago.BasicOutputUnlockConditions{
-								&iotago.AddressUnlockCondition{Address: &iotago.MultiAddress{
-									Addresses: []*iotago.AddressWithWeight{
+							UnlockConditions: axongo.BasicOutputUnlockConditions{
+								&axongo.AddressUnlockCondition{Address: &axongo.MultiAddress{
+									Addresses: []*axongo.AddressWithWeight{
 										{
-											Address: &iotago.RestrictedAddress{
+											Address: &axongo.RestrictedAddress{
 												Address:             ed25519Addresses[0],
-												AllowedCapabilities: iotago.AddressCapabilitiesBitMask{},
+												AllowedCapabilities: axongo.AddressCapabilitiesBitMask{},
 											},
 											Weight: 1,
 										},
@@ -934,7 +934,7 @@ func TestMultiAddressSyntacticalValidation(t *testing.T) {
 						},
 					}
 				},
-				wantErr: iotago.ErrInvalidNestedAddressType,
+				wantErr: axongo.ErrInvalidNestedAddressType,
 			}
 		}(),
 	}

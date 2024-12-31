@@ -10,10 +10,10 @@ import (
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/api"
-	"github.com/iotaledger/iota.go/v4/hexutil"
+	"github.com/axonfibre/fibre.go/ierrors"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/api"
+	"github.com/axonfibre/axon.go/v4/hexutil"
 )
 
 var (
@@ -157,9 +157,9 @@ func subscribeToTopic[T any](eac *EventAPIClient, topic string, deseriFunc func(
 	return channel, newSubscription(eac.MQTTClient, topic)
 }
 
-func (eac *EventAPIClient) subscribeToCommitmentsTopicRaw(topic string) (<-chan *iotago.Commitment, *EventAPIClientSubscription) {
-	return subscribeToTopic(eac, topic+api.EventAPITopicSuffixRaw, func(payload []byte) (*iotago.Commitment, error) {
-		response := new(iotago.Commitment)
+func (eac *EventAPIClient) subscribeToCommitmentsTopicRaw(topic string) (<-chan *axongo.Commitment, *EventAPIClientSubscription) {
+	return subscribeToTopic(eac, topic+api.EventAPITopicSuffixRaw, func(payload []byte) (*axongo.Commitment, error) {
+		response := new(axongo.Commitment)
 		if _, err := eac.Client.CommittedAPI().Decode(payload, response); err != nil {
 			sendErrOrDrop(eac.Errors, err)
 			return nil, err
@@ -169,9 +169,9 @@ func (eac *EventAPIClient) subscribeToCommitmentsTopicRaw(topic string) (<-chan 
 	})
 }
 
-func (eac *EventAPIClient) subscribeToBlocksTopicRaw(topic string) (<-chan *iotago.Block, *EventAPIClientSubscription) {
-	return subscribeToTopic(eac, topic+api.EventAPITopicSuffixRaw, func(payload []byte) (*iotago.Block, error) {
-		version, _, err := iotago.VersionFromBytes(payload)
+func (eac *EventAPIClient) subscribeToBlocksTopicRaw(topic string) (<-chan *axongo.Block, *EventAPIClientSubscription) {
+	return subscribeToTopic(eac, topic+api.EventAPITopicSuffixRaw, func(payload []byte) (*axongo.Block, error) {
+		version, _, err := axongo.VersionFromBytes(payload)
 		if err != nil {
 			sendErrOrDrop(eac.Errors, err)
 			return nil, err
@@ -183,7 +183,7 @@ func (eac *EventAPIClient) subscribeToBlocksTopicRaw(topic string) (<-chan *iota
 			return nil, err
 		}
 
-		block := new(iotago.Block)
+		block := new(axongo.Block)
 		if _, err := apiForVersion.Decode(payload, block); err != nil {
 			sendErrOrDrop(eac.Errors, err)
 			return nil, err
@@ -229,74 +229,74 @@ func (eac *EventAPIClient) subscribeToOutputsWithMetadataTopicRaw(topic string) 
 	})
 }
 
-func (eac *EventAPIClient) CommitmentsLatest() (<-chan *iotago.Commitment, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) CommitmentsLatest() (<-chan *axongo.Commitment, *EventAPIClientSubscription) {
 	return eac.subscribeToCommitmentsTopicRaw(api.EventAPITopicCommitmentsLatest)
 }
 
-func (eac *EventAPIClient) CommitmentsFinalized() (<-chan *iotago.Commitment, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) CommitmentsFinalized() (<-chan *axongo.Commitment, *EventAPIClientSubscription) {
 	return eac.subscribeToCommitmentsTopicRaw(api.EventAPITopicCommitmentsFinalized)
 }
 
 // Blocks returns a channel of newly received blocks.
-func (eac *EventAPIClient) Blocks() (<-chan *iotago.Block, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) Blocks() (<-chan *axongo.Block, *EventAPIClientSubscription) {
 	return eac.subscribeToBlocksTopicRaw(api.EventAPITopicBlocks)
 }
 
 // BlocksValidation returns a channel of newly received validation blocks.
-func (eac *EventAPIClient) BlocksValidation() (<-chan *iotago.Block, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) BlocksValidation() (<-chan *axongo.Block, *EventAPIClientSubscription) {
 	return eac.subscribeToBlocksTopicRaw(api.EventAPITopicBlocksValidation)
 }
 
 // BlocksBasic returns a channel of newly received basic blocks.
-func (eac *EventAPIClient) BlocksBasic() (<-chan *iotago.Block, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) BlocksBasic() (<-chan *axongo.Block, *EventAPIClientSubscription) {
 	return eac.subscribeToBlocksTopicRaw(api.EventAPITopicBlocksBasic)
 }
 
 // BlocksBasicWithTaggedData returns a channel of blocks containing tagged data containing the given tag.
-func (eac *EventAPIClient) BlocksBasicWithTaggedData() (<-chan *iotago.Block, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) BlocksBasicWithTaggedData() (<-chan *axongo.Block, *EventAPIClientSubscription) {
 	return eac.subscribeToBlocksTopicRaw(api.EventAPITopicBlocksBasicTaggedData)
 }
 
 // BlocksBasicWithTaggedDataByTag returns a channel of blocks containing tagged data.
-func (eac *EventAPIClient) BlocksBasicWithTaggedDataByTag(tag []byte) (<-chan *iotago.Block, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) BlocksBasicWithTaggedDataByTag(tag []byte) (<-chan *axongo.Block, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicBlocksBasicTaggedDataTag, api.ParameterTag, hexutil.EncodeHex(tag))
 
 	return eac.subscribeToBlocksTopicRaw(topic)
 }
 
 // BlocksBasicWithTransactions returns a channel of blocks containing transactions.
-func (eac *EventAPIClient) BlocksBasicWithTransactions() (<-chan *iotago.Block, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) BlocksBasicWithTransactions() (<-chan *axongo.Block, *EventAPIClientSubscription) {
 	return eac.subscribeToBlocksTopicRaw(api.EventAPITopicBlocksBasicTransaction)
 }
 
 // BlocksBasicWithTransactionsWithTaggedData returns a channel of blocks containing transactions with tagged data.
-func (eac *EventAPIClient) BlocksBasicWithTransactionsWithTaggedData() (<-chan *iotago.Block, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) BlocksBasicWithTransactionsWithTaggedData() (<-chan *axongo.Block, *EventAPIClientSubscription) {
 	return eac.subscribeToBlocksTopicRaw(api.EventAPITopicBlocksBasicTransactionTaggedData)
 }
 
 // BlocksBasicWithTransactionsWithTaggedDataByTag returns a channel of blocks containing transactions with tagged data containing the given tag.
-func (eac *EventAPIClient) BlocksBasicWithTransactionsWithTaggedDataByTag(tag []byte) (<-chan *iotago.Block, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) BlocksBasicWithTransactionsWithTaggedDataByTag(tag []byte) (<-chan *axongo.Block, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicBlocksBasicTransactionTaggedDataTag, api.ParameterTag, hexutil.EncodeHex(tag))
 
 	return eac.subscribeToBlocksTopicRaw(topic)
 }
 
 // BlockMetadataTransactionIncludedBlocksByTransactionID returns a channel of BlockMetadataResponse of blocks which carry the transaction with the given ID.
-func (eac *EventAPIClient) BlockMetadataTransactionIncludedBlocksByTransactionID(txID iotago.TransactionID) (<-chan *api.BlockMetadataResponse, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) BlockMetadataTransactionIncludedBlocksByTransactionID(txID axongo.TransactionID) (<-chan *api.BlockMetadataResponse, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicTransactionsIncludedBlockMetadata, api.ParameterTransactionID, txID.ToHex())
 
 	return eac.subscribeToBlockMetadataTopicRaw(topic)
 }
 
 // TransactionMetadataByTransactionID returns a channel of TransactionMetadataResponse each time the given transaction's state changes.
-func (eac *EventAPIClient) TransactionMetadataByTransactionID(txID iotago.TransactionID) (<-chan *api.TransactionMetadataResponse, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) TransactionMetadataByTransactionID(txID axongo.TransactionID) (<-chan *api.TransactionMetadataResponse, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicTransactionMetadata, api.ParameterTransactionID, txID.ToHex())
 
 	return eac.subscribeToTransactionMetadataTopicRaw(topic)
 }
 
 // BlockMetadataByBlockID returns a channel of BlockMetadataResponse each time the given block's state changes.
-func (eac *EventAPIClient) BlockMetadataByBlockID(blockID iotago.BlockID) (<-chan *api.BlockMetadataResponse, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) BlockMetadataByBlockID(blockID axongo.BlockID) (<-chan *api.BlockMetadataResponse, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicBlockMetadata, api.ParameterBlockID, blockID.ToHex())
 
 	return eac.subscribeToBlockMetadataTopicRaw(topic)
@@ -313,49 +313,49 @@ func (eac *EventAPIClient) BlockMetadataConfirmedBlocks() (<-chan *api.BlockMeta
 }
 
 // OutputWithMetadataByOutputID returns a channel which immediately returns the output with the given ID and afterward when its state changes.
-func (eac *EventAPIClient) OutputWithMetadataByOutputID(outputID iotago.OutputID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) OutputWithMetadataByOutputID(outputID axongo.OutputID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicOutputs, api.ParameterOutputID, outputID.ToHex())
 
 	return eac.subscribeToOutputsWithMetadataTopicRaw(topic)
 }
 
 // OutputsWithMetadataByAccountID returns a channel of newly created outputs to track the chain mutations of a given Account.
-func (eac *EventAPIClient) OutputsWithMetadataByAccountID(accountID iotago.AccountID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) OutputsWithMetadataByAccountID(accountID axongo.AccountID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicAccountOutputs, api.ParameterAccountAddress, accountID.ToAddress().Bech32(eac.Client.CommittedAPI().ProtocolParameters().Bech32HRP()))
 
 	return eac.subscribeToOutputsWithMetadataTopicRaw(topic)
 }
 
 // OutputsWithMetadataByAnchorID returns a channel of newly created outputs to track the chain mutations of a given anchor ID.
-func (eac *EventAPIClient) OutputsWithMetadataByAnchorID(anchorID iotago.AnchorID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) OutputsWithMetadataByAnchorID(anchorID axongo.AnchorID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicAnchorOutputs, api.ParameterAnchorAddress, anchorID.ToAddress().Bech32(eac.Client.CommittedAPI().ProtocolParameters().Bech32HRP()))
 
 	return eac.subscribeToOutputsWithMetadataTopicRaw(topic)
 }
 
 // OutputsWithMetadataByFoundryID returns a channel of newly created outputs to track the chain mutations of a given Foundry.
-func (eac *EventAPIClient) OutputsWithMetadataByFoundryID(foundryID iotago.FoundryID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) OutputsWithMetadataByFoundryID(foundryID axongo.FoundryID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicFoundryOutputs, api.ParameterFoundryID, foundryID.ToHex())
 
 	return eac.subscribeToOutputsWithMetadataTopicRaw(topic)
 }
 
 // OutputsWithMetadataByNFTID returns a channel of newly created outputs to track the chain mutations of a given NFT.
-func (eac *EventAPIClient) OutputsWithMetadataByNFTID(nftID iotago.NFTID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) OutputsWithMetadataByNFTID(nftID axongo.NFTID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicNFTOutputs, api.ParameterNFTAddress, nftID.ToAddress().Bech32(eac.Client.CommittedAPI().ProtocolParameters().Bech32HRP()))
 
 	return eac.subscribeToOutputsWithMetadataTopicRaw(topic)
 }
 
 // OutputsWithMetadataByDelegationID returns a channel of newly created outputs to track the chain mutations of a given delegation ID.
-func (eac *EventAPIClient) OutputsWithMetadataByDelegationID(delegationID iotago.DelegationID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) OutputsWithMetadataByDelegationID(delegationID axongo.DelegationID) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicDelegationOutputs, api.ParameterDelegationID, delegationID.ToHex())
 
 	return eac.subscribeToOutputsWithMetadataTopicRaw(topic)
 }
 
 // OutputsWithMetadataByUnlockConditionAndAddress returns a channel of newly created outputs on the given unlock condition and address.
-func (eac *EventAPIClient) OutputsWithMetadataByUnlockConditionAndAddress(condition api.EventAPIUnlockCondition, addr iotago.Address) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
+func (eac *EventAPIClient) OutputsWithMetadataByUnlockConditionAndAddress(condition api.EventAPIUnlockCondition, addr axongo.Address) (<-chan *api.OutputWithMetadataResponse, *EventAPIClientSubscription) {
 	topic := api.EndpointWithNamedParameterValue(api.EventAPITopicOutputsByUnlockConditionAndAddress, api.ParameterCondition, string(condition))
 	topic = api.EndpointWithNamedParameterValue(topic, api.ParameterAddress, addr.Bech32(eac.Client.CommittedAPI().ProtocolParameters().Bech32HRP()))
 

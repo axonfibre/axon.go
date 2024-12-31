@@ -7,8 +7,8 @@ import (
 
 	"golang.org/x/crypto/blake2b"
 
-	"github.com/iotaledger/hive.go/serializer/v2"
-	"github.com/iotaledger/hive.go/serializer/v2/byteutils"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2/byteutils"
 )
 
 const (

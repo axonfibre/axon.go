@@ -1,4 +1,4 @@
-package iotago
+package axongo
 
 import (
 	"fmt"
@@ -8,11 +8,11 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/iotaledger/hive.go/constraints"
-	"github.com/iotaledger/hive.go/core/safemath"
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/lo"
-	"github.com/iotaledger/hive.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/constraints"
+	"github.com/axonfibre/fibre.go/core/safemath"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/lo"
+	"github.com/axonfibre/fibre.go/serializer/v2"
 )
 
 // BaseToken defines the unit of the base token of the network.

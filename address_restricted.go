@@ -1,18 +1,18 @@
-package iotago
+package axongo
 
 import (
 	"bytes"
 	"context"
 	"io"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/lo"
-	"github.com/iotaledger/hive.go/runtime/options"
-	"github.com/iotaledger/hive.go/serializer/v2"
-	"github.com/iotaledger/hive.go/serializer/v2/byteutils"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	"github.com/iotaledger/hive.go/serializer/v2/stream"
-	"github.com/iotaledger/iota.go/v4/hexutil"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/lo"
+	"github.com/axonfibre/fibre.go/runtime/options"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2/byteutils"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	"github.com/axonfibre/fibre.go/serializer/v2/stream"
+	"github.com/axonfibre/axon.go/v4/hexutil"
 )
 
 type RestrictedAddress struct {

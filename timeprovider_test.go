@@ -1,4 +1,4 @@
-package iotago_test
+package axongo_test
 
 import (
 	"fmt"
@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 func TestTimeProvider(t *testing.T) {
@@ -17,7 +17,7 @@ func TestTimeProvider(t *testing.T) {
 	testTimeProviderWithGenesisSlot(t, tpkg.RandSlot())
 }
 
-func testTimeProviderWithGenesisSlot(t *testing.T, genesisSlot iotago.SlotIndex) {
+func testTimeProviderWithGenesisSlot(t *testing.T, genesisSlot axongo.SlotIndex) {
 	t.Helper()
 
 	genesisUnixTime := int64(1630000000) // Replace with an appropriate Unix timestamp
@@ -26,7 +26,7 @@ func testTimeProviderWithGenesisSlot(t *testing.T, genesisSlot iotago.SlotIndex)
 	slotsPerEpochExponent := uint8(3) // 2^3 = 8 slots per epoch
 	slotsPerEpoch := 1 << slotsPerEpochExponent
 
-	tp := iotago.NewTimeProvider(genesisSlot, genesisUnixTime, slotDurationSeconds, slotsPerEpochExponent)
+	tp := axongo.NewTimeProvider(genesisSlot, genesisUnixTime, slotDurationSeconds, slotsPerEpochExponent)
 
 	t.Run(fmt.Sprintf("Test Getters %d", genesisSlot), func(t *testing.T) {
 		require.EqualValues(t, genesisUnixTime, tp.GenesisUnixTime())
@@ -38,7 +38,7 @@ func testTimeProviderWithGenesisSlot(t *testing.T, genesisSlot iotago.SlotIndex)
 
 	if genesisSlot > 0 {
 		t.Run(fmt.Sprintf("Test Below Genesis %d", genesisSlot), func(t *testing.T) {
-			firstEpoch := iotago.EpochIndex(0)
+			firstEpoch := axongo.EpochIndex(0)
 			belowGenesisTime := genesisTime.Add(-time.Nanosecond)
 
 			require.EqualValues(t, genesisSlot, tp.SlotFromTime(belowGenesisTime))

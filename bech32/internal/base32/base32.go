@@ -5,7 +5,7 @@ package base32
 import (
 	"fmt"
 
-	"github.com/iotaledger/hive.go/ierrors"
+	"github.com/axonfibre/fibre.go/ierrors"
 )
 
 // EncodedLen returns the length of the base32 encoding of an input buffer of length n.

@@ -1,4 +1,4 @@
-package iotago_test
+package axongo_test
 
 import (
 	"encoding/json"
@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestEd25519Signature_DeSerialize(t *testing.T) {
@@ -19,7 +19,7 @@ func TestEd25519Signature_DeSerialize(t *testing.T) {
 		{
 			Name:   "ok",
 			Source: tpkg.RandEd25519Signature(),
-			Target: &iotago.Ed25519Signature{},
+			Target: &axongo.Ed25519Signature{},
 		},
 	}
 
@@ -45,11 +45,11 @@ func TestEd25519Signature_Valid(t *testing.T) {
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
 			// deserialize the address from the test
-			addr := &iotago.Ed25519Address{}
+			addr := &axongo.Ed25519Address{}
 			_, err = tpkg.ZeroCostTestAPI.Decode(tt.Address, addr)
 			require.NoError(t, err)
 			// create the signature type
-			sig := &iotago.Ed25519Signature{}
+			sig := &axongo.Ed25519Signature{}
 			copy(sig.PublicKey[:], tt.PublicKey)
 			copy(sig.Signature[:], tt.Signature)
 

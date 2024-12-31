@@ -1,4 +1,4 @@
-package iotago
+package axongo
 
 // ChainOutput is a type of Output which represents a chain of state transitions.
 type ChainOutput interface {

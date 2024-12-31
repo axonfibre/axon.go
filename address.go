@@ -1,16 +1,16 @@
-package iotago
+package axongo
 
 import (
 	"context"
 	"fmt"
 	"io"
 
-	"github.com/iotaledger/hive.go/constraints"
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/serializer/v2"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	"github.com/iotaledger/hive.go/serializer/v2/stream"
-	"github.com/iotaledger/iota.go/v4/bech32"
+	"github.com/axonfibre/fibre.go/constraints"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	"github.com/axonfibre/fibre.go/serializer/v2/stream"
+	"github.com/axonfibre/axon.go/v4/bech32"
 )
 
 var (

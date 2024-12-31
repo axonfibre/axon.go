@@ -7,7 +7,7 @@ then
     exit 1
 fi
 
-HIVE_MODULES=$(grep -E "^\sgithub.com/iotaledger/hive.go" "go.mod" | awk '{print $1}')
+HIVE_MODULES=$(grep -E "^\sgithub.com/axonfibre/fibre.go" "go.mod" | awk '{print $1}')
 for dependency in $HIVE_MODULES
 do
     echo "go get -u $dependency@$COMMIT..."

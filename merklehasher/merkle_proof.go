@@ -5,9 +5,9 @@ import (
 	"bytes"
 	"context"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
-	"github.com/iotaledger/iota.go/v4/hexutil"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
+	"github.com/axonfibre/axon.go/v4/hexutil"
 )
 
 type MerkleHashableType = uint8

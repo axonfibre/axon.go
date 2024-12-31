@@ -1,76 +1,76 @@
 package builder
 
 import (
-	"github.com/iotaledger/hive.go/ierrors"
-	iotago "github.com/iotaledger/iota.go/v4"
+	"github.com/axonfibre/fibre.go/ierrors"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 // NewFoundryOutputBuilder creates a new FoundryOutputBuilder with the account address, serial number, token scheme and base token amount.
-func NewFoundryOutputBuilder(accountAddr *iotago.AccountAddress, amount iotago.BaseToken, serialNumber uint32, tokenScheme iotago.TokenScheme) *FoundryOutputBuilder {
-	return &FoundryOutputBuilder{output: &iotago.FoundryOutput{
+func NewFoundryOutputBuilder(accountAddr *axongo.AccountAddress, amount axongo.BaseToken, serialNumber uint32, tokenScheme axongo.TokenScheme) *FoundryOutputBuilder {
+	return &FoundryOutputBuilder{output: &axongo.FoundryOutput{
 		Amount:       amount,
 		SerialNumber: serialNumber,
 		TokenScheme:  tokenScheme,
-		UnlockConditions: iotago.FoundryOutputUnlockConditions{
-			&iotago.ImmutableAccountUnlockCondition{Address: accountAddr},
+		UnlockConditions: axongo.FoundryOutputUnlockConditions{
+			&axongo.ImmutableAccountUnlockCondition{Address: accountAddr},
 		},
-		Features:          iotago.FoundryOutputFeatures{},
-		ImmutableFeatures: iotago.FoundryOutputImmFeatures{},
+		Features:          axongo.FoundryOutputFeatures{},
+		ImmutableFeatures: axongo.FoundryOutputImmFeatures{},
 	}}
 }
 
-// NewFoundryOutputBuilderFromPrevious creates a new FoundryOutputBuilder starting from a copy of the previous iotago.FoundryOutput.
-func NewFoundryOutputBuilderFromPrevious(previous *iotago.FoundryOutput) *FoundryOutputBuilder {
+// NewFoundryOutputBuilderFromPrevious creates a new FoundryOutputBuilder starting from a copy of the previous axongo.FoundryOutput.
+func NewFoundryOutputBuilderFromPrevious(previous *axongo.FoundryOutput) *FoundryOutputBuilder {
 	return &FoundryOutputBuilder{
 		prev: previous,
 		//nolint:forcetypeassert // we can safely assume that this is a FoundryOutput
-		output: previous.Clone().(*iotago.FoundryOutput),
+		output: previous.Clone().(*axongo.FoundryOutput),
 	}
 }
 
-// FoundryOutputBuilder builds an iotago.FoundryOutput.
+// FoundryOutputBuilder builds an axongo.FoundryOutput.
 type FoundryOutputBuilder struct {
-	prev   *iotago.FoundryOutput
-	output *iotago.FoundryOutput
+	prev   *axongo.FoundryOutput
+	output *axongo.FoundryOutput
 }
 
 // Amount sets the base token amount of the output.
-func (builder *FoundryOutputBuilder) Amount(amount iotago.BaseToken) *FoundryOutputBuilder {
+func (builder *FoundryOutputBuilder) Amount(amount axongo.BaseToken) *FoundryOutputBuilder {
 	builder.output.Amount = amount
 
 	return builder
 }
 
-// Metadata sets/modifies an iotago.MetadataFeature on the output.
-func (builder *FoundryOutputBuilder) Metadata(entries iotago.MetadataFeatureEntries) *FoundryOutputBuilder {
-	builder.output.Features.Upsert(&iotago.MetadataFeature{Entries: entries})
+// Metadata sets/modifies an axongo.MetadataFeature on the output.
+func (builder *FoundryOutputBuilder) Metadata(entries axongo.MetadataFeatureEntries) *FoundryOutputBuilder {
+	builder.output.Features.Upsert(&axongo.MetadataFeature{Entries: entries})
 
 	return builder
 }
 
 // NativeToken adds/modifies a native token to/on the output.
-func (builder *FoundryOutputBuilder) NativeToken(nt *iotago.NativeTokenFeature) *FoundryOutputBuilder {
+func (builder *FoundryOutputBuilder) NativeToken(nt *axongo.NativeTokenFeature) *FoundryOutputBuilder {
 	builder.output.Features.Upsert(nt)
 
 	return builder
 }
 
-// ImmutableMetadata sets/modifies an iotago.MetadataFeature as an immutable feature on the output.
-// Only call this function on a new iotago.FoundryOutput.
-func (builder *FoundryOutputBuilder) ImmutableMetadata(entries iotago.MetadataFeatureEntries) *FoundryOutputBuilder {
-	builder.output.ImmutableFeatures.Upsert(&iotago.MetadataFeature{Entries: entries})
+// ImmutableMetadata sets/modifies an axongo.MetadataFeature as an immutable feature on the output.
+// Only call this function on a new axongo.FoundryOutput.
+func (builder *FoundryOutputBuilder) ImmutableMetadata(entries axongo.MetadataFeatureEntries) *FoundryOutputBuilder {
+	builder.output.ImmutableFeatures.Upsert(&axongo.MetadataFeature{Entries: entries})
 
 	return builder
 }
 
-func (builder *FoundryOutputBuilder) TokenScheme(tokenScheme iotago.TokenScheme) *FoundryOutputBuilder {
+func (builder *FoundryOutputBuilder) TokenScheme(tokenScheme axongo.TokenScheme) *FoundryOutputBuilder {
 	builder.output.TokenScheme = tokenScheme
 
 	return builder
 }
 
-// Build builds the iotago.FoundryOutput.
-func (builder *FoundryOutputBuilder) Build() (*iotago.FoundryOutput, error) {
+// Build builds the axongo.FoundryOutput.
+func (builder *FoundryOutputBuilder) Build() (*axongo.FoundryOutput, error) {
 	if builder.prev != nil {
 		if !builder.prev.ImmutableFeatures.Equal(builder.output.ImmutableFeatures) {
 			return nil, ierrors.New("immutable features are not allowed to be changed")
@@ -85,7 +85,7 @@ func (builder *FoundryOutputBuilder) Build() (*iotago.FoundryOutput, error) {
 }
 
 // MustBuild works like Build() but panics if an error is encountered.
-func (builder *FoundryOutputBuilder) MustBuild() *iotago.FoundryOutput {
+func (builder *FoundryOutputBuilder) MustBuild() *axongo.FoundryOutput {
 	output, err := builder.Build()
 
 	if err != nil {

@@ -1,11 +1,11 @@
-package iotago
+package axongo
 
 import (
 	"crypto"
 	"fmt"
 
-	"github.com/iotaledger/hive.go/lo"
-	"github.com/iotaledger/iota.go/v4/merklehasher"
+	"github.com/axonfibre/fibre.go/lo"
+	"github.com/axonfibre/axon.go/v4/merklehasher"
 )
 
 type Roots struct {

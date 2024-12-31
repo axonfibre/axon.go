@@ -1,45 +1,45 @@
 package builder
 
 import (
-	"github.com/iotaledger/hive.go/ierrors"
-	iotago "github.com/iotaledger/iota.go/v4"
+	"github.com/axonfibre/fibre.go/ierrors"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 // NewAnchorOutputBuilder creates a new AnchorOutputBuilder with the required state controller/governor addresses and base token amount.
-func NewAnchorOutputBuilder(stateCtrl iotago.Address, govAddr iotago.Address, amount iotago.BaseToken) *AnchorOutputBuilder {
-	return &AnchorOutputBuilder{output: &iotago.AnchorOutput{
+func NewAnchorOutputBuilder(stateCtrl axongo.Address, govAddr axongo.Address, amount axongo.BaseToken) *AnchorOutputBuilder {
+	return &AnchorOutputBuilder{output: &axongo.AnchorOutput{
 		Amount:     amount,
 		Mana:       0,
-		AnchorID:   iotago.EmptyAnchorID,
+		AnchorID:   axongo.EmptyAnchorID,
 		StateIndex: 0,
-		UnlockConditions: iotago.AnchorOutputUnlockConditions{
-			&iotago.StateControllerAddressUnlockCondition{Address: stateCtrl},
-			&iotago.GovernorAddressUnlockCondition{Address: govAddr},
+		UnlockConditions: axongo.AnchorOutputUnlockConditions{
+			&axongo.StateControllerAddressUnlockCondition{Address: stateCtrl},
+			&axongo.GovernorAddressUnlockCondition{Address: govAddr},
 		},
-		Features:          iotago.AnchorOutputFeatures{},
-		ImmutableFeatures: iotago.AnchorOutputImmFeatures{},
+		Features:          axongo.AnchorOutputFeatures{},
+		ImmutableFeatures: axongo.AnchorOutputImmFeatures{},
 	}}
 }
 
-// NewAnchorOutputBuilderFromPrevious creates a new AnchorOutputBuilder starting from a copy of the previous iotago.AnchorOutput.
-func NewAnchorOutputBuilderFromPrevious(previous *iotago.AnchorOutput) *AnchorOutputBuilder {
+// NewAnchorOutputBuilderFromPrevious creates a new AnchorOutputBuilder starting from a copy of the previous axongo.AnchorOutput.
+func NewAnchorOutputBuilderFromPrevious(previous *axongo.AnchorOutput) *AnchorOutputBuilder {
 	return &AnchorOutputBuilder{
 		prev: previous,
 		//nolint:forcetypeassert // we can safely assume that this is an AnchorOutput
-		output: previous.Clone().(*iotago.AnchorOutput),
+		output: previous.Clone().(*axongo.AnchorOutput),
 	}
 }
 
-// AnchorOutputBuilder builds an iotago.AnchorOutput.
+// AnchorOutputBuilder builds an axongo.AnchorOutput.
 type AnchorOutputBuilder struct {
-	prev         *iotago.AnchorOutput
-	output       *iotago.AnchorOutput
+	prev         *axongo.AnchorOutput
+	output       *axongo.AnchorOutput
 	stateCtrlReq bool
 	govCtrlReq   bool
 }
 
 // Amount sets the base token amount of the output.
-func (builder *AnchorOutputBuilder) Amount(amount iotago.BaseToken) *AnchorOutputBuilder {
+func (builder *AnchorOutputBuilder) Amount(amount axongo.BaseToken) *AnchorOutputBuilder {
 	builder.output.Amount = amount
 	builder.stateCtrlReq = true
 
@@ -47,70 +47,70 @@ func (builder *AnchorOutputBuilder) Amount(amount iotago.BaseToken) *AnchorOutpu
 }
 
 // Mana sets the mana of the output.
-func (builder *AnchorOutputBuilder) Mana(mana iotago.Mana) *AnchorOutputBuilder {
+func (builder *AnchorOutputBuilder) Mana(mana axongo.Mana) *AnchorOutputBuilder {
 	builder.output.Mana = mana
 
 	return builder
 }
 
-// AnchorID sets the iotago.AnchorID of this output.
-// Do not call this function if the underlying iotago.AnchorOutput is not new.
-func (builder *AnchorOutputBuilder) AnchorID(anchorID iotago.AnchorID) *AnchorOutputBuilder {
+// AnchorID sets the axongo.AnchorID of this output.
+// Do not call this function if the underlying axongo.AnchorOutput is not new.
+func (builder *AnchorOutputBuilder) AnchorID(anchorID axongo.AnchorID) *AnchorOutputBuilder {
 	builder.output.AnchorID = anchorID
 
 	return builder
 }
 
-// StateController sets the iotago.StateControllerAddressUnlockCondition of the output.
-func (builder *AnchorOutputBuilder) StateController(stateCtrl iotago.Address) *AnchorOutputBuilder {
-	builder.output.UnlockConditions.Upsert(&iotago.StateControllerAddressUnlockCondition{Address: stateCtrl})
+// StateController sets the axongo.StateControllerAddressUnlockCondition of the output.
+func (builder *AnchorOutputBuilder) StateController(stateCtrl axongo.Address) *AnchorOutputBuilder {
+	builder.output.UnlockConditions.Upsert(&axongo.StateControllerAddressUnlockCondition{Address: stateCtrl})
 	builder.govCtrlReq = true
 
 	return builder
 }
 
-// Governor sets the iotago.GovernorAddressUnlockCondition of the output.
-func (builder *AnchorOutputBuilder) Governor(governor iotago.Address) *AnchorOutputBuilder {
-	builder.output.UnlockConditions.Upsert(&iotago.GovernorAddressUnlockCondition{Address: governor})
+// Governor sets the axongo.GovernorAddressUnlockCondition of the output.
+func (builder *AnchorOutputBuilder) Governor(governor axongo.Address) *AnchorOutputBuilder {
+	builder.output.UnlockConditions.Upsert(&axongo.GovernorAddressUnlockCondition{Address: governor})
 	builder.govCtrlReq = true
 
 	return builder
 }
 
-// Metadata sets/modifies an iotago.MetadataFeature on the output.
-func (builder *AnchorOutputBuilder) Metadata(entries iotago.MetadataFeatureEntries) *AnchorOutputBuilder {
-	builder.output.Features.Upsert(&iotago.MetadataFeature{Entries: entries})
+// Metadata sets/modifies an axongo.MetadataFeature on the output.
+func (builder *AnchorOutputBuilder) Metadata(entries axongo.MetadataFeatureEntries) *AnchorOutputBuilder {
+	builder.output.Features.Upsert(&axongo.MetadataFeature{Entries: entries})
 	builder.govCtrlReq = true
 
 	return builder
 }
 
-// StateMetadata sets/modifies an iotago.StateMetadataFeature on the output.
-func (builder *AnchorOutputBuilder) StateMetadata(entries iotago.StateMetadataFeatureEntries) *AnchorOutputBuilder {
-	builder.output.Features.Upsert(&iotago.StateMetadataFeature{Entries: entries})
+// StateMetadata sets/modifies an axongo.StateMetadataFeature on the output.
+func (builder *AnchorOutputBuilder) StateMetadata(entries axongo.StateMetadataFeatureEntries) *AnchorOutputBuilder {
+	builder.output.Features.Upsert(&axongo.StateMetadataFeature{Entries: entries})
 	builder.stateCtrlReq = true
 
 	return builder
 }
 
-// ImmutableIssuer sets/modifies an iotago.IssuerFeature as an immutable feature on the output.
-// Only call this function on a new iotago.AnchorOutput.
-func (builder *AnchorOutputBuilder) ImmutableIssuer(issuer iotago.Address) *AnchorOutputBuilder {
-	builder.output.ImmutableFeatures.Upsert(&iotago.IssuerFeature{Address: issuer})
+// ImmutableIssuer sets/modifies an axongo.IssuerFeature as an immutable feature on the output.
+// Only call this function on a new axongo.AnchorOutput.
+func (builder *AnchorOutputBuilder) ImmutableIssuer(issuer axongo.Address) *AnchorOutputBuilder {
+	builder.output.ImmutableFeatures.Upsert(&axongo.IssuerFeature{Address: issuer})
 
 	return builder
 }
 
-// ImmutableMetadata sets/modifies an iotago.MetadataFeature as an immutable feature on the output.
-// Only call this function on a new iotago.AnchorOutput.
-func (builder *AnchorOutputBuilder) ImmutableMetadata(entries iotago.MetadataFeatureEntries) *AnchorOutputBuilder {
-	builder.output.ImmutableFeatures.Upsert(&iotago.MetadataFeature{Entries: entries})
+// ImmutableMetadata sets/modifies an axongo.MetadataFeature as an immutable feature on the output.
+// Only call this function on a new axongo.AnchorOutput.
+func (builder *AnchorOutputBuilder) ImmutableMetadata(entries axongo.MetadataFeatureEntries) *AnchorOutputBuilder {
+	builder.output.ImmutableFeatures.Upsert(&axongo.MetadataFeature{Entries: entries})
 
 	return builder
 }
 
-// Build builds the iotago.AnchorOutput.
-func (builder *AnchorOutputBuilder) Build() (*iotago.AnchorOutput, error) {
+// Build builds the axongo.AnchorOutput.
+func (builder *AnchorOutputBuilder) Build() (*axongo.AnchorOutput, error) {
 	if builder.prev != nil && builder.govCtrlReq && builder.stateCtrlReq {
 		return nil, ierrors.New("builder calls require both state and governor transitions which is not possible")
 	}
@@ -132,7 +132,7 @@ func (builder *AnchorOutputBuilder) Build() (*iotago.AnchorOutput, error) {
 }
 
 // MustBuild works like Build() but panics if an error is encountered.
-func (builder *AnchorOutputBuilder) MustBuild() *iotago.AnchorOutput {
+func (builder *AnchorOutputBuilder) MustBuild() *axongo.AnchorOutput {
 	output, err := builder.Build()
 	if err != nil {
 		panic(err)
@@ -151,17 +151,17 @@ func (builder *AnchorOutputBuilder) StateTransition() *AnchorStateTransition {
 }
 
 // Amount sets the base token amount of the output.
-func (trans *AnchorStateTransition) Amount(amount iotago.BaseToken) *AnchorStateTransition {
+func (trans *AnchorStateTransition) Amount(amount axongo.BaseToken) *AnchorStateTransition {
 	return trans.builder.Amount(amount).StateTransition()
 }
 
 // Mana sets the mana of the output.
-func (trans *AnchorStateTransition) Mana(mana iotago.Mana) *AnchorStateTransition {
+func (trans *AnchorStateTransition) Mana(mana axongo.Mana) *AnchorStateTransition {
 	return trans.builder.Mana(mana).StateTransition()
 }
 
-// StateMetadata sets/modifies an iotago.StateMetadataFeature on the output.
-func (trans *AnchorStateTransition) StateMetadata(entries iotago.StateMetadataFeatureEntries) *AnchorStateTransition {
+// StateMetadata sets/modifies an axongo.StateMetadataFeature on the output.
+func (trans *AnchorStateTransition) StateMetadata(entries axongo.StateMetadataFeatureEntries) *AnchorStateTransition {
 	return trans.builder.StateMetadata(entries).StateTransition()
 }
 
@@ -179,18 +179,18 @@ func (builder *AnchorOutputBuilder) GovernanceTransition() *AnchorGovernanceTran
 	return &AnchorGovernanceTransition{builder: builder}
 }
 
-// StateController sets the iotago.StateControllerAddressUnlockCondition of the output.
-func (trans *AnchorGovernanceTransition) StateController(stateCtrl iotago.Address) *AnchorGovernanceTransition {
+// StateController sets the axongo.StateControllerAddressUnlockCondition of the output.
+func (trans *AnchorGovernanceTransition) StateController(stateCtrl axongo.Address) *AnchorGovernanceTransition {
 	return trans.builder.StateController(stateCtrl).GovernanceTransition()
 }
 
-// Governor sets the iotago.GovernorAddressUnlockCondition of the output.
-func (trans *AnchorGovernanceTransition) Governor(governor iotago.Address) *AnchorGovernanceTransition {
+// Governor sets the axongo.GovernorAddressUnlockCondition of the output.
+func (trans *AnchorGovernanceTransition) Governor(governor axongo.Address) *AnchorGovernanceTransition {
 	return trans.builder.Governor(governor).GovernanceTransition()
 }
 
-// Metadata sets/modifies an iotago.MetadataFeature as a mutable feature on the output.
-func (trans *AnchorGovernanceTransition) Metadata(entries iotago.MetadataFeatureEntries) *AnchorGovernanceTransition {
+// Metadata sets/modifies an axongo.MetadataFeature as a mutable feature on the output.
+func (trans *AnchorGovernanceTransition) Metadata(entries axongo.MetadataFeatureEntries) *AnchorGovernanceTransition {
 	return trans.builder.Metadata(entries).GovernanceTransition()
 }
 

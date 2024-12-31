@@ -1,29 +1,29 @@
-package iotago_test
+package axongo_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestInputsSyntacticalUnique(t *testing.T) {
 	tests := []struct {
 		name    string
-		inputs  iotago.Inputs[iotago.Input]
+		inputs  axongo.Inputs[axongo.Input]
 		wantErr error
 	}{
 		{
 			name: "ok",
-			inputs: iotago.Inputs[iotago.Input]{
-				&iotago.UTXOInput{
+			inputs: axongo.Inputs[axongo.Input]{
+				&axongo.UTXOInput{
 					TransactionID:          [36]byte{},
 					TransactionOutputIndex: 0,
 				},
-				&iotago.UTXOInput{
+				&axongo.UTXOInput{
 					TransactionID:          [36]byte{},
 					TransactionOutputIndex: 1,
 				},
@@ -32,22 +32,22 @@ func TestInputsSyntacticalUnique(t *testing.T) {
 		},
 		{
 			name: "fail - addr not unique",
-			inputs: iotago.Inputs[iotago.Input]{
-				&iotago.UTXOInput{
+			inputs: axongo.Inputs[axongo.Input]{
+				&axongo.UTXOInput{
 					TransactionID:          [36]byte{},
 					TransactionOutputIndex: 0,
 				},
-				&iotago.UTXOInput{
+				&axongo.UTXOInput{
 					TransactionID:          [36]byte{},
 					TransactionOutputIndex: 0,
 				},
 			},
-			wantErr: iotago.ErrInputUTXORefsNotUnique,
+			wantErr: axongo.ErrInputUTXORefsNotUnique,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			valFunc := iotago.InputsSyntacticalUnique()
+			valFunc := axongo.InputsSyntacticalUnique()
 			var runErr error
 			for index, input := range tt.inputs {
 				if err := valFunc(index, input); err != nil {
@@ -62,25 +62,25 @@ func TestInputsSyntacticalUnique(t *testing.T) {
 func TestContextInputsRewardInputMaxIndex(t *testing.T) {
 	tests := []struct {
 		name    string
-		inputs  iotago.ContextInputs[iotago.ContextInput]
+		inputs  axongo.ContextInputs[axongo.ContextInput]
 		wantErr error
 	}{
 		{
 			name: "ok",
-			inputs: iotago.ContextInputs[iotago.ContextInput]{
-				&iotago.CommitmentInput{
+			inputs: axongo.ContextInputs[axongo.ContextInput]{
+				&axongo.CommitmentInput{
 					CommitmentID: tpkg.Rand36ByteArray(),
 				},
-				&iotago.BlockIssuanceCreditInput{
+				&axongo.BlockIssuanceCreditInput{
 					AccountID: tpkg.RandAccountID(),
 				},
-				&iotago.RewardInput{
+				&axongo.RewardInput{
 					Index: 2,
 				},
-				&iotago.BlockIssuanceCreditInput{
+				&axongo.BlockIssuanceCreditInput{
 					AccountID: tpkg.RandAccountID(),
 				},
-				&iotago.RewardInput{
+				&axongo.RewardInput{
 					Index: 4,
 				},
 			},
@@ -88,20 +88,20 @@ func TestContextInputsRewardInputMaxIndex(t *testing.T) {
 		},
 		{
 			name: "fail - reward input references index equal to inputs count",
-			inputs: iotago.ContextInputs[iotago.ContextInput]{
-				&iotago.RewardInput{
+			inputs: axongo.ContextInputs[axongo.ContextInput]{
+				&axongo.RewardInput{
 					Index: 1,
 				},
-				&iotago.RewardInput{
-					Index: iotago.MaxInputsCount / 2,
+				&axongo.RewardInput{
+					Index: axongo.MaxInputsCount / 2,
 				},
 			},
-			wantErr: iotago.ErrInputRewardIndexExceedsMaxInputsCount,
+			wantErr: axongo.ErrInputRewardIndexExceedsMaxInputsCount,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			valFunc := iotago.ContextInputsRewardInputMaxIndex(iotago.MaxInputsCount / 2)
+			valFunc := axongo.ContextInputsRewardInputMaxIndex(axongo.MaxInputsCount / 2)
 			var runErr error
 			for index, input := range tt.inputs {
 				if err := valFunc(index, input); err != nil {
@@ -116,13 +116,13 @@ func TestContextInputsRewardInputMaxIndex(t *testing.T) {
 func TestInputsSyntacticalIndicesWithinBounds(t *testing.T) {
 	tests := []struct {
 		name    string
-		inputs  iotago.Inputs[iotago.Input]
+		inputs  axongo.Inputs[axongo.Input]
 		wantErr error
 	}{
 		{
 			name: "ok",
-			inputs: iotago.Inputs[iotago.Input]{
-				&iotago.UTXOInput{
+			inputs: axongo.Inputs[axongo.Input]{
+				&axongo.UTXOInput{
 					TransactionID:          [36]byte{},
 					TransactionOutputIndex: 0,
 				},
@@ -131,18 +131,18 @@ func TestInputsSyntacticalIndicesWithinBounds(t *testing.T) {
 		},
 		{
 			name: "fail - invalid reference UTXO index",
-			inputs: iotago.Inputs[iotago.Input]{
-				&iotago.UTXOInput{
+			inputs: axongo.Inputs[axongo.Input]{
+				&axongo.UTXOInput{
 					TransactionID:          [36]byte{},
 					TransactionOutputIndex: 250,
 				},
 			},
-			wantErr: iotago.ErrRefUTXOIndexInvalid,
+			wantErr: axongo.ErrRefUTXOIndexInvalid,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			valFunc := iotago.InputsSyntacticalIndicesWithinBounds()
+			valFunc := axongo.InputsSyntacticalIndicesWithinBounds()
 			var runErr error
 			for index, input := range tt.inputs {
 				if err := valFunc(index, input); err != nil {
@@ -158,38 +158,38 @@ func TestInputDeSerialize(t *testing.T) {
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name: "ok - UTXO",
-			Source: &iotago.UTXOInput{
+			Source: &axongo.UTXOInput{
 				TransactionID:          [36]byte{},
 				TransactionOutputIndex: 0,
 			},
-			Target:    &iotago.UTXOInput{},
+			Target:    &axongo.UTXOInput{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},
 		{
 			Name: "ok - Commitment",
-			Source: &iotago.CommitmentInput{
-				CommitmentID: iotago.CommitmentID{},
+			Source: &axongo.CommitmentInput{
+				CommitmentID: axongo.CommitmentID{},
 			},
-			Target:    &iotago.CommitmentInput{},
+			Target:    &axongo.CommitmentInput{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},
 		{
 			Name: "ok - BIC",
-			Source: &iotago.BlockIssuanceCreditInput{
+			Source: &axongo.BlockIssuanceCreditInput{
 				AccountID: tpkg.RandAccountID(),
 			},
-			Target:    &iotago.BlockIssuanceCreditInput{},
+			Target:    &axongo.BlockIssuanceCreditInput{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},
 		{
 			Name: "ok - Reward",
-			Source: &iotago.RewardInput{
+			Source: &axongo.RewardInput{
 				Index: 6,
 			},
-			Target:    &iotago.RewardInput{},
+			Target:    &axongo.RewardInput{},
 			SeriErr:   nil,
 			DeSeriErr: nil,
 		},

@@ -1,13 +1,13 @@
-package iotago_test
+package axongo_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestUnlock_DeSerialize(t *testing.T) {
@@ -15,32 +15,32 @@ func TestUnlock_DeSerialize(t *testing.T) {
 		{
 			Name:   "ok - signature",
 			Source: tpkg.RandEd25519SignatureUnlock(),
-			Target: &iotago.SignatureUnlock{},
+			Target: &axongo.SignatureUnlock{},
 		},
 		{
 			Name:   "ok - reference",
 			Source: tpkg.RandReferenceUnlock(),
-			Target: &iotago.ReferenceUnlock{},
+			Target: &axongo.ReferenceUnlock{},
 		},
 		{
 			Name:   "ok - account",
 			Source: tpkg.RandAccountUnlock(),
-			Target: &iotago.AccountUnlock{},
+			Target: &axongo.AccountUnlock{},
 		},
 		{
 			Name:   "ok - anchor",
 			Source: tpkg.RandAnchorUnlock(),
-			Target: &iotago.AnchorUnlock{},
+			Target: &axongo.AnchorUnlock{},
 		},
 		{
 			Name:   "ok - NFT",
 			Source: tpkg.RandNFTUnlock(),
-			Target: &iotago.NFTUnlock{},
+			Target: &axongo.NFTUnlock{},
 		},
 		{
 			Name:   "ok - Multi",
 			Source: tpkg.RandMultiUnlock(),
-			Target: &iotago.MultiUnlock{},
+			Target: &axongo.MultiUnlock{},
 		},
 	}
 
@@ -52,39 +52,39 @@ func TestUnlock_DeSerialize(t *testing.T) {
 func TestSignaturesUniqueAndReferenceUnlocksValidator(t *testing.T) {
 	tests := []struct {
 		name    string
-		unlocks iotago.Unlocks
+		unlocks axongo.Unlocks
 		wantErr error
 	}{
 		{
 			name: "ok",
-			unlocks: iotago.Unlocks{
+			unlocks: axongo.Unlocks{
 				tpkg.RandEd25519SignatureUnlock(),
 				tpkg.RandEd25519SignatureUnlock(),
-				&iotago.ReferenceUnlock{Reference: 0},
+				&axongo.ReferenceUnlock{Reference: 0},
 			},
 			wantErr: nil,
 		},
 		{
 			name: "ok - chainable referential unlock",
-			unlocks: iotago.Unlocks{
+			unlocks: axongo.Unlocks{
 				tpkg.RandEd25519SignatureUnlock(),
-				&iotago.AccountUnlock{Reference: 0},
-				&iotago.AccountUnlock{Reference: 1},
-				&iotago.AnchorUnlock{Reference: 2},
-				&iotago.NFTUnlock{Reference: 3},
+				&axongo.AccountUnlock{Reference: 0},
+				&axongo.AccountUnlock{Reference: 1},
+				&axongo.AnchorUnlock{Reference: 2},
+				&axongo.NFTUnlock{Reference: 3},
 			},
 			wantErr: nil,
 		},
 		{
 			name: "ok - multi unlock",
-			unlocks: iotago.Unlocks{
+			unlocks: axongo.Unlocks{
 				tpkg.RandEd25519SignatureUnlock(),
 				tpkg.RandEd25519SignatureUnlock(),
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.ReferenceUnlock{Reference: 0},
-						&iotago.ReferenceUnlock{Reference: 1},
-						&iotago.EmptyUnlock{},
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.ReferenceUnlock{Reference: 0},
+						&axongo.ReferenceUnlock{Reference: 1},
+						&axongo.EmptyUnlock{},
 						tpkg.RandEd25519SignatureUnlock(),
 					},
 				},
@@ -93,14 +93,14 @@ func TestSignaturesUniqueAndReferenceUnlocksValidator(t *testing.T) {
 		},
 		{
 			name: "ok - chainable referential unlock in multi unlock",
-			unlocks: iotago.Unlocks{
+			unlocks: axongo.Unlocks{
 				tpkg.RandEd25519SignatureUnlock(),
-				&iotago.AccountUnlock{Reference: 0},
-				&iotago.AccountUnlock{Reference: 1},
-				&iotago.AnchorUnlock{Reference: 2},
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.NFTUnlock{Reference: 3},
+				&axongo.AccountUnlock{Reference: 0},
+				&axongo.AccountUnlock{Reference: 1},
+				&axongo.AnchorUnlock{Reference: 2},
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.NFTUnlock{Reference: 3},
 					},
 				},
 			},
@@ -108,76 +108,76 @@ func TestSignaturesUniqueAndReferenceUnlocksValidator(t *testing.T) {
 		},
 		{
 			name: "fail - duplicate ed25519 sig block",
-			unlocks: iotago.Unlocks{
-				&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+			unlocks: axongo.Unlocks{
+				&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 					PublicKey: [32]byte{},
 					Signature: [64]byte{},
 				}},
-				&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+				&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 					PublicKey: [32]byte{},
 					Signature: [64]byte{},
 				}},
 			},
-			wantErr: iotago.ErrSignatureUnlockNotUnique,
+			wantErr: axongo.ErrSignatureUnlockNotUnique,
 		},
 		{
 			name: "fail - signature reuse outside and inside the multi unlocks - 1",
-			unlocks: iotago.Unlocks{
-				&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+			unlocks: axongo.Unlocks{
+				&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 					PublicKey: [32]byte{},
 					Signature: [64]byte{},
 				}},
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 							PublicKey: [32]byte{},
 							Signature: [64]byte{},
 						}},
 					},
 				},
 			},
-			wantErr: iotago.ErrSignatureUnlockNotUnique,
+			wantErr: axongo.ErrSignatureUnlockNotUnique,
 		},
 		{
 			name: "fail - signature reuse outside and inside the multi unlocks - 2",
-			unlocks: iotago.Unlocks{
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+			unlocks: axongo.Unlocks{
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 							PublicKey: [32]byte{},
 							Signature: [64]byte{},
 						}},
-						&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+						&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 							PublicKey: [32]byte{0x01},
 							Signature: [64]byte{0x01},
 						}},
 					},
 				},
-				&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+				&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 					PublicKey: [32]byte{},
 					Signature: [64]byte{},
 				}},
 			},
-			wantErr: iotago.ErrSignatureUnlockNotUnique,
+			wantErr: axongo.ErrSignatureUnlockNotUnique,
 		},
 		{
 			name: "ok - duplicate ed25519 sig block in different multi unlocks",
-			unlocks: iotago.Unlocks{
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+			unlocks: axongo.Unlocks{
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 							PublicKey: [32]byte{},
 							Signature: [64]byte{},
 						}},
-						&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+						&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 							PublicKey: [32]byte{0x01},
 							Signature: [64]byte{0x01},
 						}},
 					},
 				},
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 							PublicKey: [32]byte{},
 							Signature: [64]byte{},
 						}},
@@ -188,136 +188,136 @@ func TestSignaturesUniqueAndReferenceUnlocksValidator(t *testing.T) {
 		},
 		{
 			name: "fail - duplicate multi unlock",
-			unlocks: iotago.Unlocks{
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+			unlocks: axongo.Unlocks{
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 							PublicKey: [32]byte{},
 							Signature: [64]byte{},
 						}},
 					},
 				},
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.SignatureUnlock{Signature: &iotago.Ed25519Signature{
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.SignatureUnlock{Signature: &axongo.Ed25519Signature{
 							PublicKey: [32]byte{},
 							Signature: [64]byte{},
 						}},
 					},
 				},
 			},
-			wantErr: iotago.ErrMultiUnlockNotUnique,
+			wantErr: axongo.ErrMultiUnlockNotUnique,
 		},
 		{
 			name: "fail - reference unlock invalid reference",
-			unlocks: iotago.Unlocks{
+			unlocks: axongo.Unlocks{
 				tpkg.RandEd25519SignatureUnlock(),
 				tpkg.RandEd25519SignatureUnlock(),
-				&iotago.ReferenceUnlock{Reference: 1337},
+				&axongo.ReferenceUnlock{Reference: 1337},
 			},
-			wantErr: iotago.ErrReferentialUnlockInvalid,
+			wantErr: axongo.ErrReferentialUnlockInvalid,
 		},
 		{
 			name: "fail - reference unlock invalid reference in multi unlock",
-			unlocks: iotago.Unlocks{
+			unlocks: axongo.Unlocks{
 				tpkg.RandEd25519SignatureUnlock(),
 				tpkg.RandEd25519SignatureUnlock(),
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.ReferenceUnlock{Reference: 1337},
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.ReferenceUnlock{Reference: 1337},
 					},
 				},
 			},
-			wantErr: iotago.ErrReferentialUnlockInvalid,
+			wantErr: axongo.ErrReferentialUnlockInvalid,
 		},
 		{
 			name: "fail - reference unlock references non sig unlock",
-			unlocks: iotago.Unlocks{
+			unlocks: axongo.Unlocks{
 				tpkg.RandEd25519SignatureUnlock(),
-				&iotago.ReferenceUnlock{Reference: 0},
-				&iotago.ReferenceUnlock{Reference: 1},
+				&axongo.ReferenceUnlock{Reference: 0},
+				&axongo.ReferenceUnlock{Reference: 1},
 			},
-			wantErr: iotago.ErrReferentialUnlockInvalid,
+			wantErr: axongo.ErrReferentialUnlockInvalid,
 		},
 		{
 			name: "fail - reference unlock references non sig unlock in multi unlock",
-			unlocks: iotago.Unlocks{
+			unlocks: axongo.Unlocks{
 				tpkg.RandEd25519SignatureUnlock(),
-				&iotago.ReferenceUnlock{Reference: 0},
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.ReferenceUnlock{Reference: 1},
+				&axongo.ReferenceUnlock{Reference: 0},
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.ReferenceUnlock{Reference: 1},
 					},
 				},
 			},
-			wantErr: iotago.ErrReferentialUnlockInvalid,
+			wantErr: axongo.ErrReferentialUnlockInvalid,
 		},
 		{
 			name: "fail - empty unlock outside multi unlock",
-			unlocks: iotago.Unlocks{
+			unlocks: axongo.Unlocks{
 				tpkg.RandEd25519SignatureUnlock(),
-				&iotago.EmptyUnlock{},
+				&axongo.EmptyUnlock{},
 			},
-			wantErr: iotago.ErrEmptyUnlockOutsideMultiUnlock,
+			wantErr: axongo.ErrEmptyUnlockOutsideMultiUnlock,
 		},
 		{
 			name: "fail - nested multi unlock",
-			unlocks: iotago.Unlocks{
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.MultiUnlock{
-							Unlocks: []iotago.Unlock{
+			unlocks: axongo.Unlocks{
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.MultiUnlock{
+							Unlocks: []axongo.Unlock{
 								tpkg.RandEd25519SignatureUnlock(),
 							},
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrNestedMultiUnlock,
+			wantErr: axongo.ErrNestedMultiUnlock,
 		},
 		{
 			name: "ok - referenced a multi unlock",
-			unlocks: iotago.Unlocks{
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
+			unlocks: axongo.Unlocks{
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
 						tpkg.RandEd25519SignatureUnlock(),
 					},
 				},
-				&iotago.ReferenceUnlock{Reference: 0},
+				&axongo.ReferenceUnlock{Reference: 0},
 			},
 			wantErr: nil,
 		},
 		{
 			name: "fail - referenced a multi unlock in a multi unlock",
-			unlocks: iotago.Unlocks{
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
+			unlocks: axongo.Unlocks{
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
 						tpkg.RandEd25519SignatureUnlock(),
 					},
 				},
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.ReferenceUnlock{Reference: 0},
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.ReferenceUnlock{Reference: 0},
 					},
 				},
 			},
-			wantErr: iotago.ErrReferentialUnlockInvalid,
+			wantErr: axongo.ErrReferentialUnlockInvalid,
 		},
 		{
 			name: "fail - referenced a multi unlock in in itself",
-			unlocks: iotago.Unlocks{
-				&iotago.MultiUnlock{
-					Unlocks: []iotago.Unlock{
-						&iotago.ReferenceUnlock{Reference: 0},
+			unlocks: axongo.Unlocks{
+				&axongo.MultiUnlock{
+					Unlocks: []axongo.Unlock{
+						&axongo.ReferenceUnlock{Reference: 0},
 					},
 				},
 			},
-			wantErr: iotago.ErrReferentialUnlockInvalid,
+			wantErr: axongo.ErrReferentialUnlockInvalid,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			valFunc := iotago.SignaturesUniqueAndReferenceUnlocksValidator(tpkg.ZeroCostTestAPI)
+			valFunc := axongo.SignaturesUniqueAndReferenceUnlocksValidator(tpkg.ZeroCostTestAPI)
 			var runErr error
 			for index, unlock := range tt.unlocks {
 				if err := valFunc(index, unlock); err != nil {

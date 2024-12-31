@@ -1,4 +1,4 @@
-package iotago_test
+package axongo_test
 
 import (
 	"fmt"
@@ -7,22 +7,22 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestOutputTypeString(t *testing.T) {
 	tests := []struct {
-		outputType       iotago.OutputType
+		outputType       axongo.OutputType
 		outputTypeString string
 	}{
-		{iotago.OutputBasic, "BasicOutput"},
-		{iotago.OutputAccount, "AccountOutput"},
-		{iotago.OutputAnchor, "AnchorOutput"},
-		{iotago.OutputFoundry, "FoundryOutput"},
-		{iotago.OutputNFT, "NFTOutput"},
-		{iotago.OutputDelegation, "DelegationOutput"},
+		{axongo.OutputBasic, "BasicOutput"},
+		{axongo.OutputAccount, "AccountOutput"},
+		{axongo.OutputAnchor, "AnchorOutput"},
+		{axongo.OutputFoundry, "FoundryOutput"},
+		{axongo.OutputNFT, "NFTOutput"},
+		{axongo.OutputDelegation, "DelegationOutput"},
 	}
 	for _, tt := range tests {
 		require.Equal(t, tt.outputType.String(), tt.outputTypeString)
@@ -33,150 +33,150 @@ func TestOutputsDeSerialize(t *testing.T) {
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name: "ok - BasicOutput",
-			Source: &iotago.BasicOutput{
+			Source: &axongo.BasicOutput{
 				Amount: 1337,
 				Mana:   500,
-				UnlockConditions: iotago.BasicOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-					&iotago.StorageDepositReturnUnlockCondition{
+				UnlockConditions: axongo.BasicOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					&axongo.StorageDepositReturnUnlockCondition{
 						ReturnAddress: tpkg.RandEd25519Address(),
 						Amount:        1000,
 					},
-					&iotago.TimelockUnlockCondition{Slot: 1337},
-					&iotago.ExpirationUnlockCondition{
+					&axongo.TimelockUnlockCondition{Slot: 1337},
+					&axongo.ExpirationUnlockCondition{
 						ReturnAddress: tpkg.RandEd25519Address(),
 						Slot:          4000,
 					},
 				},
-				Features: iotago.BasicOutputFeatures{
-					&iotago.SenderFeature{Address: tpkg.RandEd25519Address()},
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
-					&iotago.TagFeature{Tag: tpkg.RandBytes(32)},
+				Features: axongo.BasicOutputFeatures{
+					&axongo.SenderFeature{Address: tpkg.RandEd25519Address()},
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
+					&axongo.TagFeature{Tag: tpkg.RandBytes(32)},
 					tpkg.RandNativeTokenFeature(),
 				},
 			},
-			Target: &iotago.BasicOutput{},
+			Target: &axongo.BasicOutput{},
 		},
 		{
 			Name: "ok - AccountOutput",
-			Source: &iotago.AccountOutput{
+			Source: &axongo.AccountOutput{
 				Amount:         1337,
 				Mana:           500,
 				AccountID:      tpkg.RandAccountAddress().AccountID(),
 				FoundryCounter: 1337,
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				Features: iotago.AccountOutputFeatures{
-					&iotago.SenderFeature{Address: tpkg.RandEd25519Address()},
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
-					&iotago.BlockIssuerFeature{
+				Features: axongo.AccountOutputFeatures{
+					&axongo.SenderFeature{Address: tpkg.RandEd25519Address()},
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
+					&axongo.BlockIssuerFeature{
 						ExpirySlot:      1337,
 						BlockIssuerKeys: tpkg.RandBlockIssuerKeys(),
 					},
-					&iotago.StakingFeature{
+					&axongo.StakingFeature{
 						StakedAmount: 1337,
 						FixedCost:    10,
 						StartEpoch:   1,
 						EndEpoch:     2,
 					},
 				},
-				ImmutableFeatures: iotago.AccountOutputImmFeatures{
-					&iotago.IssuerFeature{Address: tpkg.RandEd25519Address()},
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"immutable": tpkg.RandBytes(100)}},
+				ImmutableFeatures: axongo.AccountOutputImmFeatures{
+					&axongo.IssuerFeature{Address: tpkg.RandEd25519Address()},
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"immutable": tpkg.RandBytes(100)}},
 				},
 			},
-			Target: &iotago.AccountOutput{},
+			Target: &axongo.AccountOutput{},
 		},
 		{
 			Name: "ok - AnchorOutput",
-			Source: &iotago.AnchorOutput{
+			Source: &axongo.AnchorOutput{
 				Amount:     1337,
 				Mana:       500,
 				AnchorID:   tpkg.RandAnchorAddress().AnchorID(),
 				StateIndex: 10,
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
-					&iotago.StateControllerAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-					&iotago.GovernorAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
+					&axongo.StateControllerAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					&axongo.GovernorAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
-				Features: iotago.AnchorOutputFeatures{
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
-					&iotago.StateMetadataFeature{Entries: iotago.StateMetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
+				Features: axongo.AnchorOutputFeatures{
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
+					&axongo.StateMetadataFeature{Entries: axongo.StateMetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
 				},
-				ImmutableFeatures: iotago.AnchorOutputImmFeatures{
-					&iotago.IssuerFeature{Address: tpkg.RandEd25519Address()},
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
+				ImmutableFeatures: axongo.AnchorOutputImmFeatures{
+					&axongo.IssuerFeature{Address: tpkg.RandEd25519Address()},
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
 				},
 			},
-			Target: &iotago.AnchorOutput{},
+			Target: &axongo.AnchorOutput{},
 		},
 		{
 			Name: "ok - FoundryOutput",
-			Source: &iotago.FoundryOutput{
+			Source: &axongo.FoundryOutput{
 				Amount:       1337,
 				SerialNumber: 0,
-				TokenScheme: &iotago.SimpleTokenScheme{
+				TokenScheme: &axongo.SimpleTokenScheme{
 					MintedTokens:  new(big.Int).SetUint64(100),
 					MeltedTokens:  big.NewInt(50),
 					MaximumSupply: new(big.Int).SetUint64(1000),
 				},
-				UnlockConditions: iotago.FoundryOutputUnlockConditions{
-					&iotago.ImmutableAccountUnlockCondition{Address: tpkg.RandAccountAddress()},
+				UnlockConditions: axongo.FoundryOutputUnlockConditions{
+					&axongo.ImmutableAccountUnlockCondition{Address: tpkg.RandAccountAddress()},
 				},
-				Features: iotago.FoundryOutputFeatures{
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
+				Features: axongo.FoundryOutputFeatures{
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
 					tpkg.RandNativeTokenFeature(),
 				},
-				ImmutableFeatures: iotago.FoundryOutputImmFeatures{
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"immutable": tpkg.RandBytes(100)}},
+				ImmutableFeatures: axongo.FoundryOutputImmFeatures{
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"immutable": tpkg.RandBytes(100)}},
 				},
 			},
-			Target: &iotago.FoundryOutput{},
+			Target: &axongo.FoundryOutput{},
 		},
 		{
 			Name: "ok - NFTOutput",
-			Source: &iotago.NFTOutput{
+			Source: &axongo.NFTOutput{
 				Amount: 1337,
 				Mana:   500,
 				NFTID:  tpkg.Rand32ByteArray(),
-				UnlockConditions: iotago.NFTOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-					&iotago.StorageDepositReturnUnlockCondition{
+				UnlockConditions: axongo.NFTOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					&axongo.StorageDepositReturnUnlockCondition{
 						ReturnAddress: tpkg.RandEd25519Address(),
 						Amount:        1000,
 					},
-					&iotago.TimelockUnlockCondition{Slot: 1337},
-					&iotago.ExpirationUnlockCondition{
+					&axongo.TimelockUnlockCondition{Slot: 1337},
+					&axongo.ExpirationUnlockCondition{
 						ReturnAddress: tpkg.RandEd25519Address(),
 						Slot:          4000,
 					},
 				},
-				Features: iotago.NFTOutputFeatures{
-					&iotago.SenderFeature{Address: tpkg.RandEd25519Address()},
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
-					&iotago.TagFeature{Tag: tpkg.RandBytes(32)},
+				Features: axongo.NFTOutputFeatures{
+					&axongo.SenderFeature{Address: tpkg.RandEd25519Address()},
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"data": tpkg.RandBytes(100)}},
+					&axongo.TagFeature{Tag: tpkg.RandBytes(32)},
 				},
-				ImmutableFeatures: iotago.NFTOutputImmFeatures{
-					&iotago.IssuerFeature{Address: tpkg.RandEd25519Address()},
-					&iotago.MetadataFeature{Entries: iotago.MetadataFeatureEntries{"immutable": tpkg.RandBytes(10)}},
+				ImmutableFeatures: axongo.NFTOutputImmFeatures{
+					&axongo.IssuerFeature{Address: tpkg.RandEd25519Address()},
+					&axongo.MetadataFeature{Entries: axongo.MetadataFeatureEntries{"immutable": tpkg.RandBytes(10)}},
 				},
 			},
-			Target: &iotago.NFTOutput{},
+			Target: &axongo.NFTOutput{},
 		},
 		{
 			Name: "ok - DelegationOutput",
-			Source: &iotago.DelegationOutput{
+			Source: &axongo.DelegationOutput{
 				Amount:           1337,
 				DelegatedAmount:  1337,
 				DelegationID:     tpkg.Rand32ByteArray(),
 				ValidatorAddress: tpkg.RandAccountAddress(),
-				StartEpoch:       iotago.EpochIndex(32),
-				EndEpoch:         iotago.EpochIndex(37),
-				UnlockConditions: iotago.DelegationOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+				StartEpoch:       axongo.EpochIndex(32),
+				EndEpoch:         axongo.EpochIndex(37),
+				UnlockConditions: axongo.DelegationOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
 			},
-			Target: &iotago.DelegationOutput{},
+			Target: &axongo.DelegationOutput{},
 		},
 	}
 
@@ -188,21 +188,21 @@ func TestOutputsDeSerialize(t *testing.T) {
 func TestOutputsSyntacticalDepositAmount(t *testing.T) {
 	protoParams := tpkg.IOTAMainnetV3TestProtocolParameters
 
-	var minAmount iotago.BaseToken = 14100
+	var minAmount axongo.BaseToken = 14100
 
 	tests := []struct {
 		name        string
-		protoParams iotago.ProtocolParameters
-		outputs     iotago.Outputs[iotago.Output]
+		protoParams axongo.ProtocolParameters
+		outputs     axongo.Outputs[axongo.Output]
 		wantErr     error
 	}{
 		{
 			name:        "ok",
 			protoParams: tpkg.ZeroCostTestAPI.ProtocolParameters(),
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.BasicOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.BasicOutput{
 					Amount:           protoParams.TokenSupply(),
-					UnlockConditions: iotago.BasicOutputUnlockConditions{&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()}},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()}},
 					Mana:             500,
 				},
 			},
@@ -211,10 +211,10 @@ func TestOutputsSyntacticalDepositAmount(t *testing.T) {
 		{
 			name:        "ok - storage deposit covered",
 			protoParams: protoParams,
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.BasicOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.BasicOutput{
 					Amount:           minAmount, // min amount
-					UnlockConditions: iotago.BasicOutputUnlockConditions{&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()}},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()}},
 				},
 			},
 			wantErr: nil,
@@ -222,12 +222,12 @@ func TestOutputsSyntacticalDepositAmount(t *testing.T) {
 		{
 			name:        "ok - storage deposit return",
 			protoParams: protoParams,
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.BasicOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.BasicOutput{
 					Amount: 100000,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
-						&iotago.StorageDepositReturnUnlockCondition{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+						&axongo.StorageDepositReturnUnlockCondition{
 							ReturnAddress: tpkg.RandAccountAddress(),
 							Amount:        minAmount, // min amount
 						},
@@ -240,29 +240,29 @@ func TestOutputsSyntacticalDepositAmount(t *testing.T) {
 		{
 			name:        "fail - storage deposit return less than min storage deposit",
 			protoParams: protoParams,
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.BasicOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.BasicOutput{
 					Amount: 100000,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
-						&iotago.StorageDepositReturnUnlockCondition{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+						&axongo.StorageDepositReturnUnlockCondition{
 							ReturnAddress: tpkg.RandAccountAddress(),
 							Amount:        minAmount - 1, // off by 1
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrStorageDepositLessThanMinReturnOutputStorageDeposit,
+			wantErr: axongo.ErrStorageDepositLessThanMinReturnOutputStorageDeposit,
 		},
 		{
 			name:        "fail - storage deposit more than target output deposit",
 			protoParams: protoParams,
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.BasicOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.BasicOutput{
 					Amount: OneIOTA,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
-						&iotago.StorageDepositReturnUnlockCondition{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+						&axongo.StorageDepositReturnUnlockCondition{
 							ReturnAddress: tpkg.RandAccountAddress(),
 							// off by one from the deposit
 							Amount: OneIOTA + 1,
@@ -271,71 +271,71 @@ func TestOutputsSyntacticalDepositAmount(t *testing.T) {
 					Mana: 500,
 				},
 			},
-			wantErr: iotago.ErrStorageDepositExceedsTargetOutputAmount,
+			wantErr: axongo.ErrStorageDepositExceedsTargetOutputAmount,
 		},
 		{
 			name:        "fail - storage deposit not covered",
 			protoParams: protoParams,
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.BasicOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.BasicOutput{
 					Amount: minAmount - 1,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
 				},
 			},
-			wantErr: iotago.ErrStorageDepositNotCovered,
+			wantErr: axongo.ErrStorageDepositNotCovered,
 		},
 		{
 			name:        "fail - zero deposit",
 			protoParams: tpkg.ZeroCostTestAPI.ProtocolParameters(),
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.BasicOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.BasicOutput{
 					Amount: 0,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
-			wantErr: iotago.ErrAmountMustBeGreaterThanZero,
+			wantErr: axongo.ErrAmountMustBeGreaterThanZero,
 		},
 		{
 			name:        "fail - more than total supply on single output",
 			protoParams: tpkg.ZeroCostTestAPI.ProtocolParameters(),
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.BasicOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.BasicOutput{
 					Amount: protoParams.TokenSupply() + 1,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
-			wantErr: iotago.ErrOutputsSumExceedsTotalSupply,
+			wantErr: axongo.ErrOutputsSumExceedsTotalSupply,
 		},
 		{
 			name:        "fail - sum more than total supply over multiple outputs",
 			protoParams: tpkg.ZeroCostTestAPI.ProtocolParameters(),
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.BasicOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.BasicOutput{
 					Amount: protoParams.TokenSupply() - 1,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
-				&iotago.BasicOutput{
+				&axongo.BasicOutput{
 					Amount: protoParams.TokenSupply() - 1,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
-			wantErr: iotago.ErrOutputsSumExceedsTotalSupply,
+			wantErr: axongo.ErrOutputsSumExceedsTotalSupply,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			valFunc := iotago.OutputsSyntacticalDepositAmount(tt.protoParams, iotago.NewStorageScoreStructure(tt.protoParams.StorageScoreParameters()))
+			valFunc := axongo.OutputsSyntacticalDepositAmount(tt.protoParams, axongo.NewStorageScoreStructure(tt.protoParams.StorageScoreParameters()))
 			var runErr error
 			for index, output := range tt.outputs {
 				if err := valFunc(index, output); err != nil {
@@ -351,27 +351,27 @@ func TestOutputsSyntacticalDepositAmount(t *testing.T) {
 func TestOutputsSyntacticalExpirationAndTimelock(t *testing.T) {
 	tests := []struct {
 		name    string
-		outputs iotago.TxEssenceOutputs
+		outputs axongo.TxEssenceOutputs
 		wantErr error
 	}{
 		{
 			name: "ok",
-			outputs: iotago.TxEssenceOutputs{
-				&iotago.BasicOutput{
+			outputs: axongo.TxEssenceOutputs{
+				&axongo.BasicOutput{
 					Amount: 100,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-						&iotago.ExpirationUnlockCondition{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+						&axongo.ExpirationUnlockCondition{
 							ReturnAddress: tpkg.RandEd25519Address(),
 							Slot:          1337,
 						},
 					},
 				},
-				&iotago.BasicOutput{
+				&axongo.BasicOutput{
 					Amount: 100,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-						&iotago.TimelockUnlockCondition{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+						&axongo.TimelockUnlockCondition{
 							Slot: 1337,
 						},
 					},
@@ -381,40 +381,40 @@ func TestOutputsSyntacticalExpirationAndTimelock(t *testing.T) {
 		},
 		{
 			name: "fail - zero expiration time",
-			outputs: iotago.TxEssenceOutputs{
-				&iotago.BasicOutput{
+			outputs: axongo.TxEssenceOutputs{
+				&axongo.BasicOutput{
 					Amount: 100,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-						&iotago.ExpirationUnlockCondition{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+						&axongo.ExpirationUnlockCondition{
 							ReturnAddress: tpkg.RandEd25519Address(),
 							Slot:          0,
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrExpirationConditionZero,
+			wantErr: axongo.ErrExpirationConditionZero,
 		},
 		{
 			name: "fail - zero timelock time",
-			outputs: iotago.TxEssenceOutputs{
-				&iotago.BasicOutput{
+			outputs: axongo.TxEssenceOutputs{
+				&axongo.BasicOutput{
 					Amount: 100,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-						&iotago.TimelockUnlockCondition{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+						&axongo.TimelockUnlockCondition{
 							Slot: 0,
 						},
 					},
 				},
 			},
-			wantErr: iotago.ErrTimelockConditionZero,
+			wantErr: axongo.ErrTimelockConditionZero,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			valFunc := iotago.OutputsSyntacticalExpirationAndTimelock()
+			valFunc := axongo.OutputsSyntacticalExpirationAndTimelock()
 			var runErr error
 			for index, output := range tt.outputs {
 				if err := valFunc(index, output); err != nil {
@@ -429,27 +429,27 @@ func TestOutputsSyntacticalExpirationAndTimelock(t *testing.T) {
 func TestOutputsSyntacticalNativeTokensCount(t *testing.T) {
 	tests := []struct {
 		name    string
-		outputs iotago.Outputs[iotago.Output]
+		outputs axongo.Outputs[axongo.Output]
 		wantErr error
 	}{
 		{
 			name: "ok",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.BasicOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.BasicOutput{
 					Amount: 1,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
-					Features: iotago.BasicOutputFeatures{
+					Features: axongo.BasicOutputFeatures{
 						tpkg.RandNativeTokenFeature(),
 					},
 				},
-				&iotago.BasicOutput{
+				&axongo.BasicOutput{
 					Amount: 1,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
-					Features: iotago.BasicOutputFeatures{
+					Features: axongo.BasicOutputFeatures{
 						tpkg.RandNativeTokenFeature(),
 					},
 				},
@@ -458,26 +458,26 @@ func TestOutputsSyntacticalNativeTokensCount(t *testing.T) {
 		},
 		{
 			name: "fail - native token with zero amount",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.BasicOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.BasicOutput{
 					Amount: 1,
-					Features: iotago.BasicOutputFeatures{
-						&iotago.NativeTokenFeature{
-							ID:     iotago.NativeTokenID{},
+					Features: axongo.BasicOutputFeatures{
+						&axongo.NativeTokenFeature{
+							ID:     axongo.NativeTokenID{},
 							Amount: big.NewInt(0),
 						},
 					},
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
-			wantErr: iotago.ErrNativeTokenAmountLessThanEqualZero,
+			wantErr: axongo.ErrNativeTokenAmountLessThanEqualZero,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			valFunc := iotago.OutputsSyntacticalNativeTokens()
+			valFunc := axongo.OutputsSyntacticalNativeTokens()
 			var runErr error
 			for index, output := range tt.outputs {
 				if err := valFunc(index, output); err != nil {
@@ -490,25 +490,25 @@ func TestOutputsSyntacticalNativeTokensCount(t *testing.T) {
 }
 
 func TestOutputsSyntacticalAccount(t *testing.T) {
-	exampleBlockIssuerFeature := &iotago.BlockIssuerFeature{
+	exampleBlockIssuerFeature := &axongo.BlockIssuerFeature{
 		ExpirySlot:      3,
 		BlockIssuerKeys: tpkg.RandBlockIssuerKeys(2),
 	}
 
 	tests := []struct {
 		name    string
-		outputs iotago.Outputs[iotago.Output]
+		outputs axongo.Outputs[axongo.Output]
 		wantErr error
 	}{
 		{
 			name: "ok - empty state",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.AccountOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.AccountOutput{
 					Amount:         OneIOTA,
-					AccountID:      iotago.AccountID{},
+					AccountID:      axongo.AccountID{},
 					FoundryCounter: 0,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
 				},
 			},
@@ -516,13 +516,13 @@ func TestOutputsSyntacticalAccount(t *testing.T) {
 		},
 		{
 			name: "ok - non empty state",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.AccountOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.AccountOutput{
 					Amount:         OneIOTA,
 					AccountID:      tpkg.Rand32ByteArray(),
 					FoundryCounter: 1337,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
 				},
 			},
@@ -530,49 +530,49 @@ func TestOutputsSyntacticalAccount(t *testing.T) {
 		},
 		{
 			name: "fail - foundry counter non zero on empty account ID",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.AccountOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.AccountOutput{
 					Amount:         OneIOTA,
-					AccountID:      iotago.AccountID{},
+					AccountID:      axongo.AccountID{},
 					FoundryCounter: 1,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
 				},
 			},
-			wantErr: iotago.ErrAccountOutputNonEmptyState,
+			wantErr: axongo.ErrAccountOutputNonEmptyState,
 		},
 		{
 			name: "fail - account's unlock condition contains its own account address",
-			outputs: iotago.Outputs[iotago.Output]{
-				func() *iotago.AccountOutput {
-					accountID := iotago.AccountID(tpkg.Rand32ByteArray())
+			outputs: axongo.Outputs[axongo.Output]{
+				func() *axongo.AccountOutput {
+					accountID := axongo.AccountID(tpkg.Rand32ByteArray())
 
-					return &iotago.AccountOutput{
+					return &axongo.AccountOutput{
 						Amount:         OneIOTA,
 						AccountID:      accountID,
 						FoundryCounter: 1337,
-						UnlockConditions: iotago.AccountOutputUnlockConditions{
-							&iotago.AddressUnlockCondition{Address: accountID.ToAddress()},
+						UnlockConditions: axongo.AccountOutputUnlockConditions{
+							&axongo.AddressUnlockCondition{Address: accountID.ToAddress()},
 						},
 					}
 				}(),
 			},
-			wantErr: iotago.ErrAccountOutputCyclicAddress,
+			wantErr: axongo.ErrAccountOutputCyclicAddress,
 		},
 		{
 			name: "ok - staked amount equal to amount",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.AccountOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.AccountOutput{
 					Amount:         OneIOTA,
 					AccountID:      tpkg.Rand32ByteArray(),
 					FoundryCounter: 1337,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
-					Features: iotago.AccountOutputFeatures{
+					Features: axongo.AccountOutputFeatures{
 						exampleBlockIssuerFeature,
-						&iotago.StakingFeature{StakedAmount: OneIOTA},
+						&axongo.StakingFeature{StakedAmount: OneIOTA},
 					},
 				},
 			},
@@ -580,17 +580,17 @@ func TestOutputsSyntacticalAccount(t *testing.T) {
 		},
 		{
 			name: "ok - staked amount less than amount",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.AccountOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.AccountOutput{
 					Amount:         OneIOTA + 1,
 					AccountID:      tpkg.Rand32ByteArray(),
 					FoundryCounter: 1337,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
-					Features: iotago.AccountOutputFeatures{
+					Features: axongo.AccountOutputFeatures{
 						exampleBlockIssuerFeature,
-						&iotago.StakingFeature{StakedAmount: OneIOTA},
+						&axongo.StakingFeature{StakedAmount: OneIOTA},
 					},
 				},
 			},
@@ -598,35 +598,35 @@ func TestOutputsSyntacticalAccount(t *testing.T) {
 		},
 		{
 			name: "fail - staked amount greater than amount",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.AccountOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.AccountOutput{
 					Amount:         OneIOTA,
 					AccountID:      tpkg.Rand32ByteArray(),
 					FoundryCounter: 1337,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
-					Features: iotago.AccountOutputFeatures{
+					Features: axongo.AccountOutputFeatures{
 						exampleBlockIssuerFeature,
-						&iotago.StakingFeature{StakedAmount: OneIOTA + 1},
+						&axongo.StakingFeature{StakedAmount: OneIOTA + 1},
 					},
 				},
 			},
-			wantErr: iotago.ErrAccountOutputAmountLessThanStakedAmount,
+			wantErr: axongo.ErrAccountOutputAmountLessThanStakedAmount,
 		},
 		{
 			name: "ok - staking feature present with block issuer feature",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.AccountOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.AccountOutput{
 					Amount:         OneIOTA,
 					AccountID:      tpkg.Rand32ByteArray(),
 					FoundryCounter: 1337,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
-					Features: iotago.AccountOutputFeatures{
+					Features: axongo.AccountOutputFeatures{
 						exampleBlockIssuerFeature,
-						&iotago.StakingFeature{StakedAmount: OneIOTA},
+						&axongo.StakingFeature{StakedAmount: OneIOTA},
 					},
 				},
 			},
@@ -634,23 +634,23 @@ func TestOutputsSyntacticalAccount(t *testing.T) {
 		},
 		{
 			name: "fail - staking feature present without block issuer feature",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.AccountOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.AccountOutput{
 					Amount:         OneIOTA,
 					AccountID:      tpkg.Rand32ByteArray(),
 					FoundryCounter: 1337,
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
-					Features: iotago.AccountOutputFeatures{
-						&iotago.StakingFeature{StakedAmount: OneIOTA},
+					Features: axongo.AccountOutputFeatures{
+						&axongo.StakingFeature{StakedAmount: OneIOTA},
 					},
 				},
 			},
-			wantErr: iotago.ErrStakingBlockIssuerFeatureMissing,
+			wantErr: axongo.ErrStakingBlockIssuerFeatureMissing,
 		},
 	}
-	valFunc := iotago.OutputsSyntacticalAccount()
+	valFunc := axongo.OutputsSyntacticalAccount()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var runErr error
@@ -667,19 +667,19 @@ func TestOutputsSyntacticalAccount(t *testing.T) {
 func TestOutputsSyntacticalAnchor(t *testing.T) {
 	tests := []struct {
 		name    string
-		outputs iotago.Outputs[iotago.Output]
+		outputs axongo.Outputs[axongo.Output]
 		wantErr error
 	}{
 		{
 			name: "ok - empty state",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.AnchorOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.AnchorOutput{
 					Amount:     OneIOTA,
-					AnchorID:   iotago.AnchorID{},
+					AnchorID:   axongo.AnchorID{},
 					StateIndex: 0,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
-						&iotago.GovernorAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
+						&axongo.GovernorAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
 					},
 				},
 			},
@@ -687,14 +687,14 @@ func TestOutputsSyntacticalAnchor(t *testing.T) {
 		},
 		{
 			name: "ok - non empty state",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.AnchorOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.AnchorOutput{
 					Amount:     OneIOTA,
 					AnchorID:   tpkg.Rand32ByteArray(),
 					StateIndex: 10,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
-						&iotago.GovernorAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
+						&axongo.GovernorAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
 					},
 				},
 			},
@@ -702,59 +702,59 @@ func TestOutputsSyntacticalAnchor(t *testing.T) {
 		},
 		{
 			name: "fail - state index non zero on empty anchor ID",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.AnchorOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.AnchorOutput{
 					Amount:     OneIOTA,
-					AnchorID:   iotago.AnchorID{},
+					AnchorID:   axongo.AnchorID{},
 					StateIndex: 1,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
-						&iotago.GovernorAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
+						&axongo.GovernorAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
 					},
 				},
 			},
-			wantErr: iotago.ErrAnchorOutputNonEmptyState,
+			wantErr: axongo.ErrAnchorOutputNonEmptyState,
 		},
 		{
 			name: "fail - anchors's state controller address unlock condition contains its own anchor address",
-			outputs: iotago.Outputs[iotago.Output]{
-				func() *iotago.AnchorOutput {
-					anchorID := iotago.AnchorID(tpkg.Rand32ByteArray())
+			outputs: axongo.Outputs[axongo.Output]{
+				func() *axongo.AnchorOutput {
+					anchorID := axongo.AnchorID(tpkg.Rand32ByteArray())
 
-					return &iotago.AnchorOutput{
+					return &axongo.AnchorOutput{
 						Amount:     OneIOTA,
 						AnchorID:   anchorID,
 						StateIndex: 10,
-						UnlockConditions: iotago.AnchorOutputUnlockConditions{
-							&iotago.StateControllerAddressUnlockCondition{Address: anchorID.ToAddress()},
-							&iotago.GovernorAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
+						UnlockConditions: axongo.AnchorOutputUnlockConditions{
+							&axongo.StateControllerAddressUnlockCondition{Address: anchorID.ToAddress()},
+							&axongo.GovernorAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
 						},
 					}
 				}(),
 			},
-			wantErr: iotago.ErrAnchorOutputCyclicAddress,
+			wantErr: axongo.ErrAnchorOutputCyclicAddress,
 		},
 		{
 			name: "fail - anchors's governor address unlock condition contains its own anchor address",
-			outputs: iotago.Outputs[iotago.Output]{
-				func() *iotago.AnchorOutput {
-					anchorID := iotago.AnchorID(tpkg.Rand32ByteArray())
+			outputs: axongo.Outputs[axongo.Output]{
+				func() *axongo.AnchorOutput {
+					anchorID := axongo.AnchorID(tpkg.Rand32ByteArray())
 
-					return &iotago.AnchorOutput{
+					return &axongo.AnchorOutput{
 						Amount:     OneIOTA,
 						AnchorID:   anchorID,
 						StateIndex: 10,
-						UnlockConditions: iotago.AnchorOutputUnlockConditions{
-							&iotago.StateControllerAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
-							&iotago.GovernorAddressUnlockCondition{Address: anchorID.ToAddress()},
+						UnlockConditions: axongo.AnchorOutputUnlockConditions{
+							&axongo.StateControllerAddressUnlockCondition{Address: tpkg.RandAnchorAddress()},
+							&axongo.GovernorAddressUnlockCondition{Address: anchorID.ToAddress()},
 						},
 					}
 				}(),
 			},
-			wantErr: iotago.ErrAnchorOutputCyclicAddress,
+			wantErr: axongo.ErrAnchorOutputCyclicAddress,
 		},
 	}
-	valFunc := iotago.OutputsSyntacticalAnchor()
+	valFunc := axongo.OutputsSyntacticalAnchor()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var runErr error
@@ -771,22 +771,22 @@ func TestOutputsSyntacticalAnchor(t *testing.T) {
 func TestOutputsSyntacticalFoundry(t *testing.T) {
 	tests := []struct {
 		name    string
-		outputs iotago.Outputs[iotago.Output]
+		outputs axongo.Outputs[axongo.Output]
 		wantErr error
 	}{
 		{
 			name: "ok",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.FoundryOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.FoundryOutput{
 					Amount:       1337,
 					SerialNumber: 5,
-					TokenScheme: &iotago.SimpleTokenScheme{
+					TokenScheme: &axongo.SimpleTokenScheme{
 						MintedTokens:  new(big.Int).SetUint64(5),
 						MeltedTokens:  big.NewInt(2),
 						MaximumSupply: new(big.Int).SetUint64(10),
 					},
-					UnlockConditions: iotago.FoundryOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.FoundryOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
 					Features: nil,
 				},
@@ -795,17 +795,17 @@ func TestOutputsSyntacticalFoundry(t *testing.T) {
 		},
 		{
 			name: "ok - minted and max supply same",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.FoundryOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.FoundryOutput{
 					Amount:       1337,
 					SerialNumber: 5,
-					TokenScheme: &iotago.SimpleTokenScheme{
+					TokenScheme: &axongo.SimpleTokenScheme{
 						MintedTokens:  new(big.Int).SetUint64(10),
 						MeltedTokens:  big.NewInt(0),
 						MaximumSupply: new(big.Int).SetUint64(10),
 					},
-					UnlockConditions: iotago.FoundryOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.FoundryOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
 					Features: nil,
 				},
@@ -814,63 +814,63 @@ func TestOutputsSyntacticalFoundry(t *testing.T) {
 		},
 		{
 			name: "fail - invalid maximum supply",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.FoundryOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.FoundryOutput{
 					Amount:       1337,
 					SerialNumber: 5,
-					TokenScheme: &iotago.SimpleTokenScheme{
+					TokenScheme: &axongo.SimpleTokenScheme{
 						MintedTokens:  new(big.Int).SetUint64(5),
 						MeltedTokens:  big.NewInt(0),
 						MaximumSupply: new(big.Int).SetUint64(0),
 					},
-					UnlockConditions: iotago.FoundryOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.FoundryOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
 					Features: nil,
 				},
 			},
-			wantErr: iotago.ErrSimpleTokenSchemeInvalidMaximumSupply,
+			wantErr: axongo.ErrSimpleTokenSchemeInvalidMaximumSupply,
 		},
 		{
 			name: "fail - minted less than melted",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.FoundryOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.FoundryOutput{
 					Amount:       1337,
 					SerialNumber: 5,
-					TokenScheme: &iotago.SimpleTokenScheme{
+					TokenScheme: &axongo.SimpleTokenScheme{
 						MintedTokens:  big.NewInt(5),
 						MeltedTokens:  big.NewInt(10),
 						MaximumSupply: new(big.Int).SetUint64(100),
 					},
-					UnlockConditions: iotago.FoundryOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.FoundryOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
 					Features: nil,
 				},
 			},
-			wantErr: iotago.ErrSimpleTokenSchemeInvalidMintedMeltedTokens,
+			wantErr: axongo.ErrSimpleTokenSchemeInvalidMintedMeltedTokens,
 		},
 		{
 			name: "fail - minted melted delta is bigger than maximum supply",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.FoundryOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.FoundryOutput{
 					Amount:       1337,
 					SerialNumber: 5,
-					TokenScheme: &iotago.SimpleTokenScheme{
+					TokenScheme: &axongo.SimpleTokenScheme{
 						MintedTokens:  big.NewInt(50),
 						MeltedTokens:  big.NewInt(20),
 						MaximumSupply: new(big.Int).SetUint64(10),
 					},
-					UnlockConditions: iotago.FoundryOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
+					UnlockConditions: axongo.FoundryOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandAccountAddress()},
 					},
 					Features: nil,
 				},
 			},
-			wantErr: iotago.ErrSimpleTokenSchemeInvalidMintedMeltedTokens,
+			wantErr: axongo.ErrSimpleTokenSchemeInvalidMintedMeltedTokens,
 		},
 	}
-	valFunc := iotago.OutputsSyntacticalFoundry()
+	valFunc := axongo.OutputsSyntacticalFoundry()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var runErr error
@@ -887,40 +887,40 @@ func TestOutputsSyntacticalFoundry(t *testing.T) {
 func TestOutputsSyntacticalNFT(t *testing.T) {
 	tests := []struct {
 		name    string
-		outputs iotago.Outputs[iotago.Output]
+		outputs axongo.Outputs[axongo.Output]
 		wantErr error
 	}{
 		{
 			name: "ok",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.NFTOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.NFTOutput{
 					Amount: OneIOTA,
-					NFTID:  iotago.NFTID{},
-					UnlockConditions: iotago.NFTOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					NFTID:  axongo.NFTID{},
+					UnlockConditions: axongo.NFTOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
 		},
 		{
 			name: "fail - NFT's address unlock condition contains its own NFT address",
-			outputs: iotago.Outputs[iotago.Output]{
-				func() *iotago.NFTOutput {
-					nftID := iotago.NFTID(tpkg.Rand32ByteArray())
+			outputs: axongo.Outputs[axongo.Output]{
+				func() *axongo.NFTOutput {
+					nftID := axongo.NFTID(tpkg.Rand32ByteArray())
 
-					return &iotago.NFTOutput{
+					return &axongo.NFTOutput{
 						Amount: OneIOTA,
 						NFTID:  nftID,
-						UnlockConditions: iotago.NFTOutputUnlockConditions{
-							&iotago.AddressUnlockCondition{Address: nftID.ToAddress()},
+						UnlockConditions: axongo.NFTOutputUnlockConditions{
+							&axongo.AddressUnlockCondition{Address: nftID.ToAddress()},
 						},
 					}
 				}(),
 			},
-			wantErr: iotago.ErrNFTOutputCyclicAddress,
+			wantErr: axongo.ErrNFTOutputCyclicAddress,
 		},
 	}
-	valFunc := iotago.OutputsSyntacticalNFT()
+	valFunc := axongo.OutputsSyntacticalNFT()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var runErr error
@@ -935,43 +935,43 @@ func TestOutputsSyntacticalNFT(t *testing.T) {
 }
 
 func TestOutputsSyntacticaDelegation(t *testing.T) {
-	emptyAccountAddress := iotago.AccountAddress{}
+	emptyAccountAddress := axongo.AccountAddress{}
 
 	tests := []struct {
 		name    string
-		outputs iotago.Outputs[iotago.Output]
+		outputs axongo.Outputs[axongo.Output]
 		wantErr error
 	}{
 		{
 			name: "ok",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.DelegationOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.DelegationOutput{
 					Amount:           OneIOTA,
 					DelegatedAmount:  OneIOTA,
-					DelegationID:     iotago.EmptyDelegationID(),
+					DelegationID:     axongo.EmptyDelegationID(),
 					ValidatorAddress: tpkg.RandAccountAddress(),
-					UnlockConditions: iotago.DelegationOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.DelegationOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
 		},
 		{
 			name: "fail - Delegation Output contains empty validator address",
-			outputs: iotago.Outputs[iotago.Output]{
-				&iotago.DelegationOutput{
+			outputs: axongo.Outputs[axongo.Output]{
+				&axongo.DelegationOutput{
 					Amount:           OneIOTA,
-					DelegationID:     iotago.EmptyDelegationID(),
+					DelegationID:     axongo.EmptyDelegationID(),
 					ValidatorAddress: &emptyAccountAddress,
-					UnlockConditions: iotago.DelegationOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.DelegationOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 			},
-			wantErr: iotago.ErrDelegationValidatorAddressEmpty,
+			wantErr: axongo.ErrDelegationValidatorAddressEmpty,
 		},
 	}
-	valFunc := iotago.OutputsSyntacticalDelegation()
+	valFunc := axongo.OutputsSyntacticalDelegation()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var runErr error
@@ -988,11 +988,11 @@ func TestOutputsSyntacticaDelegation(t *testing.T) {
 func TestOwnerTransitionIndependentOutput_UnlockableBy(t *testing.T) {
 	type test struct {
 		name                string
-		output              iotago.OwnerTransitionIndependentOutput
-		targetAddr          iotago.Address
-		commitmentInputTime iotago.SlotIndex
-		minCommittableAge   iotago.SlotIndex
-		maxCommittableAge   iotago.SlotIndex
+		output              axongo.OwnerTransitionIndependentOutput
+		targetAddr          axongo.Address
+		commitmentInputTime axongo.SlotIndex
+		minCommittableAge   axongo.SlotIndex
+		maxCommittableAge   axongo.SlotIndex
 		canUnlock           bool
 	}
 	tests := []*test{
@@ -1000,32 +1000,32 @@ func TestOwnerTransitionIndependentOutput_UnlockableBy(t *testing.T) {
 			receiverAddr := tpkg.RandEd25519Address()
 			return &test{
 				name: "can unlock - target is source (no unlock conditions)",
-				output: &iotago.BasicOutput{
+				output: &axongo.BasicOutput{
 					Amount: OneIOTA,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: receiverAddr},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: receiverAddr},
 					},
 				},
 				targetAddr:          receiverAddr,
-				commitmentInputTime: iotago.SlotIndex(0),
-				minCommittableAge:   iotago.SlotIndex(0),
-				maxCommittableAge:   iotago.SlotIndex(0),
+				commitmentInputTime: axongo.SlotIndex(0),
+				minCommittableAge:   axongo.SlotIndex(0),
+				maxCommittableAge:   axongo.SlotIndex(0),
 				canUnlock:           true,
 			}
 		}(),
 		func() *test {
 			return &test{
 				name: "can not unlock - target is not source (no timelocks or expiration unlock conditions)",
-				output: &iotago.BasicOutput{
+				output: &axongo.BasicOutput{
 					Amount: OneIOTA,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				},
 				targetAddr:          tpkg.RandEd25519Address(),
-				commitmentInputTime: iotago.SlotIndex(0),
-				minCommittableAge:   iotago.SlotIndex(0),
-				maxCommittableAge:   iotago.SlotIndex(0),
+				commitmentInputTime: axongo.SlotIndex(0),
+				minCommittableAge:   axongo.SlotIndex(0),
+				maxCommittableAge:   axongo.SlotIndex(0),
 				canUnlock:           false,
 			}
 		}(),
@@ -1033,20 +1033,20 @@ func TestOwnerTransitionIndependentOutput_UnlockableBy(t *testing.T) {
 			receiverAddr := tpkg.RandEd25519Address()
 			return &test{
 				name: "expiration - receiver addr can unlock",
-				output: &iotago.BasicOutput{
+				output: &axongo.BasicOutput{
 					Amount: OneIOTA,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: receiverAddr},
-						&iotago.ExpirationUnlockCondition{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: receiverAddr},
+						&axongo.ExpirationUnlockCondition{
 							ReturnAddress: tpkg.RandEd25519Address(),
 							Slot:          26,
 						},
 					},
 				},
 				targetAddr:          receiverAddr,
-				commitmentInputTime: iotago.SlotIndex(5),
-				minCommittableAge:   iotago.SlotIndex(10),
-				maxCommittableAge:   iotago.SlotIndex(20),
+				commitmentInputTime: axongo.SlotIndex(5),
+				minCommittableAge:   axongo.SlotIndex(10),
+				maxCommittableAge:   axongo.SlotIndex(20),
 				canUnlock:           true,
 			}
 		}(),
@@ -1055,20 +1055,20 @@ func TestOwnerTransitionIndependentOutput_UnlockableBy(t *testing.T) {
 			returnAddr := tpkg.RandEd25519Address()
 			return &test{
 				name: "expiration - receiver addr can not unlock",
-				output: &iotago.BasicOutput{
+				output: &axongo.BasicOutput{
 					Amount: OneIOTA,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: receiverAddr},
-						&iotago.ExpirationUnlockCondition{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: receiverAddr},
+						&axongo.ExpirationUnlockCondition{
 							ReturnAddress: returnAddr,
 							Slot:          25,
 						},
 					},
 				},
 				targetAddr:          receiverAddr,
-				commitmentInputTime: iotago.SlotIndex(5),
-				minCommittableAge:   iotago.SlotIndex(10),
-				maxCommittableAge:   iotago.SlotIndex(20),
+				commitmentInputTime: axongo.SlotIndex(5),
+				minCommittableAge:   axongo.SlotIndex(10),
+				maxCommittableAge:   axongo.SlotIndex(20),
 				canUnlock:           false,
 			}
 		}(),
@@ -1077,20 +1077,20 @@ func TestOwnerTransitionIndependentOutput_UnlockableBy(t *testing.T) {
 			returnAddr := tpkg.RandEd25519Address()
 			return &test{
 				name: "expiration - return addr can unlock",
-				output: &iotago.BasicOutput{
+				output: &axongo.BasicOutput{
 					Amount: OneIOTA,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: receiverAddr},
-						&iotago.ExpirationUnlockCondition{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: receiverAddr},
+						&axongo.ExpirationUnlockCondition{
 							ReturnAddress: returnAddr,
 							Slot:          15,
 						},
 					},
 				},
 				targetAddr:          returnAddr,
-				commitmentInputTime: iotago.SlotIndex(5),
-				minCommittableAge:   iotago.SlotIndex(10),
-				maxCommittableAge:   iotago.SlotIndex(20),
+				commitmentInputTime: axongo.SlotIndex(5),
+				minCommittableAge:   axongo.SlotIndex(10),
+				maxCommittableAge:   axongo.SlotIndex(20),
 				canUnlock:           true,
 			}
 		}(),
@@ -1099,20 +1099,20 @@ func TestOwnerTransitionIndependentOutput_UnlockableBy(t *testing.T) {
 			returnAddr := tpkg.RandEd25519Address()
 			return &test{
 				name: "expiration - return addr can not unlock",
-				output: &iotago.BasicOutput{
+				output: &axongo.BasicOutput{
 					Amount: OneIOTA,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: receiverAddr},
-						&iotago.ExpirationUnlockCondition{
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: receiverAddr},
+						&axongo.ExpirationUnlockCondition{
 							ReturnAddress: returnAddr,
 							Slot:          16,
 						},
 					},
 				},
 				targetAddr:          returnAddr,
-				commitmentInputTime: iotago.SlotIndex(5),
-				minCommittableAge:   iotago.SlotIndex(10),
-				maxCommittableAge:   iotago.SlotIndex(20),
+				commitmentInputTime: axongo.SlotIndex(5),
+				minCommittableAge:   axongo.SlotIndex(10),
+				maxCommittableAge:   axongo.SlotIndex(20),
 				canUnlock:           false,
 			}
 		}(),
@@ -1120,17 +1120,17 @@ func TestOwnerTransitionIndependentOutput_UnlockableBy(t *testing.T) {
 			receiverAddr := tpkg.RandEd25519Address()
 			return &test{
 				name: "timelock - expired timelock is unlockable",
-				output: &iotago.BasicOutput{
+				output: &axongo.BasicOutput{
 					Amount: OneIOTA,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: receiverAddr},
-						&iotago.TimelockUnlockCondition{Slot: 15},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: receiverAddr},
+						&axongo.TimelockUnlockCondition{Slot: 15},
 					},
 				},
 				targetAddr:          receiverAddr,
-				commitmentInputTime: iotago.SlotIndex(5),
-				minCommittableAge:   iotago.SlotIndex(10),
-				maxCommittableAge:   iotago.SlotIndex(20),
+				commitmentInputTime: axongo.SlotIndex(5),
+				minCommittableAge:   axongo.SlotIndex(10),
+				maxCommittableAge:   axongo.SlotIndex(20),
 				canUnlock:           true,
 			}
 		}(),
@@ -1138,17 +1138,17 @@ func TestOwnerTransitionIndependentOutput_UnlockableBy(t *testing.T) {
 			receiverAddr := tpkg.RandEd25519Address()
 			return &test{
 				name: "timelock - non-expired timelock is not unlockable",
-				output: &iotago.BasicOutput{
+				output: &axongo.BasicOutput{
 					Amount: OneIOTA,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: receiverAddr},
-						&iotago.TimelockUnlockCondition{Slot: 16},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: receiverAddr},
+						&axongo.TimelockUnlockCondition{Slot: 16},
 					},
 				},
 				targetAddr:          receiverAddr,
-				commitmentInputTime: iotago.SlotIndex(5),
-				minCommittableAge:   iotago.SlotIndex(10),
-				maxCommittableAge:   iotago.SlotIndex(20),
+				commitmentInputTime: axongo.SlotIndex(5),
+				minCommittableAge:   axongo.SlotIndex(10),
+				maxCommittableAge:   axongo.SlotIndex(20),
 				canUnlock:           false,
 			}
 		}(),
@@ -1164,13 +1164,13 @@ func TestOwnerTransitionIndependentOutput_UnlockableBy(t *testing.T) {
 func TestAnchorOutput_UnlockableBy(t *testing.T) {
 	type test struct {
 		name                 string
-		current              iotago.OwnerTransitionDependentOutput
-		next                 iotago.OwnerTransitionDependentOutput
-		targetAddr           iotago.Address
-		addrCanUnlockInstead iotago.Address
-		commitmentInputTime  iotago.SlotIndex
-		minCommittableAge    iotago.SlotIndex
-		maxCommittableAge    iotago.SlotIndex
+		current              axongo.OwnerTransitionDependentOutput
+		next                 axongo.OwnerTransitionDependentOutput
+		targetAddr           axongo.Address
+		addrCanUnlockInstead axongo.Address
+		commitmentInputTime  axongo.SlotIndex
+		minCommittableAge    axongo.SlotIndex
+		maxCommittableAge    axongo.SlotIndex
 		wantErr              error
 		canUnlock            bool
 	}
@@ -1181,26 +1181,26 @@ func TestAnchorOutput_UnlockableBy(t *testing.T) {
 
 			return &test{
 				name: "state ctrl can unlock - state index increase",
-				current: &iotago.AnchorOutput{
+				current: &axongo.AnchorOutput{
 					Amount:     OneIOTA,
 					StateIndex: 0,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: stateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: govCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: stateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: govCtrl},
 					},
 				},
-				next: &iotago.AnchorOutput{
+				next: &axongo.AnchorOutput{
 					Amount:     OneIOTA,
 					StateIndex: 1,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: stateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: govCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: stateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: govCtrl},
 					},
 				},
 				targetAddr:          stateCtrl,
-				commitmentInputTime: iotago.SlotIndex(0),
-				minCommittableAge:   iotago.SlotIndex(0),
-				maxCommittableAge:   iotago.SlotIndex(0),
+				commitmentInputTime: axongo.SlotIndex(0),
+				minCommittableAge:   axongo.SlotIndex(0),
+				maxCommittableAge:   axongo.SlotIndex(0),
 				canUnlock:           true,
 			}
 		}(),
@@ -1210,27 +1210,27 @@ func TestAnchorOutput_UnlockableBy(t *testing.T) {
 
 			return &test{
 				name: "state ctrl can not unlock - state index same",
-				current: &iotago.AnchorOutput{
+				current: &axongo.AnchorOutput{
 					Amount:     OneIOTA,
 					StateIndex: 0,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: stateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: govCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: stateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: govCtrl},
 					},
 				},
-				next: &iotago.AnchorOutput{
+				next: &axongo.AnchorOutput{
 					Amount:     OneIOTA,
 					StateIndex: 0,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: stateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: govCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: stateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: govCtrl},
 					},
 				},
 				targetAddr:           stateCtrl,
 				addrCanUnlockInstead: govCtrl,
-				commitmentInputTime:  iotago.SlotIndex(0),
-				minCommittableAge:    iotago.SlotIndex(0),
-				maxCommittableAge:    iotago.SlotIndex(0),
+				commitmentInputTime:  axongo.SlotIndex(0),
+				minCommittableAge:    axongo.SlotIndex(0),
+				maxCommittableAge:    axongo.SlotIndex(0),
 				canUnlock:            false,
 			}
 		}(),
@@ -1240,20 +1240,20 @@ func TestAnchorOutput_UnlockableBy(t *testing.T) {
 
 			return &test{
 				name: "state ctrl can not unlock - transition destroy",
-				current: &iotago.AnchorOutput{
+				current: &axongo.AnchorOutput{
 					Amount:     OneIOTA,
 					StateIndex: 0,
-					UnlockConditions: iotago.AnchorOutputUnlockConditions{
-						&iotago.StateControllerAddressUnlockCondition{Address: stateCtrl},
-						&iotago.GovernorAddressUnlockCondition{Address: govCtrl},
+					UnlockConditions: axongo.AnchorOutputUnlockConditions{
+						&axongo.StateControllerAddressUnlockCondition{Address: stateCtrl},
+						&axongo.GovernorAddressUnlockCondition{Address: govCtrl},
 					},
 				},
 				next:                 nil,
 				targetAddr:           stateCtrl,
 				addrCanUnlockInstead: govCtrl,
-				commitmentInputTime:  iotago.SlotIndex(0),
-				minCommittableAge:    iotago.SlotIndex(0),
-				maxCommittableAge:    iotago.SlotIndex(0),
+				commitmentInputTime:  axongo.SlotIndex(0),
+				minCommittableAge:    axongo.SlotIndex(0),
+				maxCommittableAge:    axongo.SlotIndex(0),
 				canUnlock:            false,
 			}
 		}(),
@@ -1281,70 +1281,70 @@ func TestAnchorOutput_UnlockableBy(t *testing.T) {
 func TestOutputsSyntacticDisallowedImplicitAccountCreationAddress(t *testing.T) {
 	type test struct {
 		name    string
-		output  iotago.Output
+		output  axongo.Output
 		wantErr error
 	}
 
 	tests := []test{
 		{
 			name: "fail - Account Output contains Implicit Account Creation Address",
-			output: &iotago.AccountOutput{
-				UnlockConditions: iotago.AccountOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandImplicitAccountCreationAddress()},
+			output: &axongo.AccountOutput{
+				UnlockConditions: axongo.AccountOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandImplicitAccountCreationAddress()},
 				},
 			},
-			wantErr: iotago.ErrImplicitAccountCreationAddressInInvalidOutput,
+			wantErr: axongo.ErrImplicitAccountCreationAddressInInvalidOutput,
 		},
 		{
 			name: "fail - Anchor Output contains Implicit Account Creation Address as State Controller",
-			output: &iotago.AnchorOutput{
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
-					&iotago.StateControllerAddressUnlockCondition{Address: tpkg.RandImplicitAccountCreationAddress()},
-					&iotago.GovernorAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+			output: &axongo.AnchorOutput{
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
+					&axongo.StateControllerAddressUnlockCondition{Address: tpkg.RandImplicitAccountCreationAddress()},
+					&axongo.GovernorAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 				},
 			},
-			wantErr: iotago.ErrImplicitAccountCreationAddressInInvalidOutput,
+			wantErr: axongo.ErrImplicitAccountCreationAddressInInvalidOutput,
 		},
 		{
 			name: "fail - Anchor Output contains Implicit Account Creation Address as Governor",
-			output: &iotago.AnchorOutput{
-				UnlockConditions: iotago.AnchorOutputUnlockConditions{
-					&iotago.StateControllerAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-					&iotago.GovernorAddressUnlockCondition{Address: tpkg.RandImplicitAccountCreationAddress()},
+			output: &axongo.AnchorOutput{
+				UnlockConditions: axongo.AnchorOutputUnlockConditions{
+					&axongo.StateControllerAddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					&axongo.GovernorAddressUnlockCondition{Address: tpkg.RandImplicitAccountCreationAddress()},
 				},
 			},
-			wantErr: iotago.ErrImplicitAccountCreationAddressInInvalidOutput,
+			wantErr: axongo.ErrImplicitAccountCreationAddressInInvalidOutput,
 		},
 		{
 			name: "fail - NFT Output contains Implicit Account Creation Address",
-			output: &iotago.NFTOutput{
-				UnlockConditions: iotago.NFTOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandImplicitAccountCreationAddress()},
+			output: &axongo.NFTOutput{
+				UnlockConditions: axongo.NFTOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandImplicitAccountCreationAddress()},
 				},
 			},
-			wantErr: iotago.ErrImplicitAccountCreationAddressInInvalidOutput,
+			wantErr: axongo.ErrImplicitAccountCreationAddressInInvalidOutput,
 		},
 		{
 			name: "fail - Delegation Output contains Implicit Account Creation Address",
-			output: &iotago.DelegationOutput{
+			output: &axongo.DelegationOutput{
 				Amount:           1337,
 				DelegatedAmount:  1337,
 				DelegationID:     tpkg.Rand32ByteArray(),
 				ValidatorAddress: tpkg.RandAccountAddress(),
-				StartEpoch:       iotago.EpochIndex(32),
-				EndEpoch:         iotago.EpochIndex(37),
-				UnlockConditions: iotago.DelegationOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: tpkg.RandImplicitAccountCreationAddress()},
+				StartEpoch:       axongo.EpochIndex(32),
+				EndEpoch:         axongo.EpochIndex(37),
+				UnlockConditions: axongo.DelegationOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: tpkg.RandImplicitAccountCreationAddress()},
 				},
 			},
-			wantErr: iotago.ErrImplicitAccountCreationAddressInInvalidOutput,
+			wantErr: axongo.ErrImplicitAccountCreationAddressInInvalidOutput,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			implicitAccountCreationAddressValidatorFunc := iotago.OutputsSyntacticalImplicitAccountCreationAddress()
+			implicitAccountCreationAddressValidatorFunc := axongo.OutputsSyntacticalImplicitAccountCreationAddress()
 
 			err := implicitAccountCreationAddressValidatorFunc(0, tt.output)
 

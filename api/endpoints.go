@@ -537,17 +537,17 @@ const (
 	EventAPITopicSuffixConfirmed = "confirmed"
 
 	// HINT: all existing topics always have a "/raw" suffix for the raw payload as well.
-	EventAPITopicCommitmentsLatest    = "commitments/latest"    // iotago.Commitment
-	EventAPITopicCommitmentsFinalized = "commitments/finalized" // iotago.Commitment
+	EventAPITopicCommitmentsLatest    = "commitments/latest"    // axongo.Commitment
+	EventAPITopicCommitmentsFinalized = "commitments/finalized" // axongo.Commitment
 
-	EventAPITopicBlocks                              = "blocks"                                     // iotago.Block (track all incoming blocks)
-	EventAPITopicBlocksValidation                    = "blocks/validation"                          // iotago.Block (track all incoming validation blocks)
-	EventAPITopicBlocksBasic                         = "blocks/basic"                               // iotago.Block (track all incoming basic blocks)
-	EventAPITopicBlocksBasicTaggedData               = "blocks/basic/tagged-data"                   // iotago.Block (track all incoming basic blocks with tagged data payload)
-	EventAPITopicBlocksBasicTaggedDataTag            = "blocks/basic/tagged-data/{tag}"             // iotago.Block (track all incoming basic blocks with specific tagged data payload)
-	EventAPITopicBlocksBasicTransaction              = "blocks/basic/transaction"                   // iotago.Block (track all incoming basic blocks with transactions)
-	EventAPITopicBlocksBasicTransactionTaggedData    = "blocks/basic/transaction/tagged-data"       // iotago.Block (track all incoming basic blocks with transactions and tagged data)
-	EventAPITopicBlocksBasicTransactionTaggedDataTag = "blocks/basic/transaction/tagged-data/{tag}" // iotago.Block (track all incoming basic blocks with transactions and specific tagged data)
+	EventAPITopicBlocks                              = "blocks"                                     // axongo.Block (track all incoming blocks)
+	EventAPITopicBlocksValidation                    = "blocks/validation"                          // axongo.Block (track all incoming validation blocks)
+	EventAPITopicBlocksBasic                         = "blocks/basic"                               // axongo.Block (track all incoming basic blocks)
+	EventAPITopicBlocksBasicTaggedData               = "blocks/basic/tagged-data"                   // axongo.Block (track all incoming basic blocks with tagged data payload)
+	EventAPITopicBlocksBasicTaggedDataTag            = "blocks/basic/tagged-data/{tag}"             // axongo.Block (track all incoming basic blocks with specific tagged data payload)
+	EventAPITopicBlocksBasicTransaction              = "blocks/basic/transaction"                   // axongo.Block (track all incoming basic blocks with transactions)
+	EventAPITopicBlocksBasicTransactionTaggedData    = "blocks/basic/transaction/tagged-data"       // axongo.Block (track all incoming basic blocks with transactions and tagged data)
+	EventAPITopicBlocksBasicTransactionTaggedDataTag = "blocks/basic/transaction/tagged-data/{tag}" // axongo.Block (track all incoming basic blocks with transactions and specific tagged data)
 
 	// single block on subscribe and changes in it's metadata (accepted, confirmed).
 	EventAPITopicTransactionsIncludedBlockMetadata = "transactions/{transactionId}/included-block-metadata" // api.BlockMetadataResponse (track inclusion of a single transaction)

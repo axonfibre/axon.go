@@ -1,10 +1,10 @@
 //nolint:dupl
-package iotago
+package axongo
 
 import (
 	"cmp"
 
-	"github.com/iotaledger/hive.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2"
 )
 
 // AddressUnlockCondition is an UnlockCondition defining an address which has to be unlocked.

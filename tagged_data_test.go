@@ -1,11 +1,11 @@
-package iotago_test
+package axongo_test
 
 import (
 	"testing"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestTaggedDataDeSerialize(t *testing.T) {
@@ -15,12 +15,12 @@ func TestTaggedDataDeSerialize(t *testing.T) {
 		{
 			Name:   "ok",
 			Source: tpkg.RandTaggedData([]byte(tag)),
-			Target: &iotago.TaggedData{},
+			Target: &axongo.TaggedData{},
 		},
 		{
 			Name:   "empty-tag",
 			Source: tpkg.RandTaggedData([]byte{}),
-			Target: &iotago.TaggedData{},
+			Target: &axongo.TaggedData{},
 		},
 	}
 

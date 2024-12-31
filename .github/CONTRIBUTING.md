@@ -52,21 +52,22 @@ Please check the following list:
   at [security@iota.org](mailto:security@iota.org).
 
 - **Ensure the bug was not already reported** by searching on GitHub under [**
-  Issues**](https://github.com/iotaledger/iota.go/issues). If the bug has already been reported **and the issue is still
+  Issues**](https://github.com/axonfibre/axon.go/issues). If the bug has already been reported **and the issue is still
   open**, add a comment to the existing issue instead of opening a new one. You can also find related issues by
-  their [label](https://github.com/iotaledger/iota.go/labels?page=1&sort=name-asc).
+  their [label](https://github.com/axonfibre/axon.go/labels?page=1&sort=name-asc).
 
 **Note:** If you find a **Closed** issue that seems similar to what you're experiencing, open a new issue and include a
 link to the original issue in the body of your new one.
 
 ### Submitting A Bug Report
 
-To report a bug, [open a new issue](https://github.com/iotaledger/iota.go/issues/new), and be sure to include as many
+To report a bug, [open a new issue](https://github.com/axonfibre/axon.go/issues/new), and be sure to include as many
 details as possible, using the template.
 
 **Note:** Minor changes such as fixing a typo can but do not need an open issue.
 
 If you also want to fix the bug, submit a [pull request](#pull-requests) and reference the issue.
+
 </details>
 
 <br>
@@ -81,7 +82,7 @@ collaborate to find the best possible way forward with your suggestion.
 ### Before suggesting a new feature
 
 **Ensure the feature has not already been suggested** by searching on GitHub under [**
-Issues**](https://github.com/iotaledger/iota.go/issues).
+Issues**](https://github.com/axonfibre/axon.go/issues).
 
 ### Suggesting a new feature
 
@@ -89,6 +90,7 @@ To suggest a new feature, talk to the IOTA community and IOTA Foundation members
 .
 
 If the team members approves your feature, they will create an issue for it.
+
 </details>
 
 <br>
@@ -121,10 +123,11 @@ To build a new feature, check out a new branch based on the `master` branch, and
 <br>
 
 The Go client library documentation is hosted on https://docs.iota.org, which is built from content in
-the [documentation](https://github.com/iotaledger/documentation) repository.
+the [documentation](https://github.com/axonfibre/documentation) repository.
 
-Please see the [guidelines](https://github.com/iotaledger/documentation/CONTRIBUTING.md) on the documentation repository
+Please see the [guidelines](https://github.com/axonfibre/documentation/CONTRIBUTING.md) on the documentation repository
 for information on how to contribute to the documentation.
+
 </details>
 
 <br>
@@ -163,6 +166,7 @@ it will be merged.
 
 **Note:** Reviewers may ask you to complete additional work, tests, or other changes before your pull request can be
 approved and merged.
+
 </details>
 
 <br>

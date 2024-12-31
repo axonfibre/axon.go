@@ -1,9 +1,9 @@
-package iotago
+package axongo
 
 import (
 	"cmp"
 
-	"github.com/iotaledger/hive.go/serializer/v2"
+	"github.com/axonfibre/fibre.go/serializer/v2"
 )
 
 // TimelockUnlockCondition is an unlock condition which puts a time constraint on an output depending

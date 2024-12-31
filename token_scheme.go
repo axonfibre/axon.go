@@ -1,10 +1,10 @@
-package iotago
+package axongo
 
 import (
 	"fmt"
 	"math/big"
 
-	"github.com/iotaledger/hive.go/constraints"
+	"github.com/axonfibre/fibre.go/constraints"
 )
 
 // TokenSchemeType defines the type of token schemes.

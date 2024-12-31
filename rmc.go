@@ -1,4 +1,4 @@
-package iotago
+package axongo
 
 type CongestionControlParameters struct {
 	// MinReferenceManaCost is the minimum value of the reference Mana cost.

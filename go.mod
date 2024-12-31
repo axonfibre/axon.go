@@ -1,20 +1,20 @@
-module github.com/iotaledger/iota.go/v4
+module github.com/axonfibre/axon.go
 
-go 1.22
+go 1.23
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.4.3
 	github.com/ethereum/go-ethereum v1.14.0
 	github.com/holiman/uint256 v1.2.4
-	github.com/iotaledger/hive.go/constraints v0.0.0-20240425095808-113b21573349
-	github.com/iotaledger/hive.go/core v1.0.0-rc.3.0.20240425095808-113b21573349
-	github.com/iotaledger/hive.go/crypto v0.0.0-20240425095808-113b21573349
-	github.com/iotaledger/hive.go/ierrors v0.0.0-20240425095808-113b21573349
-	github.com/iotaledger/hive.go/lo v0.0.0-20240425095808-113b21573349
-	github.com/iotaledger/hive.go/runtime v0.0.0-20240425095808-113b21573349
-	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-rc.1.0.20240425095808-113b21573349
-	github.com/iotaledger/hive.go/stringify v0.0.0-20240425095808-113b21573349
-	github.com/iotaledger/iota-crypto-demo v0.0.0-20240419094816-40260bb800f7
+	github.com/axonfibre/fibre.go/constraints v0.0.1
+	github.com/axonfibre/fibre.go/core v1.0.0-1
+	github.com/axonfibre/fibre.go/crypto v0.0.1
+	github.com/axonfibre/fibre.go/ierrors v0.0.1
+	github.com/axonfibre/fibre.go/lo v0.0.1
+	github.com/axonfibre/fibre.go/runtime v0.0.1
+	github.com/axonfibre/fibre.go/serializer v0.0.1
+	github.com/axonfibre/fibre.go/stringify v0.0.1
+	github.com/axonfibre/crypto-demo v0.0.1
 	github.com/pasztorpisti/qs v0.0.0-20171216220353-8d6c33ee906c
 	github.com/samber/lo v1.39.0
 	github.com/stretchr/testify v1.9.0
@@ -30,7 +30,7 @@ require (
 	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 	github.com/iancoleman/orderedmap v0.3.0 // indirect
-	github.com/iotaledger/hive.go/ds v0.0.0-20240425095808-113b21573349 // indirect
+	github.com/axonfibre/fibre.go/ds v0.0.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

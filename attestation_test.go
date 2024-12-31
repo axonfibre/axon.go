@@ -1,14 +1,14 @@
-package iotago_test
+package axongo_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/iotaledger/hive.go/lo"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/builder"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	"github.com/axonfibre/fibre.go/lo"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/builder"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 func TestAttestation(t *testing.T) {
@@ -18,9 +18,9 @@ func TestAttestation(t *testing.T) {
 		Build()
 
 	require.NoError(t, err)
-	require.Equal(t, iotago.BlockBodyTypeValidation, block.Body.Type())
+	require.Equal(t, axongo.BlockBodyTypeValidation, block.Body.Type())
 
-	attestation := iotago.NewAttestation(tpkg.ZeroCostTestAPI, block)
+	attestation := axongo.NewAttestation(tpkg.ZeroCostTestAPI, block)
 
 	// Compare fields of block and attestation.
 	{

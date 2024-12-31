@@ -9,8 +9,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/iotaledger/hive.go/serializer/v2"
-	iotago "github.com/iotaledger/iota.go/v4"
+	"github.com/axonfibre/fibre.go/serializer/v2"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 func RandomRead(p []byte) (n int, err error) {
@@ -219,26 +219,26 @@ func SortedRand40ByteArray(count int) [][40]byte {
 	return hashes
 }
 
-func RandSlot() iotago.SlotIndex {
-	return iotago.SlotIndex(RandUint32(uint32(iotago.MaxSlotIndex)))
+func RandSlot() axongo.SlotIndex {
+	return axongo.SlotIndex(RandUint32(uint32(axongo.MaxSlotIndex)))
 }
 
-func RandEpoch() iotago.EpochIndex {
-	return iotago.EpochIndex(RandUint32(uint32(iotago.MaxEpochIndex)))
+func RandEpoch() axongo.EpochIndex {
+	return axongo.EpochIndex(RandUint32(uint32(axongo.MaxEpochIndex)))
 }
 
 // RandBaseToken returns a random amount of base token.
-func RandBaseToken(max iotago.BaseToken) iotago.BaseToken {
-	return iotago.BaseToken(rand.Int63n(int64(uint32(max))))
+func RandBaseToken(max axongo.BaseToken) axongo.BaseToken {
+	return axongo.BaseToken(rand.Int63n(int64(uint32(max))))
 }
 
 // RandMana returns a random amount of mana.
-func RandMana(max iotago.Mana) iotago.Mana {
-	return iotago.Mana(rand.Int63n(int64(uint32(max))))
+func RandMana(max axongo.Mana) axongo.Mana {
+	return axongo.Mana(rand.Int63n(int64(uint32(max))))
 }
 
 // RandTaggedData returns a random tagged data payload.
-func RandTaggedData(tag []byte, dataLength ...int) *iotago.TaggedData {
+func RandTaggedData(tag []byte, dataLength ...int) *axongo.TaggedData {
 	var data []byte
 	switch {
 	case len(dataLength) > 0:
@@ -247,47 +247,47 @@ func RandTaggedData(tag []byte, dataLength ...int) *iotago.TaggedData {
 		data = RandBytes(RandInt(200) + 1)
 	}
 
-	return &iotago.TaggedData{Tag: tag, Data: data}
+	return &axongo.TaggedData{Tag: tag, Data: data}
 }
 
 // RandUTXOInput returns a random UTXO input.
-func RandUTXOInput() *iotago.UTXOInput {
-	return RandUTXOInputWithIndex(uint16(RandInt(iotago.RefUTXOIndexMax)))
+func RandUTXOInput() *axongo.UTXOInput {
+	return RandUTXOInputWithIndex(uint16(RandInt(axongo.RefUTXOIndexMax)))
 }
 
-func RandCommitmentID() iotago.CommitmentID {
+func RandCommitmentID() axongo.CommitmentID {
 	return Rand36ByteArray()
 }
 
-func RandCommitment() *iotago.Commitment {
-	return &iotago.Commitment{
-		ProtocolVersion:      iotago.LatestProtocolVersion(),
+func RandCommitment() *axongo.Commitment {
+	return &axongo.Commitment{
+		ProtocolVersion:      axongo.LatestProtocolVersion(),
 		Slot:                 RandSlot(),
 		PreviousCommitmentID: RandCommitmentID(),
 		RootsID:              RandIdentifier(),
 		CumulativeWeight:     RandUint64(math.MaxUint64),
-		ReferenceManaCost:    RandMana(iotago.MaxMana),
+		ReferenceManaCost:    RandMana(axongo.MaxMana),
 	}
 }
 
 // RandCommitmentInput returns a random Commitment input.
-func RandCommitmentInput() *iotago.CommitmentInput {
-	return &iotago.CommitmentInput{
+func RandCommitmentInput() *axongo.CommitmentInput {
+	return &axongo.CommitmentInput{
 		CommitmentID: Rand36ByteArray(),
 	}
 }
 
 // RandBlockIssuanceCreditInput returns a random BlockIssuanceCreditInput.
-func RandBlockIssuanceCreditInput() *iotago.BlockIssuanceCreditInput {
-	return &iotago.BlockIssuanceCreditInput{
+func RandBlockIssuanceCreditInput() *axongo.BlockIssuanceCreditInput {
+	return &axongo.BlockIssuanceCreditInput{
 		AccountID: RandAccountID(),
 	}
 }
 
 // RandUTXOInputWithIndex returns a random UTXO input with a specific index.
-func RandUTXOInputWithIndex(index uint16) *iotago.UTXOInput {
-	utxoInput := &iotago.UTXOInput{}
-	txID := RandBytes(iotago.TransactionIDLength)
+func RandUTXOInputWithIndex(index uint16) *axongo.UTXOInput {
+	utxoInput := &axongo.UTXOInput{}
+	txID := RandBytes(axongo.TransactionIDLength)
 	copy(utxoInput.TransactionID[:], txID)
 
 	utxoInput.TransactionOutputIndex = index
@@ -296,16 +296,16 @@ func RandUTXOInputWithIndex(index uint16) *iotago.UTXOInput {
 }
 
 // RandAllotment returns a random Allotment.
-func RandAllotment() *iotago.Allotment {
-	return &iotago.Allotment{
+func RandAllotment() *axongo.Allotment {
+	return &axongo.Allotment{
 		AccountID: RandAccountID(),
 		Mana:      RandMana(10000) + 1,
 	}
 }
 
 // RandSortAllotment returns count sorted Allotments.
-func RandSortAllotment(count int) iotago.Allotments {
-	var allotments iotago.Allotments
+func RandSortAllotment(count int) axongo.Allotments {
+	var allotments axongo.Allotments
 	for range count {
 		allotments = append(allotments, RandAllotment())
 	}
@@ -315,24 +315,24 @@ func RandSortAllotment(count int) iotago.Allotments {
 }
 
 // RandWorkScore returns a random workscore.
-func RandWorkScore(max uint32) iotago.WorkScore {
-	return iotago.WorkScore(RandUint32(max))
+func RandWorkScore(max uint32) axongo.WorkScore {
+	return axongo.WorkScore(RandUint32(max))
 }
 
 // RandStorageScoreParameters produces random set of  parameters.
-func RandStorageScoreParameters() *iotago.StorageScoreParameters {
-	return &iotago.StorageScoreParameters{
-		StorageCost:                 RandBaseToken(iotago.MaxBaseToken),
-		FactorData:                  iotago.StorageScoreFactor(RandUint8(math.MaxUint8)),
-		OffsetOutputOverhead:        iotago.StorageScore(RandUint64(math.MaxUint64)),
-		OffsetEd25519BlockIssuerKey: iotago.StorageScore(RandUint64(math.MaxUint64)),
-		OffsetStakingFeature:        iotago.StorageScore(RandUint64(math.MaxUint64)),
+func RandStorageScoreParameters() *axongo.StorageScoreParameters {
+	return &axongo.StorageScoreParameters{
+		StorageCost:                 RandBaseToken(axongo.MaxBaseToken),
+		FactorData:                  axongo.StorageScoreFactor(RandUint8(math.MaxUint8)),
+		OffsetOutputOverhead:        axongo.StorageScore(RandUint64(math.MaxUint64)),
+		OffsetEd25519BlockIssuerKey: axongo.StorageScore(RandUint64(math.MaxUint64)),
+		OffsetStakingFeature:        axongo.StorageScore(RandUint64(math.MaxUint64)),
 	}
 }
 
 // RandWorkScoreParameters produces random workscore structure.
-func RandWorkScoreParameters() *iotago.WorkScoreParameters {
-	return &iotago.WorkScoreParameters{
+func RandWorkScoreParameters() *axongo.WorkScoreParameters {
+	return &axongo.WorkScoreParameters{
 		DataByte:         RandWorkScore(math.MaxUint32),
 		Block:            RandWorkScore(math.MaxUint32),
 		Input:            RandWorkScore(math.MaxUint32),
@@ -349,17 +349,17 @@ func RandWorkScoreParameters() *iotago.WorkScoreParameters {
 // RandProtocolParameters produces random protocol parameters.
 // Some protocol parameters are subject to sanity checks when the protocol parameters are created
 // so we use default values here to avoid panics rather than random ones.
-func RandProtocolParameters() iotago.ProtocolParameters {
-	return iotago.NewV3SnapshotProtocolParameters(
-		iotago.WithStorageOptions(
-			RandBaseToken(iotago.MaxBaseToken),
-			iotago.StorageScoreFactor(RandUint8(math.MaxUint8)),
-			iotago.StorageScore(RandUint64(math.MaxUint64)),
-			iotago.StorageScore(RandUint64(math.MaxUint64)),
-			iotago.StorageScore(RandUint64(math.MaxUint64)),
-			iotago.StorageScore(RandUint64(math.MaxUint64)),
+func RandProtocolParameters() axongo.ProtocolParameters {
+	return axongo.NewV3SnapshotProtocolParameters(
+		axongo.WithStorageOptions(
+			RandBaseToken(axongo.MaxBaseToken),
+			axongo.StorageScoreFactor(RandUint8(math.MaxUint8)),
+			axongo.StorageScore(RandUint64(math.MaxUint64)),
+			axongo.StorageScore(RandUint64(math.MaxUint64)),
+			axongo.StorageScore(RandUint64(math.MaxUint64)),
+			axongo.StorageScore(RandUint64(math.MaxUint64)),
 		),
-		iotago.WithWorkScoreOptions(
+		axongo.WithWorkScoreOptions(
 			RandWorkScore(math.MaxUint32),
 			RandWorkScore(math.MaxUint32),
 			RandWorkScore(math.MaxUint32),
@@ -374,11 +374,11 @@ func RandProtocolParameters() iotago.ProtocolParameters {
 	)
 }
 
-func RandTokenScheme() iotago.TokenScheme {
+func RandTokenScheme() axongo.TokenScheme {
 	maxSupply := RandInt64(1_000_000_000)
 	mintedTokens := RandInt64(uint64(maxSupply))
 
-	return &iotago.SimpleTokenScheme{
+	return &axongo.SimpleTokenScheme{
 		MintedTokens:  big.NewInt(mintedTokens),
 		MaximumSupply: big.NewInt(maxSupply),
 		MeltedTokens:  big.NewInt(0),

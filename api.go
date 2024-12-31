@@ -1,4 +1,4 @@
-package iotago
+package axongo
 
 import (
 	"encoding/binary"
@@ -6,8 +6,8 @@ import (
 
 	"golang.org/x/crypto/blake2b"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/hive.go/serializer/v2/serix"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/fibre.go/serializer/v2/serix"
 )
 
 type Version byte

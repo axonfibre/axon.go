@@ -7,13 +7,13 @@ import (
 	"fmt"
 	"slices"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
-	iotago "github.com/iotaledger/iota.go/v4"
+	hiveEd25519 "github.com/axonfibre/fibre.go/crypto/ed25519"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
 // RandEd25519Signature returns a random Ed25519 signature.
-func RandEd25519Signature() *iotago.Ed25519Signature {
-	edSig := &iotago.Ed25519Signature{}
+func RandEd25519Signature() *axongo.Ed25519Signature {
+	edSig := &axongo.Ed25519Signature{}
 	pub := RandBytes(ed25519.PublicKeySize)
 	sig := RandBytes(ed25519.SignatureSize)
 	copy(edSig.PublicKey[:], pub)
@@ -49,30 +49,30 @@ func RandEd25519Seed() [ed25519.SeedSize]byte {
 }
 
 // RandEd25519Identity produces a random Ed25519 identity.
-func RandEd25519Identity() (ed25519.PrivateKey, *iotago.Ed25519Address, iotago.AddressKeys) {
+func RandEd25519Identity() (ed25519.PrivateKey, *axongo.Ed25519Address, axongo.AddressKeys) {
 	edSk := RandEd25519PrivateKey()
 	//nolint:forcetypeassert // we can safely assume that this is an ed25519.PublicKey
-	edAddr := iotago.Ed25519AddressFromPubKey(edSk.Public().(ed25519.PublicKey))
-	addrKeys := iotago.NewAddressKeysForEd25519Address(edAddr, edSk)
+	edAddr := axongo.Ed25519AddressFromPubKey(edSk.Public().(ed25519.PublicKey))
+	addrKeys := axongo.NewAddressKeysForEd25519Address(edAddr, edSk)
 
 	return edSk, edAddr, addrKeys
 }
 
 // RandEd25519IdentitiesSortedByAddress returns random Ed25519 addresses and keys lexically sorted by the address.
-func RandEd25519IdentitiesSortedByAddress(count int) ([]iotago.Address, []iotago.AddressKeys) {
-	addresses := make([]iotago.Address, count)
-	addressKeys := make([]iotago.AddressKeys, count)
+func RandEd25519IdentitiesSortedByAddress(count int) ([]axongo.Address, []axongo.AddressKeys) {
+	addresses := make([]axongo.Address, count)
+	addressKeys := make([]axongo.AddressKeys, count)
 	for i := range count {
 		_, addresses[i], addressKeys[i] = RandEd25519Identity()
 	}
 
 	// addressses need to be lexically ordered in the MultiAddress
-	slices.SortFunc(addresses, func(a iotago.Address, b iotago.Address) int {
+	slices.SortFunc(addresses, func(a axongo.Address, b axongo.Address) int {
 		return bytes.Compare(a.ID(), b.ID())
 	})
 
 	// addressses need to be lexically ordered in the MultiAddress
-	slices.SortFunc(addressKeys, func(a iotago.AddressKeys, b iotago.AddressKeys) int {
+	slices.SortFunc(addressKeys, func(a axongo.AddressKeys, b axongo.AddressKeys) int {
 		return bytes.Compare(a.Address.ID(), b.Address.ID())
 	})
 
@@ -80,20 +80,20 @@ func RandEd25519IdentitiesSortedByAddress(count int) ([]iotago.Address, []iotago
 }
 
 // RandImplicitAccountIdentity produces a random Implicit Account identity.
-func RandImplicitAccountIdentity() (ed25519.PrivateKey, *iotago.ImplicitAccountCreationAddress, iotago.AddressKeys) {
+func RandImplicitAccountIdentity() (ed25519.PrivateKey, *axongo.ImplicitAccountCreationAddress, axongo.AddressKeys) {
 	edSk := RandEd25519PrivateKey()
 	//nolint:forcetypeassert // we can safely assume that this is an ed25519.PublicKey
-	implicitAccAddr := iotago.ImplicitAccountCreationAddressFromPubKey(edSk.Public().(ed25519.PublicKey))
-	addrKeys := iotago.NewAddressKeysForImplicitAccountCreationAddress(implicitAccAddr, edSk)
+	implicitAccAddr := axongo.ImplicitAccountCreationAddressFromPubKey(edSk.Public().(ed25519.PublicKey))
+	addrKeys := axongo.NewAddressKeysForImplicitAccountCreationAddress(implicitAccAddr, edSk)
 
 	return edSk, implicitAccAddr, addrKeys
 }
 
-func RandBlockIssuerKey() iotago.BlockIssuerKey {
-	return iotago.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(RandEd25519PublicKey())
+func RandBlockIssuerKey() axongo.BlockIssuerKey {
+	return axongo.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(RandEd25519PublicKey())
 }
 
-func RandBlockIssuerKeys(count ...int) iotago.BlockIssuerKeys {
+func RandBlockIssuerKeys(count ...int) axongo.BlockIssuerKeys {
 	// We always generate at least one key.
 	length := RandInt(10) + 1
 
@@ -101,7 +101,7 @@ func RandBlockIssuerKeys(count ...int) iotago.BlockIssuerKeys {
 		length = count[0]
 	}
 
-	blockIssuerKeys := iotago.NewBlockIssuerKeys()
+	blockIssuerKeys := axongo.NewBlockIssuerKeys()
 	for range length {
 		blockIssuerKeys.Add(RandBlockIssuerKey())
 	}

@@ -1,95 +1,95 @@
-package iotago_test
+package axongo_test
 
 import (
 	"testing"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestUnlockConditionsDeSerialize(t *testing.T) {
 	tests := []*frameworks.DeSerializeTest{
 		{
 			Name: "ok - AddressUnlockCondition",
-			Source: &iotago.AddressUnlockCondition{
+			Source: &axongo.AddressUnlockCondition{
 				Address: tpkg.RandEd25519Address(),
 			},
-			Target: &iotago.AddressUnlockCondition{},
+			Target: &axongo.AddressUnlockCondition{},
 		},
 		{
 			Name: "ok - StorageDepositReturnUnlockCondition",
-			Source: &iotago.StorageDepositReturnUnlockCondition{
+			Source: &axongo.StorageDepositReturnUnlockCondition{
 				ReturnAddress: tpkg.RandEd25519Address(),
 				Amount:        1337,
 			},
-			Target: &iotago.StorageDepositReturnUnlockCondition{},
+			Target: &axongo.StorageDepositReturnUnlockCondition{},
 		},
 		{
 			Name: "ok - TimelockUnlockCondition",
-			Source: &iotago.TimelockUnlockCondition{
+			Source: &axongo.TimelockUnlockCondition{
 				Slot: 1000,
 			},
-			Target: &iotago.TimelockUnlockCondition{},
+			Target: &axongo.TimelockUnlockCondition{},
 		},
 		{
 			Name: "ok - ExpirationUnlockCondition",
-			Source: &iotago.ExpirationUnlockCondition{
+			Source: &axongo.ExpirationUnlockCondition{
 				ReturnAddress: tpkg.RandEd25519Address(),
 				Slot:          1000,
 			},
-			Target: &iotago.ExpirationUnlockCondition{},
+			Target: &axongo.ExpirationUnlockCondition{},
 		},
 		{
 			Name: "ok - StateControllerAddressUnlockCondition",
-			Source: &iotago.StateControllerAddressUnlockCondition{
+			Source: &axongo.StateControllerAddressUnlockCondition{
 				Address: tpkg.RandEd25519Address(),
 			},
-			Target: &iotago.StateControllerAddressUnlockCondition{},
+			Target: &axongo.StateControllerAddressUnlockCondition{},
 		},
 		{
 			Name: "ok - GovernorAddressUnlockCondition",
-			Source: &iotago.GovernorAddressUnlockCondition{
+			Source: &axongo.GovernorAddressUnlockCondition{
 				Address: tpkg.RandEd25519Address(),
 			},
-			Target: &iotago.GovernorAddressUnlockCondition{},
+			Target: &axongo.GovernorAddressUnlockCondition{},
 		},
 		{
 			Name: "fail - ImplicitAccountCreationAddress in GovernorAddressUnlockCondition",
-			Source: &iotago.GovernorAddressUnlockCondition{
+			Source: &axongo.GovernorAddressUnlockCondition{
 				Address: tpkg.RandImplicitAccountCreationAddress(),
 			},
-			Target:    &iotago.GovernorAddressUnlockCondition{},
-			SeriErr:   iotago.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
-			DeSeriErr: iotago.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
+			Target:    &axongo.GovernorAddressUnlockCondition{},
+			SeriErr:   axongo.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
+			DeSeriErr: axongo.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
 		},
 		{
 			Name: "fail - ImplicitAccountCreationAddress in StateControllerAddressUnlockCondition",
-			Source: &iotago.StateControllerAddressUnlockCondition{
+			Source: &axongo.StateControllerAddressUnlockCondition{
 				Address: tpkg.RandImplicitAccountCreationAddress(),
 			},
-			Target:    &iotago.StateControllerAddressUnlockCondition{},
-			SeriErr:   iotago.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
-			DeSeriErr: iotago.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
+			Target:    &axongo.StateControllerAddressUnlockCondition{},
+			SeriErr:   axongo.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
+			DeSeriErr: axongo.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
 		},
 		{
 			Name: "fail - ImplicitAccountCreationAddress in ExpirationUnlockCondition",
-			Source: &iotago.ExpirationUnlockCondition{
+			Source: &axongo.ExpirationUnlockCondition{
 				Slot:          3,
 				ReturnAddress: tpkg.RandImplicitAccountCreationAddress(),
 			},
-			Target:    &iotago.ExpirationUnlockCondition{},
-			SeriErr:   iotago.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
-			DeSeriErr: iotago.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
+			Target:    &axongo.ExpirationUnlockCondition{},
+			SeriErr:   axongo.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
+			DeSeriErr: axongo.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
 		},
 		{
 			Name: "fail - ImplicitAccountCreationAddress in StorageDepositReturnUnlockCondition",
-			Source: &iotago.StorageDepositReturnUnlockCondition{
+			Source: &axongo.StorageDepositReturnUnlockCondition{
 				ReturnAddress: tpkg.RandImplicitAccountCreationAddress(),
 			},
-			Target:    &iotago.StorageDepositReturnUnlockCondition{},
-			SeriErr:   iotago.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
-			DeSeriErr: iotago.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
+			Target:    &axongo.StorageDepositReturnUnlockCondition{},
+			SeriErr:   axongo.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
+			DeSeriErr: axongo.ErrImplicitAccountCreationAddressInInvalidUnlockCondition,
 		},
 	}
 

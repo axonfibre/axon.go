@@ -8,9 +8,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	"github.com/iotaledger/iota.go/v4/bech32"
-	"github.com/iotaledger/iota.go/v4/bech32/internal/base32"
+	"github.com/axonfibre/fibre.go/ierrors"
+	"github.com/axonfibre/axon.go/v4/bech32"
+	"github.com/axonfibre/axon.go/v4/bech32/internal/base32"
 )
 
 func TestMain(m *testing.M) {

@@ -1,13 +1,13 @@
-package iotago_test
+package axongo_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/tpkg"
-	"github.com/iotaledger/iota.go/v4/tpkg/frameworks"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/tpkg"
+	"github.com/axonfibre/axon.go/v4/tpkg/frameworks"
 )
 
 func TestStorageScoreParameters_DeSerialize(t *testing.T) {
@@ -15,7 +15,7 @@ func TestStorageScoreParameters_DeSerialize(t *testing.T) {
 		{
 			Name:   "ok",
 			Source: tpkg.RandStorageScoreParameters(),
-			Target: &iotago.StorageScoreParameters{},
+			Target: &axongo.StorageScoreParameters{},
 		},
 	}
 
@@ -25,7 +25,7 @@ func TestStorageScoreParameters_DeSerialize(t *testing.T) {
 }
 
 func TestStorageScoreParamtersJSONMarshalling(t *testing.T) {
-	storageScoreParameters := &iotago.StorageScoreParameters{
+	storageScoreParameters := &axongo.StorageScoreParameters{
 		StorageCost:                 500,
 		FactorData:                  1,
 		OffsetOutputOverhead:        10,
@@ -40,7 +40,7 @@ func TestStorageScoreParamtersJSONMarshalling(t *testing.T) {
 
 	require.Equal(t, storageScoreParametersJSON, string(j))
 
-	decodedStorageScoreStructure := &iotago.StorageScoreParameters{}
+	decodedStorageScoreStructure := &axongo.StorageScoreParameters{}
 	err = tpkg.ZeroCostTestAPI.JSONDecode([]byte(storageScoreParametersJSON), decodedStorageScoreStructure)
 	require.NoError(t, err)
 

@@ -6,11 +6,11 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/iotaledger/hive.go/lo"
-	iotago "github.com/iotaledger/iota.go/v4"
+	"github.com/axonfibre/fibre.go/lo"
+	axongo "github.com/axonfibre/axon.go/v4"
 )
 
-func RandOutputIDWithCreationSlot(slot iotago.SlotIndex, index ...uint16) iotago.OutputID {
+func RandOutputIDWithCreationSlot(slot axongo.SlotIndex, index ...uint16) axongo.OutputID {
 	txID := RandTransactionIDWithCreationSlot(slot)
 
 	idx := RandUint16(126)
@@ -18,19 +18,19 @@ func RandOutputIDWithCreationSlot(slot iotago.SlotIndex, index ...uint16) iotago
 		idx = index[0]
 	}
 
-	var outputID iotago.OutputID
+	var outputID axongo.OutputID
 	copy(outputID[:], txID[:])
-	binary.LittleEndian.PutUint16(outputID[iotago.TransactionIDLength:], idx)
+	binary.LittleEndian.PutUint16(outputID[axongo.TransactionIDLength:], idx)
 
 	return outputID
 }
 
-func RandOutputID(index ...uint16) iotago.OutputID {
+func RandOutputID(index ...uint16) axongo.OutputID {
 	return RandOutputIDWithCreationSlot(0, index...)
 }
 
-func RandOutputIDsWithCreationSlot(slot iotago.SlotIndex, count uint16) iotago.OutputIDs {
-	outputIDs := make(iotago.OutputIDs, int(count))
+func RandOutputIDsWithCreationSlot(slot axongo.SlotIndex, count uint16) axongo.OutputIDs {
+	outputIDs := make(axongo.OutputIDs, int(count))
 	for i := range int(count) {
 		outputIDs[i] = RandOutputIDWithCreationSlot(slot, count)
 	}
@@ -38,8 +38,8 @@ func RandOutputIDsWithCreationSlot(slot iotago.SlotIndex, count uint16) iotago.O
 	return outputIDs
 }
 
-func RandOutputIDs(count uint16) iotago.OutputIDs {
-	outputIDs := make(iotago.OutputIDs, int(count))
+func RandOutputIDs(count uint16) axongo.OutputIDs {
+	outputIDs := make(axongo.OutputIDs, int(count))
 	for i := range count {
 		outputIDs[i] = RandOutputID(count)
 	}
@@ -47,28 +47,28 @@ func RandOutputIDs(count uint16) iotago.OutputIDs {
 	return outputIDs
 }
 
-func RandOutputIDProof(api iotago.API) *iotago.OutputIDProof {
+func RandOutputIDProof(api axongo.API) *axongo.OutputIDProof {
 	tx := RandTransaction(api, WithOutputCount(1))
-	return lo.PanicOnErr(iotago.OutputIDProofFromTransaction(tx, 0))
+	return lo.PanicOnErr(axongo.OutputIDProofFromTransaction(tx, 0))
 }
 
 // RandBasicOutput returns a random basic output (with no features).
-func RandBasicOutput(addressType ...iotago.AddressType) *iotago.BasicOutput {
-	dep := &iotago.BasicOutput{
+func RandBasicOutput(addressType ...axongo.AddressType) *axongo.BasicOutput {
+	dep := &axongo.BasicOutput{
 		Amount:           RandBaseToken(10000) + 1,
-		UnlockConditions: iotago.BasicOutputUnlockConditions{},
-		Features:         iotago.BasicOutputFeatures{},
+		UnlockConditions: axongo.BasicOutputUnlockConditions{},
+		Features:         axongo.BasicOutputFeatures{},
 	}
 
-	addrType := iotago.AddressEd25519
+	addrType := axongo.AddressEd25519
 	if len(addressType) > 0 {
 		addrType = addressType[0]
 	}
 
 	//nolint:exhaustive
 	switch addrType {
-	case iotago.AddressEd25519:
-		dep.UnlockConditions = iotago.BasicOutputUnlockConditions{&iotago.AddressUnlockCondition{Address: RandEd25519Address()}}
+	case axongo.AddressEd25519:
+		dep.UnlockConditions = axongo.BasicOutputUnlockConditions{&axongo.AddressUnlockCondition{Address: RandEd25519Address()}}
 	default:
 		panic(fmt.Sprintf("invalid addr type: %d", addrType))
 	}
@@ -76,118 +76,118 @@ func RandBasicOutput(addressType ...iotago.AddressType) *iotago.BasicOutput {
 	return dep
 }
 
-func RandOutputType() iotago.OutputType {
-	outputTypes := []iotago.OutputType{iotago.OutputBasic, iotago.OutputAccount, iotago.OutputAnchor, iotago.OutputFoundry, iotago.OutputNFT, iotago.OutputDelegation}
+func RandOutputType() axongo.OutputType {
+	outputTypes := []axongo.OutputType{axongo.OutputBasic, axongo.OutputAccount, axongo.OutputAnchor, axongo.OutputFoundry, axongo.OutputNFT, axongo.OutputDelegation}
 
 	return outputTypes[RandInt(len(outputTypes)-1)]
 }
 
-func RandOutput(outputType iotago.OutputType) iotago.Output {
-	var addr iotago.Address
-	if outputType == iotago.OutputFoundry {
-		addr = RandAddress(iotago.AddressAccount)
+func RandOutput(outputType axongo.OutputType) axongo.Output {
+	var addr axongo.Address
+	if outputType == axongo.OutputFoundry {
+		addr = RandAddress(axongo.AddressAccount)
 	} else {
-		addr = RandAddress(iotago.AddressEd25519)
+		addr = RandAddress(axongo.AddressEd25519)
 	}
 
 	return RandOutputOnAddress(outputType, addr)
 }
 
-func RandOutputOnAddress(outputType iotago.OutputType, address iotago.Address) iotago.Output {
-	return RandOutputOnAddressWithAmount(outputType, address, RandBaseToken(iotago.MaxBaseToken))
+func RandOutputOnAddress(outputType axongo.OutputType, address axongo.Address) axongo.Output {
+	return RandOutputOnAddressWithAmount(outputType, address, RandBaseToken(axongo.MaxBaseToken))
 }
 
-func RandOutputOnAddressWithAmount(outputType iotago.OutputType, address iotago.Address, amount iotago.BaseToken) iotago.Output {
-	var iotaOutput iotago.Output
+func RandOutputOnAddressWithAmount(outputType axongo.OutputType, address axongo.Address, amount axongo.BaseToken) axongo.Output {
+	var iotaOutput axongo.Output
 
 	switch outputType {
-	case iotago.OutputBasic:
-		iotaOutput = &iotago.BasicOutput{
+	case axongo.OutputBasic:
+		iotaOutput = &axongo.BasicOutput{
 			Amount: amount,
-			UnlockConditions: iotago.BasicOutputUnlockConditions{
-				&iotago.AddressUnlockCondition{
+			UnlockConditions: axongo.BasicOutputUnlockConditions{
+				&axongo.AddressUnlockCondition{
 					Address: address,
 				},
 			},
-			Features: iotago.BasicOutputFeatures{},
+			Features: axongo.BasicOutputFeatures{},
 		}
 
-	case iotago.OutputAccount:
-		iotaOutput = &iotago.AccountOutput{
+	case axongo.OutputAccount:
+		iotaOutput = &axongo.AccountOutput{
 			Amount:    amount,
 			AccountID: RandAccountID(),
-			UnlockConditions: iotago.AccountOutputUnlockConditions{
-				&iotago.AddressUnlockCondition{
+			UnlockConditions: axongo.AccountOutputUnlockConditions{
+				&axongo.AddressUnlockCondition{
 					Address: address,
 				},
 			},
-			Features:          iotago.AccountOutputFeatures{},
-			ImmutableFeatures: iotago.AccountOutputImmFeatures{},
+			Features:          axongo.AccountOutputFeatures{},
+			ImmutableFeatures: axongo.AccountOutputImmFeatures{},
 		}
 
-	case iotago.OutputAnchor:
-		iotaOutput = &iotago.AnchorOutput{
+	case axongo.OutputAnchor:
+		iotaOutput = &axongo.AnchorOutput{
 			Amount:   amount,
 			AnchorID: RandAnchorID(),
-			UnlockConditions: iotago.AnchorOutputUnlockConditions{
-				&iotago.StateControllerAddressUnlockCondition{
+			UnlockConditions: axongo.AnchorOutputUnlockConditions{
+				&axongo.StateControllerAddressUnlockCondition{
 					Address: address,
 				},
-				&iotago.GovernorAddressUnlockCondition{
+				&axongo.GovernorAddressUnlockCondition{
 					Address: address,
 				},
 			},
-			Features:          iotago.AnchorOutputFeatures{},
-			ImmutableFeatures: iotago.AnchorOutputImmFeatures{},
+			Features:          axongo.AnchorOutputFeatures{},
+			ImmutableFeatures: axongo.AnchorOutputImmFeatures{},
 		}
 
-	case iotago.OutputFoundry:
-		if address.Type() != iotago.AddressAccount {
+	case axongo.OutputFoundry:
+		if address.Type() != axongo.AddressAccount {
 			panic("not an alias address")
 		}
 		supply := new(big.Int).SetUint64(RandUint64(math.MaxUint64))
 
 		//nolint:forcetypeassert // we already checked the type
-		iotaOutput = &iotago.FoundryOutput{
+		iotaOutput = &axongo.FoundryOutput{
 			Amount:       amount,
 			SerialNumber: 0,
-			TokenScheme: &iotago.SimpleTokenScheme{
+			TokenScheme: &axongo.SimpleTokenScheme{
 				MintedTokens:  supply,
 				MeltedTokens:  new(big.Int).SetBytes([]byte{0}),
 				MaximumSupply: supply,
 			},
-			UnlockConditions: iotago.FoundryOutputUnlockConditions{
-				&iotago.ImmutableAccountUnlockCondition{
-					Address: address.(*iotago.AccountAddress),
+			UnlockConditions: axongo.FoundryOutputUnlockConditions{
+				&axongo.ImmutableAccountUnlockCondition{
+					Address: address.(*axongo.AccountAddress),
 				},
 			},
-			Features:          iotago.FoundryOutputFeatures{},
-			ImmutableFeatures: iotago.FoundryOutputImmFeatures{},
+			Features:          axongo.FoundryOutputFeatures{},
+			ImmutableFeatures: axongo.FoundryOutputImmFeatures{},
 		}
 
-	case iotago.OutputNFT:
-		iotaOutput = &iotago.NFTOutput{
+	case axongo.OutputNFT:
+		iotaOutput = &axongo.NFTOutput{
 			Amount: amount,
 			NFTID:  RandNFTID(),
-			UnlockConditions: iotago.NFTOutputUnlockConditions{
-				&iotago.AddressUnlockCondition{
+			UnlockConditions: axongo.NFTOutputUnlockConditions{
+				&axongo.AddressUnlockCondition{
 					Address: address,
 				},
 			},
-			Features:          iotago.NFTOutputFeatures{},
-			ImmutableFeatures: iotago.NFTOutputImmFeatures{},
+			Features:          axongo.NFTOutputFeatures{},
+			ImmutableFeatures: axongo.NFTOutputImmFeatures{},
 		}
 
-	case iotago.OutputDelegation:
-		iotaOutput = &iotago.DelegationOutput{
+	case axongo.OutputDelegation:
+		iotaOutput = &axongo.DelegationOutput{
 			Amount:           amount,
 			DelegatedAmount:  amount,
 			DelegationID:     RandDelegationID(),
 			ValidatorAddress: RandAccountAddress(),
 			StartEpoch:       RandEpoch(),
-			EndEpoch:         iotago.MaxEpochIndex,
-			UnlockConditions: iotago.DelegationOutputUnlockConditions{
-				&iotago.AddressUnlockCondition{
+			EndEpoch:         axongo.MaxEpochIndex,
+			UnlockConditions: axongo.DelegationOutputUnlockConditions{
+				&axongo.AddressUnlockCondition{
 					Address: address,
 				},
 			},

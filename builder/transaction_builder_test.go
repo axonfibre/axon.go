@@ -7,24 +7,24 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/iotaledger/hive.go/ierrors"
-	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/builder"
-	"github.com/iotaledger/iota.go/v4/tpkg"
+	"github.com/axonfibre/fibre.go/ierrors"
+	axongo "github.com/axonfibre/axon.go/v4"
+	"github.com/axonfibre/axon.go/v4/builder"
+	"github.com/axonfibre/axon.go/v4/tpkg"
 )
 
 func TestTransactionBuilder(t *testing.T) {
 	prvKey := tpkg.RandEd25519PrivateKey()
 	pubKey := prvKey.Public().(ed25519.PublicKey)
-	inputAddrEd25519 := iotago.Ed25519AddressFromPubKey(pubKey)
-	inputAddrRestricted := iotago.RestrictedAddressWithCapabilities(inputAddrEd25519, iotago.WithAddressCanReceiveAnything())
-	inputAddrImplicitAccountCreation := iotago.ImplicitAccountCreationAddressFromPubKey(pubKey)
-	signer := iotago.NewInMemoryAddressSignerFromEd25519PrivateKeys(prvKey)
+	inputAddrEd25519 := axongo.Ed25519AddressFromPubKey(pubKey)
+	inputAddrRestricted := axongo.RestrictedAddressWithCapabilities(inputAddrEd25519, axongo.WithAddressCanReceiveAnything())
+	inputAddrImplicitAccountCreation := axongo.ImplicitAccountCreationAddressFromPubKey(pubKey)
+	signer := axongo.NewInMemoryAddressSignerFromEd25519PrivateKeys(prvKey)
 
-	output := &iotago.BasicOutput{
+	output := &axongo.BasicOutput{
 		Amount: 50,
-		UnlockConditions: iotago.BasicOutputUnlockConditions{
-			&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+		UnlockConditions: axongo.BasicOutputUnlockConditions{
+			&axongo.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 		},
 	}
 
@@ -37,8 +37,8 @@ func TestTransactionBuilder(t *testing.T) {
 	tests := []*test{
 		// ok - 1 input/output - Ed25519 address
 		func() *test {
-			inputUTXO1 := &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
-			input := tpkg.RandOutputOnAddress(iotago.OutputBasic, inputAddrEd25519)
+			inputUTXO1 := &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
+			input := tpkg.RandOutputOnAddress(axongo.OutputBasic, inputAddrEd25519)
 			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, signer).
 				AddInput(&builder.TxInput{UnlockTarget: inputAddrEd25519, InputID: inputUTXO1.OutputID(), Input: input}).
 				AddOutput(output)
@@ -51,8 +51,8 @@ func TestTransactionBuilder(t *testing.T) {
 
 		// ok - 1 input/output - Restricted address with underlying Ed25519 address
 		func() *test {
-			inputUTXO1 := &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
-			input := tpkg.RandOutputOnAddress(iotago.OutputBasic, inputAddrRestricted)
+			inputUTXO1 := &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
+			input := tpkg.RandOutputOnAddress(axongo.OutputBasic, inputAddrRestricted)
 			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, signer).
 				AddInput(&builder.TxInput{UnlockTarget: inputAddrRestricted, InputID: inputUTXO1.OutputID(), Input: input}).
 				AddOutput(output)
@@ -65,8 +65,8 @@ func TestTransactionBuilder(t *testing.T) {
 
 		// ok - 1 input/output - Implicit account creation address
 		func() *test {
-			inputUTXO1 := &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
-			input := tpkg.RandOutputOnAddress(iotago.OutputBasic, inputAddrImplicitAccountCreation)
+			inputUTXO1 := &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
+			input := tpkg.RandOutputOnAddress(axongo.OutputBasic, inputAddrImplicitAccountCreation)
 			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, signer).
 				AddInput(&builder.TxInput{UnlockTarget: inputAddrImplicitAccountCreation, InputID: inputUTXO1.OutputID(), Input: input}).
 				AddOutput(output)
@@ -79,13 +79,13 @@ func TestTransactionBuilder(t *testing.T) {
 
 		// ok - Implicit account creation address with basic input
 		func() *test {
-			inputUTXO1 := &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
-			input1 := tpkg.RandOutputOnAddress(iotago.OutputBasic, inputAddrImplicitAccountCreation)
+			inputUTXO1 := &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
+			input1 := tpkg.RandOutputOnAddress(axongo.OutputBasic, inputAddrImplicitAccountCreation)
 
-			inputUTXO2 := &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 1}
-			input2 := &iotago.BasicOutput{
+			inputUTXO2 := &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 1}
+			input2 := &axongo.BasicOutput{
 				Amount:           1000,
-				UnlockConditions: iotago.BasicOutputUnlockConditions{&iotago.AddressUnlockCondition{Address: inputAddrEd25519}},
+				UnlockConditions: axongo.BasicOutputUnlockConditions{&axongo.AddressUnlockCondition{Address: inputAddrEd25519}},
 			}
 
 			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, signer).
@@ -102,37 +102,37 @@ func TestTransactionBuilder(t *testing.T) {
 		// ok - mix basic+chain outputs
 		func() *test {
 			var (
-				inputID1 = &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
-				inputID2 = &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 1}
-				inputID3 = &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 4}
-				inputID4 = &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 8}
+				inputID1 = &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
+				inputID2 = &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 1}
+				inputID3 = &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 4}
+				inputID4 = &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 8}
 			)
 
 			var (
-				basicOutput = &iotago.BasicOutput{
+				basicOutput = &axongo.BasicOutput{
 					Amount:           1000,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{&iotago.AddressUnlockCondition{Address: inputAddrEd25519}},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{&axongo.AddressUnlockCondition{Address: inputAddrEd25519}},
 				}
 
-				nftOutput = &iotago.NFTOutput{
+				nftOutput = &axongo.NFTOutput{
 					Amount:            1000,
 					NFTID:             tpkg.Rand32ByteArray(),
-					UnlockConditions:  iotago.NFTOutputUnlockConditions{&iotago.AddressUnlockCondition{Address: inputAddrEd25519}},
+					UnlockConditions:  axongo.NFTOutputUnlockConditions{&axongo.AddressUnlockCondition{Address: inputAddrEd25519}},
 					Features:          nil,
 					ImmutableFeatures: nil,
 				}
 
-				accountOwnedByNFT = &iotago.AccountOutput{
+				accountOwnedByNFT = &axongo.AccountOutput{
 					Amount:    1000,
 					AccountID: tpkg.Rand32ByteArray(),
-					UnlockConditions: iotago.AccountOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: nftOutput.ChainID().ToAddress()},
+					UnlockConditions: axongo.AccountOutputUnlockConditions{
+						&axongo.AddressUnlockCondition{Address: nftOutput.ChainID().ToAddress()},
 					},
 				}
 
-				basicOwnedByAccount = &iotago.BasicOutput{
+				basicOwnedByAccount = &axongo.BasicOutput{
 					Amount:           1000,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{&iotago.AddressUnlockCondition{Address: accountOwnedByNFT.ChainID().ToAddress()}},
+					UnlockConditions: axongo.BasicOutputUnlockConditions{&axongo.AddressUnlockCondition{Address: accountOwnedByNFT.ChainID().ToAddress()}},
 				}
 			)
 
@@ -151,12 +151,12 @@ func TestTransactionBuilder(t *testing.T) {
 
 		// ok - with tagged data payload
 		func() *test {
-			inputUTXO1 := &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
+			inputUTXO1 := &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
 
 			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, signer).
-				AddInput(&builder.TxInput{UnlockTarget: inputAddrEd25519, InputID: inputUTXO1.OutputID(), Input: tpkg.RandOutputOnAddress(iotago.OutputBasic, inputAddrEd25519)}).
+				AddInput(&builder.TxInput{UnlockTarget: inputAddrEd25519, InputID: inputUTXO1.OutputID(), Input: tpkg.RandOutputOnAddress(axongo.OutputBasic, inputAddrEd25519)}).
 				AddOutput(output).
-				AddTaggedDataPayload(&iotago.TaggedData{Tag: []byte("index"), Data: nil})
+				AddTaggedDataPayload(&axongo.TaggedData{Tag: []byte("index"), Data: nil})
 
 			return &test{
 				name:    "ok - with tagged data payload",
@@ -166,14 +166,14 @@ func TestTransactionBuilder(t *testing.T) {
 
 		// ok - with context inputs
 		func() *test {
-			inputUTXO1 := &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
+			inputUTXO1 := &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
 
 			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, signer).
-				AddInput(&builder.TxInput{UnlockTarget: inputAddrEd25519, InputID: inputUTXO1.OutputID(), Input: tpkg.RandOutputOnAddress(iotago.OutputBasic, inputAddrEd25519)}).
+				AddInput(&builder.TxInput{UnlockTarget: inputAddrEd25519, InputID: inputUTXO1.OutputID(), Input: tpkg.RandOutputOnAddress(axongo.OutputBasic, inputAddrEd25519)}).
 				AddOutput(output).
-				AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: tpkg.Rand36ByteArray()}).
-				AddBlockIssuanceCreditInput(&iotago.BlockIssuanceCreditInput{AccountID: tpkg.RandAccountID()}).
-				AddRewardInput(&iotago.RewardInput{Index: 0}, 100)
+				AddCommitmentInput(&axongo.CommitmentInput{CommitmentID: tpkg.Rand36ByteArray()}).
+				AddBlockIssuanceCreditInput(&axongo.BlockIssuanceCreditInput{AccountID: tpkg.RandAccountID()}).
+				AddRewardInput(&axongo.RewardInput{Index: 0}, 100)
 
 			return &test{
 				name:    "ok - with context inputs",
@@ -183,11 +183,11 @@ func TestTransactionBuilder(t *testing.T) {
 
 		// ok - allot all mana
 		func() *test {
-			inputUTXO1 := &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
+			inputUTXO1 := &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
 
-			basicOutput := &iotago.BasicOutput{
+			basicOutput := &axongo.BasicOutput{
 				Amount:           1000_000_000,
-				UnlockConditions: iotago.BasicOutputUnlockConditions{&iotago.AddressUnlockCondition{Address: inputAddrEd25519}},
+				UnlockConditions: axongo.BasicOutputUnlockConditions{&axongo.AddressUnlockCondition{Address: inputAddrEd25519}},
 			}
 
 			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, signer).
@@ -203,21 +203,21 @@ func TestTransactionBuilder(t *testing.T) {
 
 		// ok - with mana lock condition
 		func() *test {
-			inputUTXO1 := &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
+			inputUTXO1 := &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
 
-			accountAddr := iotago.AccountAddressFromOutputID(inputUTXO1.OutputID())
-			basicOutput := &iotago.BasicOutput{
+			accountAddr := axongo.AccountAddressFromOutputID(inputUTXO1.OutputID())
+			basicOutput := &axongo.BasicOutput{
 				Amount: 1000,
-				UnlockConditions: iotago.BasicOutputUnlockConditions{
-					&iotago.AddressUnlockCondition{Address: accountAddr},
-					&iotago.TimelockUnlockCondition{Slot: inputUTXO1.CreationSlot()},
+				UnlockConditions: axongo.BasicOutputUnlockConditions{
+					&axongo.AddressUnlockCondition{Address: accountAddr},
+					&axongo.TimelockUnlockCondition{Slot: inputUTXO1.CreationSlot()},
 				}}
 
 			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, signer).
 				AddInput(&builder.TxInput{
 					UnlockTarget: inputAddrImplicitAccountCreation,
 					InputID:      inputUTXO1.OutputID(),
-					Input:        tpkg.RandOutputOnAddress(iotago.OutputBasic, inputAddrImplicitAccountCreation),
+					Input:        tpkg.RandOutputOnAddress(axongo.OutputBasic, inputAddrImplicitAccountCreation),
 				}).
 				SetCreationSlot(10).
 				AddOutput(basicOutput).
@@ -231,37 +231,37 @@ func TestTransactionBuilder(t *testing.T) {
 
 		// err - missing address keys (wrong address)
 		func() *test {
-			inputUTXO1 := &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
+			inputUTXO1 := &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
 
 			// wrong address/keys
 			wrongAddress := tpkg.RandEd25519PrivateKey()
 			//nolint:forcetypeassert // we can safely assume that this is a ed25519.PublicKey
-			wrongAddr := iotago.Ed25519AddressFromPubKey(wrongAddress.Public().(ed25519.PublicKey))
-			wrongAddrKeys := iotago.AddressKeys{Address: wrongAddr, Keys: wrongAddress}
+			wrongAddr := axongo.Ed25519AddressFromPubKey(wrongAddress.Public().(ed25519.PublicKey))
+			wrongAddrKeys := axongo.AddressKeys{Address: wrongAddr, Keys: wrongAddress}
 
-			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, iotago.NewInMemoryAddressSigner(wrongAddrKeys)).
-				AddInput(&builder.TxInput{UnlockTarget: inputAddrEd25519, InputID: inputUTXO1.OutputID(), Input: tpkg.RandOutputOnAddress(iotago.OutputBasic, inputAddrEd25519)}).
+			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, axongo.NewInMemoryAddressSigner(wrongAddrKeys)).
+				AddInput(&builder.TxInput{UnlockTarget: inputAddrEd25519, InputID: inputUTXO1.OutputID(), Input: tpkg.RandOutputOnAddress(axongo.OutputBasic, inputAddrEd25519)}).
 				AddOutput(output)
 
 			return &test{
 				name:     "err - missing address keys (wrong address)",
 				builder:  bdl,
-				buildErr: iotago.ErrAddressKeysNotMapped,
+				buildErr: axongo.ErrAddressKeysNotMapped,
 			}
 		}(),
 
 		// err - missing address keys (no keys given at all)
 		func() *test {
-			inputUTXO1 := &iotago.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
+			inputUTXO1 := &axongo.UTXOInput{TransactionID: tpkg.Rand36ByteArray(), TransactionOutputIndex: 0}
 
-			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, iotago.NewInMemoryAddressSigner()).
-				AddInput(&builder.TxInput{UnlockTarget: inputAddrEd25519, InputID: inputUTXO1.OutputID(), Input: tpkg.RandOutputOnAddress(iotago.OutputBasic, inputAddrEd25519)}).
+			bdl := builder.NewTransactionBuilder(tpkg.ZeroCostTestAPI, axongo.NewInMemoryAddressSigner()).
+				AddInput(&builder.TxInput{UnlockTarget: inputAddrEd25519, InputID: inputUTXO1.OutputID(), Input: tpkg.RandOutputOnAddress(axongo.OutputBasic, inputAddrEd25519)}).
 				AddOutput(output)
 
 			return &test{
 				name:     "err - missing address keys (no keys given at all)",
 				builder:  bdl,
-				buildErr: iotago.ErrAddressKeysNotMapped,
+				buildErr: axongo.ErrAddressKeysNotMapped,
 			}
 		}(),
 	}
